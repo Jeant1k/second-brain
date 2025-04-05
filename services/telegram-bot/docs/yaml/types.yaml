@@ -1,0 +1,24 @@
+components:
+    schemas:
+        Task:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Уникальный идентификатор задачи
+                description:
+                    type: string
+                    description: Описание задачи
+                task_type:
+                    $ref: '../../../schemas/services/ai-proxy/api/api.yaml#/components/schemas/TaskType'
+                created_at:
+                    type: string
+                    format: date-time
+                    description: Время создания задачи
+                user_id:
+                    type: string
+                    description: Идентификатор пользователя
+            required:
+              - description
+              - task_type
+              - user_id
