@@ -1,0 +1,30 @@
+components:
+    schemas:
+        Error:
+            description: Описание ошибки
+            type: object
+            additionalProperties: false
+            required:
+              - message
+              - code
+            properties:
+                message:
+                    description: Сообщение об ошибке
+                    type: string
+                code:
+                    description: Код ошибки
+                    type: string
+
+        TaskType:
+            description: Тип задачи в терминологиях системы ГТД
+            type: string
+            enum:
+              - trash
+              - someday_maybe
+              - trigger_someday_maybe
+              - notes
+              - do_it
+              - delegate
+              - current_actions
+              - calendar
+              - project

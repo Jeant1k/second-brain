@@ -1,0 +1,62 @@
+openapi: 3.0.0
+info:
+    title: AI proxy API
+    version: 1.0.0
+
+paths:
+    /health:
+        get:
+            summary: Health check endpoint
+            responses:
+                200:
+                    description: OK
+
+    /ai-proxy/v1/task/define:
+        post:
+            summary: Определение списка по описанию задачи
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/V1TaskDefineRequest'
+            responses:
+                200:
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/V1TaskDefineResponse'
+                422:
+                    description: Ошибка во время генерации или 
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '../definitions.yaml#/components/schemas/Error'
+                500:
+                    description: Ошибка сервиса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '../definitions.yaml#/components/schemas/Error'
+
+components:
+    schemas:
+        V1TaskDefineRequest:
+            type: object
+            additionalProperties: false
+            required:
+              - task
+            properties:
+                task:
+                    type: string
+                    description: Описание задачи
+
+        V1TaskDefineResponse:
+            type: object
+            additionalProperties: false
+            required:
+              - task_type
+            properties:
+                task_type:
+                    $ref: '../definitions.yaml#/components/schemas/TaskType'

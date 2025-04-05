@@ -1,0 +1,10 @@
+datamodel-code-generator==0.28.4
+fastapi==0.115.11
+starlette==0.46.1
+uvicorn==0.34.0
+pydantic==2.10.6
+python-dotenv==1.0.1
+yandex-cloud-ml-sdk==0.4.2
+iniconfig==2.1.0
+pluggy==1.5.0
+pytest==8.3.5
