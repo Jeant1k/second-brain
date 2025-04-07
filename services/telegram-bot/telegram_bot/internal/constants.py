@@ -22,13 +22,25 @@ TASK_STORAGE_BY_TYPE_PATH = "/tasks/by-type"
 TASK_TYPE_TO_READABLE = {
     TaskType.trash: "Мусор",
     TaskType.someday_maybe: "Когда-нибудь потом",
-    TaskType.trigger_someday_maybe: "Когда-нибудь потом (с триггером)",
     TaskType.notes: "Заметки",
     TaskType.do_it: "Выполнить сразу",
     TaskType.delegate: "Ожидание",
     TaskType.current_actions: "Текущие действия",
     TaskType.calendar: "Календарь",
-    TaskType.project: "Проекты"
+    TaskType.project: "Проекты",
+    TaskType.completed: "Выполнено"
+}
+
+EN_READABLE_TO_TASK_TYPE = {
+    "current_actions": TaskType.current_actions,
+    "project": TaskType.project,
+    "delegate": TaskType.delegate,
+    "completed": TaskType.completed,
+    "someday_maybe": TaskType.someday_maybe,
+    "notes": TaskType.notes,
+    "trash": TaskType.trash,
+    "do_it": TaskType.do_it,
+    "calendar": TaskType.calendar
 }
 
 # Маппинг кнопок на типы задач
@@ -36,7 +48,7 @@ BUTTON_TO_TASK_TYPE = {
     CURRENT_ACTIONS_BTN: TaskType.current_actions,
     PROJECTS_BTN: TaskType.project,
     WAITING_BTN: TaskType.delegate,
-    COMPLETED_BTN: "completed",  # Особый тип, не в TaskType
+    COMPLETED_BTN: TaskType.completed,
     SOMEDAY_BTN: TaskType.someday_maybe,
     NOTES_BTN: TaskType.notes,
     TRASH_BTN: TaskType.trash

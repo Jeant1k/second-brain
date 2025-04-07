@@ -21,7 +21,6 @@ components:
             enum:
               - trash
               - someday_maybe
-              - trigger_someday_maybe
               - notes
               - do_it
               - delegate

@@ -1,6 +1,7 @@
 import httpx
 import json
 from telegram_bot.generated.types import Task
+from telegram_bot.generated.ai_proxy_api import TaskType
 from telegram_bot.internal.constants import (
     TASK_STORAGE_PATH, 
     TASK_STORAGE_BY_TYPE_PATH
@@ -61,7 +62,7 @@ class TaskStorageClient:
         #     logger.error(f"Unexpected error when saving task: {str(e)}")
         #     raise TaskStorageError(message="Unexpected error occurred")
 
-    async def get_tasks_by_type(self, user_id: str, task_type: str) -> list[Task]:
+    async def get_tasks_by_type(self, user_id: str, task_type: TaskType) -> list[Task]:
         """
         Получает список задач определенного типа
         
@@ -75,32 +76,31 @@ class TaskStorageClient:
         Вызывает:
             TaskStorageError: Если произошла ошибка при получении списка задач
         """
-        task_type_str = task_type.value if hasattr(task_type, 'value') else str(task_type)
 
         # В MVP используем заглушку
-        logger.info(f"Simulating get tasks by type: user_id={user_id}, task_type={task_type_str}")
+        logger.info(f"Simulating get tasks by type: user_id={user_id}, task_type={task_type}")
         
         # Генерируем тестовые данные для каждого типа
-        if task_type_str == "completed":
+        if task_type == TaskType.completed:
             return [
-                Task(description="Завершил отчет по проекту", task_type=task_type_str, user_id=user_id),
-                Task(description="Ответил на все письма", task_type=task_type_str, user_id=user_id)
+                Task(description="Завершил отчет по проекту", task_type=task_type.value, user_id=user_id),
+                Task(description="Ответил на все письма", task_type=task_type.value, user_id=user_id)
             ]
         
         # Для остальных типов возвращаем список с 1-2 задачами
         example_tasks = {
-            "trash": ["Старая заметка про идею", "Устаревшая информация"],
-            "someday_maybe": ["Изучить новый язык программирования", "Прочитать книгу о GTD"],
-            "notes": ["Идея для приложения: помощник по планированию", "Мысли о структуре проекта"],
-            "do_it": ["Отправить email", "Позвонить клиенту"],
-            "delegate": ["Ожидаю ответа от команды", "Жду документы от бухгалтерии"],
-            "current_actions": ["Разработка MVP", "Тестирование интерфейса"],
-            "calendar": ["Встреча в пятницу", "Дедлайн по проекту 20 мая"],
-            "project": ["Дипломный проект", "Разработка бота SECOND BRAIN"]
+            TaskType.trash: ["Старая заметка про идею", "Устаревшая информация"],
+            TaskType.someday_maybe: ["Изучить новый язык программирования", "Прочитать книгу о GTD"],
+            TaskType.notes: ["Идея для приложения: помощник по планированию", "Мысли о структуре проекта"],
+            TaskType.do_it: ["Отправить email", "Позвонить клиенту"],
+            TaskType.delegate: ["Ожидаю ответа от команды", "Жду документы от бухгалтерии"],
+            TaskType.current_actions: ["Разработка MVP", "Тестирование интерфейса"],
+            TaskType.calendar: ["Встреча в пятницу", "Дедлайн по проекту 20 мая"],
+            TaskType.project: ["Дипломный проект", "Разработка бота SECOND BRAIN"]
         }
         
-        tasks = example_tasks.get(task_type_str, ["Пример задачи"])
-        return [Task(description=task, task_type=task_type_str, user_id=user_id) for task in tasks]
+        tasks = example_tasks.get(task_type, ["Пример задачи"])
+        return [Task(description=task, task_type=task_type.value, user_id=user_id) for task in tasks]
 
         # Реальный код для подключения к сервису
         # try:

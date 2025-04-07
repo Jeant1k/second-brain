@@ -45,7 +45,7 @@ class TaskManager:
         try:
             task = Task(
                 description=task_description,
-                task_type=task_type,
+                task_type=task_type.value,
                 user_id=user_id
             )
             return await self.task_storage_client.save_task(task)
@@ -53,7 +53,7 @@ class TaskManager:
             logger.error(f"Error saving task: {e}")
             raise
 
-    async def get_tasks_by_type(self, user_id: str, task_type: str) -> list[Task]:
+    async def get_tasks_by_type(self, user_id: str, task_type: TaskType) -> list[Task]:
         """
         Получает список задач определенного типа
         

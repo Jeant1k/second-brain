@@ -4,7 +4,9 @@ from telegram_bot.internal.task_manager import TaskManager
 from telegram_bot.internal.constants import (
     SUCCESSFUL_TASK_SAVE,
     TASK_SAVE_ERROR,
-    UNKNOWN_ERROR
+    UNKNOWN_ERROR,
+    EN_READABLE_TO_TASK_TYPE,
+    TASK_TYPE_TO_READABLE
 )
 from telegram_bot.keyboards.reply_keyboards import (
     get_main_keyboard,
@@ -25,7 +27,7 @@ async def handle_confirmation_callback(update: Update, context: CallbackContext)
     await query.answer()
     
     # Получаем действие из callback_data
-    action = query.data.split("_")[1]  # confirm_yes или confirm_no
+    action = query.data.split("_", 1)[1]  # confirm_yes или confirm_no
     
     # Проверяем, есть ли текущая задача в контексте
     if "current_task" not in context.user_data:
@@ -78,9 +80,9 @@ async def handle_task_type_selection(update: Update, context: CallbackContext) -
     user_id = str(update.effective_user.id)
     
     await query.answer()
-    
+
     # Получаем выбранный тип задачи из callback_data
-    selected_type = query.data.split("_")[1]  # type_task_type
+    selected_type = query.data.split("_", 1)[1]  # type_task_type
     
     # Проверяем, есть ли текущая задача в контексте
     if "current_task" not in context.user_data:
@@ -99,11 +101,11 @@ async def handle_task_type_selection(update: Update, context: CallbackContext) -
         success = await task_manager.save_task(
             user_id=user_id,
             task_description=current_task["description"],
-            task_type=selected_type
+            task_type=EN_READABLE_TO_TASK_TYPE[current_task["task_type"]]
         )
         
         if success:
-            message = SUCCESSFUL_TASK_SAVE.format(selected_type)
+            message = SUCCESSFUL_TASK_SAVE.format(TASK_TYPE_TO_READABLE[EN_READABLE_TO_TASK_TYPE[selected_type]])
             await query.edit_message_text(message)
         else:
             await query.edit_message_text(TASK_SAVE_ERROR)
