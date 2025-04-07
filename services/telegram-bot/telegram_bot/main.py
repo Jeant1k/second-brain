@@ -1,6 +1,6 @@
 import asyncio
 from telegram.ext import ApplicationBuilder
-from telegram_bot.handlers import register_handlers
+from telegram_bot.handlers.init import register_handlers
 from telegram_bot.internal.utils import get_env_var
 from telegram_bot.internal.logger import get_logger
 
@@ -31,11 +31,13 @@ async def main():
     
     logger.info("Bot started")
     
-    # Держим бота запущенным, пока не получим сигнал остановки
+    # Держим бота запущенным до получения сигнала остановки
     try:
+        await asyncio.Event().wait()
+    except (KeyboardInterrupt, SystemExit):
+        logger.info("Bot stopping...")
         await application.updater.stop_polling()
         await application.stop()
-    except (KeyboardInterrupt, SystemExit):
         logger.info("Bot stopped")
 
 

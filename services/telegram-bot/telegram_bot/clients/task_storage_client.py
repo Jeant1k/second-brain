@@ -75,14 +75,16 @@ class TaskStorageClient:
         Вызывает:
             TaskStorageError: Если произошла ошибка при получении списка задач
         """
+        task_type_str = task_type.value if hasattr(task_type, 'value') else str(task_type)
+
         # В MVP используем заглушку
-        logger.info(f"Simulating get tasks by type: user_id={user_id}, task_type={task_type}")
+        logger.info(f"Simulating get tasks by type: user_id={user_id}, task_type={task_type_str}")
         
         # Генерируем тестовые данные для каждого типа
-        if task_type == "completed":
+        if task_type_str == "completed":
             return [
-                Task(description="Завершил отчет по проекту", task_type=task_type, user_id=user_id),
-                Task(description="Ответил на все письма", task_type=task_type, user_id=user_id)
+                Task(description="Завершил отчет по проекту", task_type=task_type_str, user_id=user_id),
+                Task(description="Ответил на все письма", task_type=task_type_str, user_id=user_id)
             ]
         
         # Для остальных типов возвращаем список с 1-2 задачами
@@ -97,8 +99,8 @@ class TaskStorageClient:
             "project": ["Дипломный проект", "Разработка бота SECOND BRAIN"]
         }
         
-        tasks = example_tasks.get(task_type, ["Пример задачи"])
-        return [Task(description=task, task_type=task_type, user_id=user_id) for task in tasks]
+        tasks = example_tasks.get(task_type_str, ["Пример задачи"])
+        return [Task(description=task, task_type=task_type_str, user_id=user_id) for task in tasks]
 
         # Реальный код для подключения к сервису
         # try:

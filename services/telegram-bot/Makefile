@@ -1,5 +1,4 @@
 PROJECT_ROOT := /home/jean/second_brain
-TEMP_DIR := /tmp/openapi-gen
 
 # .PHONY: run-tests
 # run-tests:
@@ -8,8 +7,8 @@ TEMP_DIR := /tmp/openapi-gen
 
 .PHONY: run-codegen
 run-codegen:
-	cd $(PROJECT_ROOT) && datamodel-codegen --input schemas/services/ai-proxy/api/api.yaml --output services/telegram-bot/telegram_bot/generated/ai_proxy_api.py --input-file-type openapi
-	cd $(PROJECT_ROOT) && datamodel-codegen --input services/telegram-bot/docs/yaml/types.yaml --output services/telegram-bot/telegram_bot/generated/types.py --input-file-type openapi
+	datamodel-codegen --input $(PROJECT_ROOT)/schemas/services/ai-proxy/api/api.yaml --output $(PROJECT_ROOT)/services/telegram-bot/telegram_bot/generated/ai_proxy_api.py --input-file-type openapi
+	datamodel-codegen --input $(PROJECT_ROOT)/services/telegram-bot/docs/yaml/types.yaml --output $(PROJECT_ROOT)/services/telegram-bot/telegram_bot/generated/types.py --input-file-type openapi
 
 
 .PHONY: run-service

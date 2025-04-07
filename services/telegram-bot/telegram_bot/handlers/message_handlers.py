@@ -79,7 +79,7 @@ async def handle_list_button(update: Update, context: CallbackContext) -> None:
     try:
         # Получаем задачи из хранилища
         tasks = await task_manager.get_tasks_by_type(user_id, task_type)
-        
+
         # Форматируем и отправляем пользователю
         if not tasks:
             await update.message.reply_text(

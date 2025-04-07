@@ -6,7 +6,7 @@ logger.remove()
 logger.add(
     sys.stderr,
     format="{time} {level} {message}",
-    level="INFO",
+    level="DEBUG",
     serialize=False,
 )
 

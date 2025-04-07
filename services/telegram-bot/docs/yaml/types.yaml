@@ -10,7 +10,7 @@ components:
                     type: string
                     description: Описание задачи
                 task_type:
-                    $ref: '../../../schemas/services/ai-proxy/api/api.yaml#/components/schemas/TaskType'
+                    $ref: '../../../../schemas/services/ai-proxy/definitions.yaml#/components/schemas/TaskType'
                 created_at:
                     type: string
                     format: date-time

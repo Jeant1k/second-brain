@@ -28,3 +28,4 @@ components:
               - current_actions
               - calendar
               - project
+              - completed

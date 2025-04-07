@@ -17,9 +17,9 @@ from telegram_bot.generated.ai_proxy_api import TaskType
 def get_main_keyboard() -> ReplyKeyboardMarkup:
     """Создает основную клавиатуру с кнопками для списков задач"""
     keyboard = [
-        [CURRENT_ACTIONS_BTN, PROJECTS_BTN],
-        [WAITING_BTN, COMPLETED_BTN],
-        [SOMEDAY_BTN, NOTES_BTN, TRASH_BTN]
+        [CURRENT_ACTIONS_BTN, WAITING_BTN],
+        [SOMEDAY_BTN, COMPLETED_BTN],
+        [PROJECTS_BTN, NOTES_BTN, TRASH_BTN]
     ]
     return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
