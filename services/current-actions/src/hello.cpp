@@ -22,7 +22,7 @@ class Hello final : public userver::server::handlers::HttpHandlerBase {
       : HttpHandlerBase(config, component_context),
         pg_cluster_(
             component_context
-                .FindComponent<userver::components::Postgres>("postgres-db-1")
+                .FindComponent<userver::components::Postgres>("postgres-current-actions")
                 .GetCluster()) {}
 
   std::string HandleRequestThrow(
@@ -70,7 +70,7 @@ std::string SayHelloTo(std::string_view name, UserType type) {
 
 void AppendHello(userver::components::ComponentList& component_list) {
   component_list.Append<Hello>();
-  component_list.Append<userver::components::Postgres>("postgres-db-1");
+  component_list.Append<userver::components::Postgres>("postgres-current-actions");
   component_list.Append<userver::clients::dns::Component>();
 }
 
