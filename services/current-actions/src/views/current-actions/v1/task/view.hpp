@@ -1,10 +1,9 @@
 #pragma once
 
-#include <string>
-#include <string_view>
-
 #include <userver/components/component_list.hpp>
 #include <userver/server/handlers/http_handler_base.hpp>
+
+#include "../../../../current_actions/contract/managers/tasks_manager.hpp"
 
 namespace views::current_actions::v1::task::post {
 
@@ -22,7 +21,7 @@ public:
     ) const override;
 
 private:
-
+    const ::current_actions::contract::managers::TasksManager& tasks_manager_;
 };
        
 }  // namespace views::current_actions::v1::task::post

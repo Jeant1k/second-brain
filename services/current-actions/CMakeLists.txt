@@ -15,8 +15,28 @@ userver_setup_environment()
 
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
-    src/hello.hpp
-    src/hello.cpp
+    # views
+    src/views/current-actions/v1/task/view.hpp
+    src/views/current-actions/v1/task/view.cpp
+
+    # current_actions
+    src/current_actions/contract/managers/tasks_manager.hpp
+    src/current_actions/managers/tasks_manager.cpp
+    src/current_actions/models/task.hpp
+    src/current_actions/providers/tasks_provider/tasks_provider.hpp
+    src/current_actions/providers/tasks_provider/tasks_provider.cpp
+
+    # codegen
+    include/current_actions/sql_queries.hpp
+    src/current_actions/sql_queries.cpp
+    src/docs/yaml/api_fwd.hpp
+    src/docs/yaml/api_parsers.ipp
+    src/docs/yaml/api.cpp
+    src/docs/yaml/api.hpp
+    src/docs/yaml/definitions_fwd.hpp
+    src/docs/yaml/definitions_parsers.ipp
+    src/docs/yaml/definitions.cpp
+    src/docs/yaml/definitions.hpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::postgresql)
 
@@ -38,6 +58,14 @@ userver_target_generate_chaotic(${PROJECT_NAME}-chgen
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC ${PROJECT_NAME}-chgen)
 
+userver_add_sql_library(
+    ${PROJECT_NAME}_sql
+    NAMESPACE current_actions
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    SQL_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/current_actions/database/sql/*.sql
+)
+target_link_libraries(${PROJECT_NAME}_objs PUBLIC ${PROJECT_NAME}_sql)
+
 
 # The Service
 add_executable(${PROJECT_NAME} src/main.cpp)
@@ -45,19 +73,19 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
 
 
 # Unit Tests
-add_executable(${PROJECT_NAME}_unittest
-    src/hello_test.cpp
-)
-target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver::utest)
-add_google_tests(${PROJECT_NAME}_unittest)
+# add_executable(${PROJECT_NAME}_unittest
+#     ...
+# )
+# target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver::utest)
+# add_google_tests(${PROJECT_NAME}_unittest)
 
 
 # Benchmarks
-add_executable(${PROJECT_NAME}_benchmark
-    src/hello_benchmark.cpp
-)
-target_link_libraries(${PROJECT_NAME}_benchmark PRIVATE ${PROJECT_NAME}_objs userver::ubench)
-add_google_benchmark_tests(${PROJECT_NAME}_benchmark)
+# add_executable(${PROJECT_NAME}_benchmark
+#     ...
+# )
+# target_link_libraries(${PROJECT_NAME}_benchmark PRIVATE ${PROJECT_NAME}_objs userver::ubench)
+# add_google_benchmark_tests(${PROJECT_NAME}_benchmark)
 
 
 # Functional Tests

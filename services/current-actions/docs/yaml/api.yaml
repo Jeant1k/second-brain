@@ -103,8 +103,6 @@ components:
                     description: Описание задачи
                 project_id:
                     type: string
-                    format: uuid
-                    nullable: true
                     description: Идентификатор проекта, к которому относится задача
                 priority:
                     $ref: 'definitions.yaml#/components/schemas/Priority'
@@ -123,7 +121,6 @@ components:
             properties:
                 task_id:
                     type: string
-                    format: uuid
                     description: Идентификатор задачи
             required:
               - task_id

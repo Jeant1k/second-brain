@@ -4,32 +4,40 @@
 #include <userver/components/component.hpp>
 #include <userver/utils/assert.hpp>
 
-#include <docs/yaml/api.yaml>
+#include "docs/yaml/api.hpp"
 
 namespace views::current_actions::v1::task::post {
+
+namespace {
+
+using ::current_actions::contract::managers::TasksManager;
+using ::current_actions::handlers::CreateTaskRequest;
+
+}
 
 CurrentActionsV1TaskPost::CurrentActionsV1TaskPost(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
-) : userver::server::handlers::HttpHandlerBase(config, component_context) {}
+) : userver::server::handlers::HttpHandlerBase(config, component_context),
+    tasks_manager_(component_context.FindComponent<TasksManager>()) {}
 
 std::string CurrentActionsV1TaskPost::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext&
 ) const {
-    request.GetHttpResponse().SetContentType(http::content_type::kApplicationJson);
+    request.GetHttpResponse().SetContentType(userver::http::content_type::kApplicationJson);
  
-    auto request_json = formats::json::FromString(request.RequestBody());
+    auto request_json = userver::formats::json::FromString(request.RequestBody());
 
-    auto request_dom = request_json.As<current_actions::handlers::CreateTaskRequest>();
+    auto create_task_request = request_json.As<CreateTaskRequest>();
 
-    // request_dom and response_dom have generated types
-    auto response_dom = SayHelloTo(request_dom);
+    tasks_manager_.CreateTask(std::move(create_task_request));
 
-    // Use generated serializer for ValueBuilder()
-    auto response_json = formats::json::ValueBuilder{response_dom}.ExtractValue();
-    return formats::json::ToString(response_json);
-
+    auto& response = request.GetHttpResponse();
+    response.SetContentType(userver::http::content_type::kApplicationJson);
+    response.SetStatus(userver::server::http::HttpStatus::kCreated);
+    
+    return "";
 }
 
 }  // namespace views::current_actions::v1::task::post
