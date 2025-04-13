@@ -1,0 +1,138 @@
+components:
+    parameters:
+        UserId:
+            name: user_id
+            in: query
+            required: true
+            schema:
+                type: integer
+                format: int64
+            description: ID пользователя
+        
+        Status:
+            name: status
+            in: query
+            required: false
+            schema:
+                type: string
+                enum: [active, completed]
+            description: Статус задач для фильтрации
+
+        Limit:
+            name: limit
+            in: query
+            required: false
+            schema:
+                type: integer
+                default: 100
+                minimum: 1
+                maximum: 1000
+            description: Максимальное количество задач в ответе
+
+        Offset:
+            name: offset
+            in: query
+            required: false
+            schema:
+                type: integer
+                default: 0
+                minimum: 0
+            description: Смещение от начала списка задач
+
+    schemas:
+        Error:
+            description: Описание ошибки
+            type: object
+            additionalProperties: false
+            required:
+              - message
+              - code
+            properties:
+                message:
+                    description: Сообщение об ошибке
+                    type: string
+                code:
+                    description: Код ошибки
+                    type: string
+
+        TaskStatus:
+            type: string
+            enum:
+              - active
+              - completed
+            description: Статус задачи
+        
+        Priority:
+            type: string
+            enum:
+              - high
+              - medium
+              - low
+            description: Приоритет задачи
+            default: medium
+        
+        Tag:
+            type: object
+            additionalProperties: false
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    description: Уникальный идентификатор тега
+                name:
+                    type: string
+                    description: Название тега
+                created_at:
+                    type: string
+                    format: date-time
+                    description: Время создания тега
+            required:
+              - id
+              - name
+
+        Task:
+            type: object
+            additionalProperties: false
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    description: Уникальный идентификатор задачи
+                user_id:
+                    type: integer
+                    format: int64
+                    description: Идентификатор пользователя
+                description:
+                    type: string
+                    description: Описание задачи
+                status:
+                    $ref: '#/components/schemas/TaskStatus'
+                project_id:
+                    type: string
+                    format: uuid
+                    description: Идентификатор проекта, к которому относится задача
+                priority:
+                    $ref: '#/components/schemas/Priority'
+                tags:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Tag'
+                    description: Теги, связанные с задачей
+                created_at:
+                    type: string
+                    format: date-time
+                    description: Время создания задачи
+                updated_at:
+                    type: string
+                    format: date-time
+                    description: Время последнего обновления задачи
+                completed_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    description: Время выполнения задачи
+            required:
+              - id
+              - user_id
+              - description
+              - status

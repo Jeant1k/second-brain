@@ -4,7 +4,7 @@ project(current-actions CXX)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(DownloadUserver)
 
-find_package(userver COMPONENTS core postgresql QUIET)
+find_package(userver COMPONENTS core postgresql chaotic QUIET)
 if(NOT userver_FOUND)
   # Tries TRY_DIR first, falls back to downloading userver from GitHub using CPM.
   download_userver(TRY_DIR third_party/userver)
@@ -19,6 +19,24 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/hello.cpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::postgresql)
+
+
+# Codegen
+file(GLOB_RECURSE SCHEMAS ${CMAKE_CURRENT_SOURCE_DIR}/docs/yaml/*.yaml)
+userver_target_generate_chaotic(${PROJECT_NAME}-chgen
+    ARGS
+        # Map '/components/schemas/*' JSONSchema types to C++ types in 'current_actions::handlers' namespace
+        -n "/components/schemas/([^/]*)/=current_actions::handlers::{0}"
+        # Generate serializers for responses
+        --generate-serializers
+    OUTPUT_DIR
+        ${CMAKE_CURRENT_BINARY_DIR}/src
+    SCHEMAS
+        ${SCHEMAS}
+    RELATIVE_TO
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(${PROJECT_NAME}_objs PUBLIC ${PROJECT_NAME}-chgen)
 
 
 # The Service

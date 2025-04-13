@@ -1,0 +1,145 @@
+openapi: 3.0.3
+info:
+    title: Current Actions API
+    description: API для управления текущими действиями в системе SECOND BRAIN
+    version: 1.0.0
+
+paths:
+    /current-actions/v1/task/list:
+        get:
+            summary: Получение списка текущих действий
+            operationId: listTasks
+            parameters:
+              - $ref: 'definitions.yaml#/components/parameters/UserId'
+              - $ref: 'definitions.yaml#/components/parameters/Status'
+              - $ref: 'definitions.yaml#/components/parameters/Limit'
+              - $ref: 'definitions.yaml#/components/parameters/Offset'
+            responses:
+                200:
+                    description: Список текущих действий
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TaskListResponse'
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+    
+    /current-actions/v1/task:
+        post:
+            summary: Создание новой задачи
+            operationId: createTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateTaskRequest'
+            responses:
+                201:
+                    description: Задача успешно создана
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+    
+    /current-actions/v1/task/complete:
+        post:
+            summary: Отметить задачу как выполненную
+            operationId: completeTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TaskIdRequest'
+            responses:
+                200:
+                    description: Задача успешно отмечена как выполненная
+                404:
+                    description: Задача не найдена
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+    
+    /current-actions/v1/task/reactivate:
+        post:
+            summary: Вернуть задачу в активное состояние
+            operationId: reactivateTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TaskIdRequest'
+            responses:
+                200:
+                    description: Задача успешно возвращена в активное состояние
+                404:
+                    description: Задача не найдена
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+
+components:
+    schemas:
+        CreateTaskRequest:
+            type: object
+            additionalProperties: false
+            properties:
+                user_id:
+                    type: integer
+                    format: int64
+                    description: Идентификатор пользователя
+                description:
+                    type: string
+                    description: Описание задачи
+                project_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+                    description: Идентификатор проекта, к которому относится задача
+                priority:
+                    $ref: 'definitions.yaml#/components/schemas/Priority'
+                tags:
+                    type: array
+                    items:
+                        type: string
+                    description: Список тегов
+            required:
+              - user_id
+              - description
+        
+        TaskIdRequest:
+            type: object
+            additionalProperties: false
+            properties:
+                task_id:
+                    type: string
+                    format: uuid
+                    description: Идентификатор задачи
+            required:
+              - task_id
+        
+        TaskListResponse:
+            type: object
+            additionalProperties: false
+            properties:
+                tasks:
+                    type: array
+                    items:
+                        $ref: 'definitions.yaml#/components/schemas/Task'
+                    description: Список задач
+                offset:
+                    type: integer
+                    description: Смещение от начала списка задач
+            required:
+              - tasks
+              - offset

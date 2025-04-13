@@ -6,4 +6,4 @@ is-testing: true
 
 server-port: 8080
 
-dbconnection: 'postgresql://testsuite@localhost:15433/current-actions_V01__create_db'
+dbconnection: 'postgresql://testsuite@localhost:15433/current-actions_current_actions'
