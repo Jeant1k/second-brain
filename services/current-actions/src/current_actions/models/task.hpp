@@ -39,7 +39,7 @@ namespace userver::storages::postgres::io {
 template <>
 struct CppToUserPg<current_actions::models::Priority>
     : EnumMappingBase<current_actions::models::Priority> {
-    static constexpr DBTypeName postgres_name = "current_actions.tasks.priority";
+    static constexpr DBTypeName postgres_name = "current_actions.task_priority";
     static constexpr EnumeratorList enumerators{
         {EnumType::kHigh, "high"},
         {EnumType::kMedium, "medium"},

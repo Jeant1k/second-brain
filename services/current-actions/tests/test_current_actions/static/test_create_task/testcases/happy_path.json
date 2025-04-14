@@ -1,0 +1,20 @@
+{
+  "expected_result": {
+    "response": {},
+    "tasks_and_tags": {
+      "user_id": 123456,
+      "description": "Some task description",
+      "status": "active",
+      "project_id": null,
+      "priority": "medium",
+      "tags": []
+    },
+    "status_code": 201
+  },
+  "initial_data": {
+    "request_body": {
+      "user_id": 123456,
+      "description": "Some task description"
+    }
+  }
+}

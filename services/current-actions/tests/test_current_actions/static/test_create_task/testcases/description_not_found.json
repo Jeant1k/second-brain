@@ -1,0 +1,12 @@
+{
+  "expected_result": {
+    "response": {},
+    "tasks_and_tags": {},
+    "status_code": 400
+  },
+  "initial_data": {
+    "request_body": {
+      "user_id": 123456
+    }
+  }
+}

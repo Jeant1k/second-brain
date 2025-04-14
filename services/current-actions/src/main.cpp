@@ -4,6 +4,8 @@
 #include <userver/server/handlers/tests_control.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
+#include <userver/storages/postgres/component.hpp>
+#include <userver/clients/dns/component.hpp>
 
 #include "views/current-actions/v1/task/view.hpp"
 #include "current_actions/contract/managers/tasks_manager.hpp"
@@ -14,7 +16,9 @@ int main(int argc, char* argv[]) {
                             .Append<userver::server::handlers::Ping>()
                             .Append<userver::components::TestsuiteSupport>()
                             .Append<userver::components::HttpClient>()
+                            .Append<userver::clients::dns::Component>()
                             .Append<userver::server::handlers::TestsControl>()
+                            .Append<userver::components::Postgres>("postgres-current-actions")
 
                             // views
                             .Append<views::current_actions::v1::task::post::CurrentActionsV1TaskPost>()
