@@ -19,6 +19,7 @@ def initial_data_path(service_source_dir):
     """Path for find files with data"""
     return [
         service_source_dir / 'tests/test_current_actions/static/test_create_task/testcases',
+        service_source_dir / 'tests/test_current_actions/static/test_complete_task/testcases',
     ]
 
 

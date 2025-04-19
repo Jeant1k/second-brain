@@ -4,14 +4,18 @@
 
 #include "docs/yaml/api.hpp"
 
+#include "../contract/models/exceptions.hpp"
+
 namespace current_actions::contract::managers {
 
 namespace {
 
-using current_actions::handlers::CreateTaskRequest;
+using handlers::CreateTaskRequest;
+using handlers::TaskIdRequest;
 using current_actions::models::Task;
+using current_actions::models::TaskId;
 using current_actions::models::kMapPriority;
-using current_actions::providers::tasks_provider::TasksProvider;
+using providers::tasks_provider::TasksProvider;
 
 }  // namespace
 
@@ -38,8 +42,20 @@ Task TasksManager::Transform(CreateTaskRequest&& create_task_request) const {
         std::move(tags)};
 }
 
+TaskId TasksManager::Transform(TaskIdRequest&& task_id_request) const {
+    return TaskId{std::move(task_id_request.task_id)};
+}
+
 void TasksManager::CreateTask(CreateTaskRequest&& task) const {
     tasks_provider_.InsertTask(Transform(std::move(task)));
+}
+
+void TasksManager::CompleteTask(TaskIdRequest&& task_id_request) const {
+    const auto result = tasks_provider_.MarkTaskAsCompleted(Transform(std::move(task_id_request)));
+    
+    if (result == TasksProvider::MarkTaskAsCompletedResult::kTaskNotFound) {
+        throw models::TaskNotFoundException{"Task to mark as completed was not found"};
+    }
 }
 
 }  // namespace current_actions::contract::providers

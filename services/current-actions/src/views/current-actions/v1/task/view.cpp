@@ -1,8 +1,6 @@
 #include "view.hpp"
 
-#include <userver/clients/dns/component.hpp>
 #include <userver/components/component.hpp>
-#include <userver/utils/assert.hpp>
 
 #include "docs/yaml/api.hpp"
 
@@ -13,6 +11,7 @@ namespace {
 using ::current_actions::contract::managers::TasksManager;
 using ::current_actions::handlers::CreateTaskRequest;
 using contract::models::ApiResponseFactory;
+using views::contract::models::ApiResponse;
 
 }  // namespace
 
@@ -22,7 +21,7 @@ CurrentActionsV1TaskPost::CurrentActionsV1TaskPost(
 ) : views::contract::BaseHandler<CreateTaskRequest>(config, component_context),
     tasks_manager_(component_context.FindComponent<TasksManager>()) {}
 
-views::contract::models::ApiResponse CurrentActionsV1TaskPost::Handle(
+ApiResponse CurrentActionsV1TaskPost::Handle(
     CreateTaskRequest&& request,
     userver::server::request::RequestContext&&
 ) const {

@@ -2,6 +2,7 @@
 
 #include <userver/formats/json/serialize.hpp>
 #include <userver/formats/json/value_builder.hpp>
+#include <userver/logging/log.hpp>
 
 namespace views::contract::models {
 

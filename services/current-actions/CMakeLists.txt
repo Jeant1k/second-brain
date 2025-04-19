@@ -21,8 +21,11 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/views/contract/base_handler.hpp
     src/views/current-actions/v1/task/view.hpp
     src/views/current-actions/v1/task/view.cpp
+    src/views/current-actions/v1/task/complete/view.hpp
+    src/views/current-actions/v1/task/complete/view.cpp
 
     # current_actions
+    src/current_actions/contract/models/exceptions.hpp
     src/current_actions/contract/managers/tasks_manager.hpp
     src/current_actions/managers/tasks_manager.cpp
     src/current_actions/models/task.hpp

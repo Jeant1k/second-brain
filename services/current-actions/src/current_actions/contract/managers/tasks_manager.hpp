@@ -17,10 +17,13 @@ public:
         const userver::components::ComponentConfig& config,
         const userver::components::ComponentContext& component_context);
 
-    void CreateTask(current_actions::handlers::CreateTaskRequest&& create_task_request) const;
+    void CreateTask(handlers::CreateTaskRequest&& create_task_request) const;
+
+    void CompleteTask(handlers::TaskIdRequest&& task_id_request) const;
 
 private:
-    models::Task Transform(current_actions::handlers::CreateTaskRequest&& create_task_request) const;
+    models::Task Transform(handlers::CreateTaskRequest&& create_task_request) const;
+    models::TaskId Transform(handlers::TaskIdRequest&& task_id_request) const;
 
 private:
     const providers::tasks_provider::TasksProvider& tasks_provider_;

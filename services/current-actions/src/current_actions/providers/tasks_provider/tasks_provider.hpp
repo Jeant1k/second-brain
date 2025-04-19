@@ -15,7 +15,10 @@ public:
         const userver::components::ComponentConfig& config,
         const userver::components::ComponentContext& component_context);
     
-    void InsertTask(current_actions::models::Task&& task) const;
+    void InsertTask(models::Task&& task) const;
+
+    enum class MarkTaskAsCompletedResult : char { kSuccess, kTaskNotFound };
+    MarkTaskAsCompletedResult MarkTaskAsCompleted(models::TaskId&& task_id) const;
 
 private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;

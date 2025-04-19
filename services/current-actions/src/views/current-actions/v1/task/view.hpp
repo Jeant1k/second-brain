@@ -1,7 +1,6 @@
 #pragma once
 
 #include <userver/components/component_list.hpp>
-#include <userver/server/handlers/http_handler_base.hpp>
 
 #include "docs/yaml/api.hpp"
 

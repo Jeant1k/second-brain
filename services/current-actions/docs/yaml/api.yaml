@@ -61,6 +61,12 @@ paths:
             responses:
                 200:
                     description: Задача успешно отмечена как выполненная
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
                 404:
                     description: Задача не найдена
                     content:
@@ -81,6 +87,12 @@ paths:
             responses:
                 200:
                     description: Задача успешно возвращена в активное состояние
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
                 404:
                     description: Задача не найдена
                     content:
@@ -103,6 +115,7 @@ components:
                     description: Описание задачи
                 project_id:
                     type: string
+                    format: uuid
                     description: Идентификатор проекта, к которому относится задача
                 priority:
                     $ref: 'definitions.yaml#/components/schemas/Priority'
@@ -121,6 +134,7 @@ components:
             properties:
                 task_id:
                     type: string
+                    format: uuid
                     description: Идентификатор задачи
             required:
               - task_id

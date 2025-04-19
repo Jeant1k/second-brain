@@ -43,6 +43,10 @@ private:
 
 class ApiResponseFactory {
 public:
+    static ApiResponse Ok() {
+        return ApiResponse(EmptyResponse{}, 200);
+    }
+
     template <typename T>
     static ApiResponse Ok(T&& data) {
         SuccessResponse<userver::formats::json::Value> response{

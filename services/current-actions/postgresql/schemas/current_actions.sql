@@ -7,7 +7,7 @@ CREATE TYPE current_actions.task_status AS ENUM ('active', 'completed');
 CREATE TYPE current_actions.task_priority AS ENUM ('high', 'medium', 'low');
 
 -- Таблица с текущими действиями
-CREATE TABLE current_actions.tasks (
+CREATE TABLE IF NOT EXISTS current_actions.tasks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id BIGINT NOT NULL,
     description TEXT NOT NULL,
@@ -31,7 +31,7 @@ COMMENT ON COLUMN current_actions.tasks.updated_at IS 'Время последн
 COMMENT ON COLUMN current_actions.tasks.completed_at IS 'Время выполнения задачи';
 
 -- Таблица с тегами для задач
-CREATE TABLE current_actions.tags (
+CREATE TABLE IF NOT EXISTS current_actions.tags (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     task_id UUID NOT NULL REFERENCES current_actions.tasks(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,

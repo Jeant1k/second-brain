@@ -1,16 +1,20 @@
 #pragma once
 
 #include <string>
-#include <optional>
 #include <vector>
 #include <unordered_map>
 
+#include <boost/uuid/uuid_io.hpp>
+
 #include <userver/storages/postgres/io/enum_types.hpp>
 #include <userver/storages/postgres/io/io_fwd.hpp>
+#include <userver/utils/strong_typedef.hpp>
 
 #include "docs/yaml/definitions.hpp"
 
 namespace current_actions::models {
+
+using TaskId = userver::utils::StrongTypedef<class TaskIdTag, boost::uuids::uuid>;
 
 enum class Priority {
     kHigh,
@@ -21,7 +25,7 @@ enum class Priority {
 struct Task {
     std::int64_t user_id;
     std::string description;
-    std::optional<std::string> project_id;
+    std::optional<boost::uuids::uuid> project_id;
     Priority priority;
     std::vector<std::string> tags;
 };

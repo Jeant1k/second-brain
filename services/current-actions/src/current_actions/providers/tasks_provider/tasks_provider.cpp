@@ -14,7 +14,8 @@ namespace current_actions::providers::tasks_provider {
 
 namespace {
 
-using current_actions::models::Task;
+using models::Task;
+using models::TaskId;
 
 }  // namespace
 
@@ -38,7 +39,23 @@ void TasksProvider::InsertTask(Task&& task) const {
 
     auto task_id = boost::uuids::to_string((*result.cbegin())["id"].As<boost::uuids::uuid>());
 
-    LOG_INFO() << fmt::format("Task with id = {} has been inserted", std::move(task_id));
+    LOG_INFO() << fmt::format("Task with id = {} was inserted", std::move(task_id));
+}
+
+TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(TaskId&& task_id) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        sql::kMarkTaskAsCompleted,
+        task_id.GetUnderlying()
+    );
+
+    if (result.RowsAffected() == 0) {
+        LOG_WARNING() << fmt::format("Task with id = {} was not marked as completed", boost::uuids::to_string(task_id.GetUnderlying()));
+        return MarkTaskAsCompletedResult::kTaskNotFound;
+    }
+
+    LOG_INFO() << fmt::format("Task with id = {} was marked as completed", boost::uuids::to_string(task_id.GetUnderlying()));
+    return MarkTaskAsCompletedResult::kSuccess;
 }
 
 }  // namespace current_actions::providers::tasks_provider

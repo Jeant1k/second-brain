@@ -1,7 +1,7 @@
 {
   "expected_result": {
     "response": "{}",
-    "tasks_and_tags": [
+    "database_data": [
       {
         "user_id": 123456,
         "description": "Some task description",

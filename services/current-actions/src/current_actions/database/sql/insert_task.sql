@@ -7,7 +7,7 @@
 
 WITH inserted_task AS (
     INSERT INTO current_actions.tasks (
-        user_id, 
+        user_id,
         description, 
         project_id, 
         priority

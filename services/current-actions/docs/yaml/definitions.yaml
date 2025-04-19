@@ -95,6 +95,7 @@ components:
             properties:
                 id:
                     type: string
+                    format: uuid
                     description: Уникальный идентификатор задачи
                 user_id:
                     type: integer
@@ -107,6 +108,7 @@ components:
                     $ref: '#/components/schemas/TaskStatus'
                 project_id:
                     type: string
+                    format: uuid
                     description: Идентификатор проекта, к которому относится задача
                 priority:
                     $ref: '#/components/schemas/Priority'
