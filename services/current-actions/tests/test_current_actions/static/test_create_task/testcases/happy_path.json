@@ -1,6 +1,6 @@
 {
   "expected_result": {
-    "response": "null",
+    "response": "{}",
     "tasks_and_tags": [
       {
         "user_id": 123456,

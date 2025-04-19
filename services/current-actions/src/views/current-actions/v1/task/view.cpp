@@ -5,7 +5,6 @@
 #include <userver/utils/assert.hpp>
 
 #include "docs/yaml/api.hpp"
-#include "docs/yaml/definitions.hpp"
 
 namespace views::current_actions::v1::task::post {
 
@@ -13,39 +12,23 @@ namespace {
 
 using ::current_actions::contract::managers::TasksManager;
 using ::current_actions::handlers::CreateTaskRequest;
+using contract::models::ApiResponseFactory;
 
-}
+}  // namespace
 
 CurrentActionsV1TaskPost::CurrentActionsV1TaskPost(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
-) : userver::server::handlers::HttpHandlerBase(config, component_context),
+) : views::contract::BaseHandler<CreateTaskRequest>(config, component_context),
     tasks_manager_(component_context.FindComponent<TasksManager>()) {}
 
-std::string CurrentActionsV1TaskPost::HandleRequestThrow(
-    const userver::server::http::HttpRequest& request,
-    userver::server::request::RequestContext&
+views::contract::models::ApiResponse CurrentActionsV1TaskPost::Handle(
+    CreateTaskRequest&& request,
+    userver::server::request::RequestContext&&
 ) const {
-    auto& response = request.GetHttpResponse();
-    response.SetContentType(userver::http::content_type::kApplicationJson);
-
-    auto request_json = userver::formats::json::FromString(request.RequestBody());
-
-    CreateTaskRequest create_task_request;
-
-    try {
-        create_task_request = request_json.As<CreateTaskRequest>();
-    } catch (const std::exception& ex) {
-        LOG_INFO() << "Some required field in request is missing";
-        response.SetStatus(userver::server::http::HttpStatus::kBadRequest);
-        return userver::formats::json::ToString(userver::formats::json::ValueBuilder{::current_actions::handlers::Error{ex.what(), "BAD_REQUEST"}}.ExtractValue());
-    }
-
-    tasks_manager_.CreateTask(std::move(create_task_request));
-
-    response.SetStatus(userver::server::http::HttpStatus::kCreated);
+    tasks_manager_.CreateTask(std::move(request));
     
-    return userver::formats::json::ToString({});
+    return ApiResponseFactory::Created();
 }
 
 }  // namespace views::current_actions::v1::task::post

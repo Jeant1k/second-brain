@@ -1,6 +1,6 @@
 {
   "expected_result": {
-    "response": "{\"message\":\"Error at path 'description': Field is missing\",\"code\":\"BAD_REQUEST\"}",
+    "response": "{\"message\":\"Invalid request format: Error at path 'description': Field is missing\",\"code\":\"BAD_REQUEST\"}",
     "tasks_and_tags": [],
     "status_code": 400
   },

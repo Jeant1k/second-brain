@@ -16,6 +16,9 @@ userver_setup_environment()
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
     # views
+    src/views/contract/models/responses.hpp
+    src/views/models/responses.cpp
+    src/views/contract/base_handler.hpp
     src/views/current-actions/v1/task/view.hpp
     src/views/current-actions/v1/task/view.cpp
 
