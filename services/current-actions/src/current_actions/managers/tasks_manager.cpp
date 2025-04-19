@@ -59,4 +59,12 @@ void TasksManager::CompleteTask(TaskIdRequest&& task_id_request) const {
     }
 }
 
+void TasksManager::ReactivateTask(handlers::TaskIdRequest&& task_id_request) const {
+    const auto result = tasks_provider_.MarkTaskAsActive(Transform(std::move(task_id_request)));
+
+    if (result == TasksProvider::MarkTaskAsActiveResult::kTaskNotFound) {
+        throw models::TaskNotFoundException{"Task to mark as active was not found"};
+    }
+}
+
 }  // namespace current_actions::contract::managers

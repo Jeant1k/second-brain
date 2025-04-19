@@ -10,6 +10,7 @@
 #include "current_actions/contract/managers/tasks_manager.hpp"
 #include "current_actions/providers/tasks_provider/tasks_provider.hpp"
 #include "views/current-actions/v1/task/complete/view.hpp"
+#include "views/current-actions/v1/task/reactivate/view.hpp"
 #include "views/current-actions/v1/task/view.hpp"
 
 int main(int argc, char* argv[]) {
@@ -25,6 +26,7 @@ int main(int argc, char* argv[]) {
             // views
             .Append<views::current_actions::v1::task::post::CurrentActionsV1TaskPost>()
             .Append<views::current_actions::v1::task::complete::post::CurrentActionsV1TaskCompletePost>()
+            .Append<views::current_actions::v1::task::reactivate::post::CurrentActionsV1TaskReactivatePost>()
 
             // current_actions
             .Append<current_actions::contract::managers::TasksManager>()

@@ -61,4 +61,21 @@ TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(Task
     return MarkTaskAsCompletedResult::kSuccess;
 }
 
+TasksProvider::MarkTaskAsActiveResult TasksProvider::MarkTaskAsActive(models::TaskId&& task_id) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsActive, task_id.GetUnderlying()
+    );
+
+    if (result.RowsAffected() == 0) {
+        LOG_WARNING() << fmt::format(
+            "Task with id = {} was not marked as active", boost::uuids::to_string(task_id.GetUnderlying())
+        );
+        return MarkTaskAsActiveResult::kTaskNotFound;
+    }
+
+    LOG_INFO(
+    ) << fmt::format("Task with id = {} was marked as active", boost::uuids::to_string(task_id.GetUnderlying()));
+    return MarkTaskAsActiveResult::kSuccess;
+}
+
 }  // namespace current_actions::providers::tasks_provider

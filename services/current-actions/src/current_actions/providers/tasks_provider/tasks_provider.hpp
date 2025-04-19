@@ -21,6 +21,9 @@ public:
     enum class MarkTaskAsCompletedResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsCompletedResult MarkTaskAsCompleted(models::TaskId&& task_id) const;
 
+    enum class MarkTaskAsActiveResult : char { kSuccess, kTaskNotFound };
+    MarkTaskAsActiveResult MarkTaskAsActive(models::TaskId&& task_id) const;
+
 private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;
 };

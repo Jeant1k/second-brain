@@ -23,6 +23,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/views/current-actions/v1/task/view.cpp
     src/views/current-actions/v1/task/complete/view.hpp
     src/views/current-actions/v1/task/complete/view.cpp
+    src/views/current-actions/v1/task/reactivate/view.hpp
+    src/views/current-actions/v1/task/reactivate/view.cpp
 
     # current_actions
     src/current_actions/contract/models/exceptions.hpp

@@ -21,6 +21,8 @@ public:
 
     void CompleteTask(handlers::TaskIdRequest&& task_id_request) const;
 
+    void ReactivateTask(handlers::TaskIdRequest&& task_id_request) const;
+
 private:
     models::Task Transform(handlers::CreateTaskRequest&& create_task_request) const;
     models::TaskId Transform(handlers::TaskIdRequest&& task_id_request) const;
