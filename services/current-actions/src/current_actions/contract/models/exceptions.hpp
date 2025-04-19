@@ -9,10 +9,8 @@ private:
 
 public:
     explicit TaskNotFoundException(std::string&& message) : error_message_(std::move(message)) {}
-    
-    const char* what() const noexcept override {
-        return error_message_.c_str();
-    }
+
+    const char* what() const noexcept override { return error_message_.c_str(); }
 };
 
-}  // current_actions::contract::models
+}  // namespace current_actions::contract::models

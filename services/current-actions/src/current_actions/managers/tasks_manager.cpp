@@ -2,19 +2,18 @@
 
 #include <userver/components/component_context.hpp>
 
-#include "docs/yaml/api.hpp"
-
 #include "../contract/models/exceptions.hpp"
+#include "docs/yaml/api.hpp"
 
 namespace current_actions::contract::managers {
 
 namespace {
 
-using handlers::CreateTaskRequest;
-using handlers::TaskIdRequest;
+using current_actions::models::kMapPriority;
 using current_actions::models::Task;
 using current_actions::models::TaskId;
-using current_actions::models::kMapPriority;
+using handlers::CreateTaskRequest;
+using handlers::TaskIdRequest;
 using providers::tasks_provider::TasksProvider;
 
 }  // namespace
@@ -22,8 +21,9 @@ using providers::tasks_provider::TasksProvider;
 TasksManager::TasksManager(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
-) : userver::components::ComponentBase(config, component_context),
-    tasks_provider_(component_context.FindComponent<TasksProvider>()) {}
+)
+    : userver::components::ComponentBase(config, component_context),
+      tasks_provider_(component_context.FindComponent<TasksProvider>()) {}
 
 Task TasksManager::Transform(CreateTaskRequest&& create_task_request) const {
     std::vector<std::string> tags;
@@ -39,7 +39,8 @@ Task TasksManager::Transform(CreateTaskRequest&& create_task_request) const {
         std::move(create_task_request.description),
         std::move(create_task_request.project_id),
         kMapPriority.at(create_task_request.priority),
-        std::move(tags)};
+        std::move(tags)
+    };
 }
 
 TaskId TasksManager::Transform(TaskIdRequest&& task_id_request) const {
@@ -52,10 +53,10 @@ void TasksManager::CreateTask(CreateTaskRequest&& task) const {
 
 void TasksManager::CompleteTask(TaskIdRequest&& task_id_request) const {
     const auto result = tasks_provider_.MarkTaskAsCompleted(Transform(std::move(task_id_request)));
-    
+
     if (result == TasksProvider::MarkTaskAsCompletedResult::kTaskNotFound) {
         throw models::TaskNotFoundException{"Task to mark as completed was not found"};
     }
 }
 
-}  // namespace current_actions::contract::providers
+}  // namespace current_actions::contract::managers

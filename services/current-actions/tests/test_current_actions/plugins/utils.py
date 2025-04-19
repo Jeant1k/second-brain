@@ -20,7 +20,7 @@ def select_user_tasks_and_tags(pgsql, user_id):
     )
 
     result = []
-    
+
     for row in cursor.fetchall():
         task_dict = {
             'user_id': row['user_id'],
@@ -31,7 +31,7 @@ def select_user_tasks_and_tags(pgsql, user_id):
             'tags': row['tags']
         }
         result.append(task_dict)
-    
+
     return result
 
 
@@ -53,7 +53,6 @@ def select_task(pgsql, task_id):
         )
     except psycopg2.errors.InvalidTextRepresentation:
         return {}
-
 
     rows = cursor.fetchall()
     if len(rows) == 0:

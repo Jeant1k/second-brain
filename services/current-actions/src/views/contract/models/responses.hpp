@@ -1,9 +1,8 @@
 #pragma once
 
 #include <string>
-#include <variant>
-
 #include <userver/formats/json/value_builder.hpp>
+#include <variant>
 
 #include "docs/yaml/definitions.hpp"
 
@@ -22,11 +21,7 @@ struct ErrorResponse {
 
 class ApiResponse {
 public:
-    using ResponseVariant = std::variant<
-        EmptyResponse,
-        SuccessResponse<userver::formats::json::Value>,
-        ErrorResponse
-    >;
+    using ResponseVariant = std::variant<EmptyResponse, SuccessResponse<userver::formats::json::Value>, ErrorResponse>;
 
     explicit ApiResponse(ResponseVariant&& response, const int status_code)
         : response_(std::move(response)), status_code_(status_code) {}
@@ -43,9 +38,7 @@ private:
 
 class ApiResponseFactory {
 public:
-    static ApiResponse Ok() {
-        return ApiResponse(EmptyResponse{}, 200);
-    }
+    static ApiResponse Ok() { return ApiResponse(EmptyResponse{}, 200); }
 
     template <typename T>
     static ApiResponse Ok(T&& data) {
@@ -55,9 +48,7 @@ public:
         return ApiResponse(std::move(response), 200);
     }
 
-    static ApiResponse Created() {
-        return ApiResponse(EmptyResponse{}, 201);
-    }
+    static ApiResponse Created() { return ApiResponse(EmptyResponse{}, 201); }
 
     static ApiResponse BadRequest(const std::string& message, const std::string& code = "BAD_REQUEST") {
         ErrorResponse error{current_actions::handlers::Error{message, code}};
@@ -75,4 +66,4 @@ public:
     }
 };
 
-} // namespace views::contract::models
+}  // namespace views::contract::models

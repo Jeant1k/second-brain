@@ -35,4 +35,5 @@ async def test_create_task(
     assert response.status == expected_data['status_code']
     assert response.text == expected_data['response']
 
-    assert select_user_tasks_and_tags(pgsql, initial_data['request_body'].get('user_id', 0)) == expected_data['database_data']
+    assert select_user_tasks_and_tags(pgsql, initial_data['request_body'].get(
+        'user_id', 0)) == expected_data['database_data']

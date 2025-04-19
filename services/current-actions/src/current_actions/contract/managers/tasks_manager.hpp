@@ -2,10 +2,9 @@
 
 #include <userver/components/component_base.hpp>
 
-#include "docs/yaml/api_fwd.hpp"
-
 #include "../../models/task.hpp"
 #include "../../providers/tasks_provider/tasks_provider.hpp"
+#include "docs/yaml/api_fwd.hpp"
 
 namespace current_actions::contract::managers {
 
@@ -15,7 +14,8 @@ public:
 
     TasksManager(
         const userver::components::ComponentConfig& config,
-        const userver::components::ComponentContext& component_context);
+        const userver::components::ComponentContext& component_context
+    );
 
     void CreateTask(handlers::CreateTaskRequest&& create_task_request) const;
 
@@ -28,5 +28,5 @@ private:
 private:
     const providers::tasks_provider::TasksProvider& tasks_provider_;
 };
-       
-}  // namespace current_actions::contract::providers
+
+}  // namespace current_actions::contract::managers

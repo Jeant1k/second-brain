@@ -13,8 +13,9 @@ public:
 
     TasksProvider(
         const userver::components::ComponentConfig& config,
-        const userver::components::ComponentContext& component_context);
-    
+        const userver::components::ComponentContext& component_context
+    );
+
     void InsertTask(models::Task&& task) const;
 
     enum class MarkTaskAsCompletedResult : char { kSuccess, kTaskNotFound };
@@ -23,5 +24,5 @@ public:
 private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;
 };
-       
+
 }  // namespace current_actions::providers::tasks_provider
