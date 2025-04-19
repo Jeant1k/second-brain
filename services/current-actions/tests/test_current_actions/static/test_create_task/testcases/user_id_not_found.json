@@ -1,7 +1,7 @@
 {
   "expected_result": {
-    "response": {},
-    "tasks_and_tags": {},
+    "response": "{\"message\":\"Error at path 'user_id': Field is missing\",\"code\":\"BAD_REQUEST\"}",
+    "tasks_and_tags": [],
     "status_code": 400
   },
   "initial_data": {

@@ -5,6 +5,7 @@
 #include <userver/utils/assert.hpp>
 
 #include "docs/yaml/api.hpp"
+#include "docs/yaml/definitions.hpp"
 
 namespace views::current_actions::v1::task::post {
 
@@ -25,19 +26,26 @@ std::string CurrentActionsV1TaskPost::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext&
 ) const {
-    request.GetHttpResponse().SetContentType(userver::http::content_type::kApplicationJson);
- 
+    auto& response = request.GetHttpResponse();
+    response.SetContentType(userver::http::content_type::kApplicationJson);
+
     auto request_json = userver::formats::json::FromString(request.RequestBody());
 
-    auto create_task_request = request_json.As<CreateTaskRequest>();
+    CreateTaskRequest create_task_request;
+
+    try {
+        create_task_request = request_json.As<CreateTaskRequest>();
+    } catch (const std::exception& ex) {
+        LOG_INFO() << "Some required field in request is missing";
+        response.SetStatus(userver::server::http::HttpStatus::kBadRequest);
+        return userver::formats::json::ToString(userver::formats::json::ValueBuilder{::current_actions::handlers::Error{ex.what(), "BAD_REQUEST"}}.ExtractValue());
+    }
 
     tasks_manager_.CreateTask(std::move(create_task_request));
 
-    auto& response = request.GetHttpResponse();
-    response.SetContentType(userver::http::content_type::kApplicationJson);
     response.SetStatus(userver::server::http::HttpStatus::kCreated);
     
-    return "";
+    return userver::formats::json::ToString({});
 }
 
 }  // namespace views::current_actions::v1::task::post

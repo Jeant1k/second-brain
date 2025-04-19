@@ -1,5 +1,8 @@
 #include "tasks_provider.hpp"
 
+#include <boost/lexical_cast.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <userver/logging/log.hpp>
@@ -33,7 +36,9 @@ void TasksProvider::InsertTask(Task&& task) const {
         std::move(task.tags)
     );
 
-    LOG_INFO() << fmt::format("Task with id = {} has been inserted", result.AsSingleRow<std::int64_t>());
+    auto task_id = boost::uuids::to_string((*result.cbegin())["id"].As<boost::uuids::uuid>());
+
+    LOG_INFO() << fmt::format("Task with id = {} has been inserted", std::move(task_id));
 }
 
 }  // namespace current_actions::providers::tasks_provider

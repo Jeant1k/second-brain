@@ -19,11 +19,7 @@ WITH inserted_task AS (
             WHEN $3::TEXT IS NOT NULL THEN $3::UUID 
             ELSE NULL 
         END,
-        CASE 
-            WHEN $4 = 0 THEN 'high'::current_actions.task_priority
-            WHEN $4 = 1 THEN 'medium'::current_actions.task_priority
-            WHEN $4 = 2 THEN 'low'::current_actions.task_priority
-        END
+        $4::current_actions.task_priority
     )
     RETURNING id
 ),
