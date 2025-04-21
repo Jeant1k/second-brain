@@ -2,7 +2,7 @@
 
 #include <userver/components/component_base.hpp>
 
-#include "../../models/task.hpp"
+#include "../../models/tasks_provider_structures.hpp"
 #include "../../providers/tasks_provider/tasks_provider.hpp"
 #include "docs/yaml/api_fwd.hpp"
 
@@ -23,8 +23,10 @@ public:
 
     void ReactivateTask(handlers::TaskIdRequest&& task_id_request) const;
 
+    handlers::ListTasksResponse ListTasks(handlers::ListTasksRequest&& list_task_request) const;
+
 private:
-    models::Task Transform(handlers::CreateTaskRequest&& create_task_request) const;
+    models::TaskInfo Transform(handlers::CreateTaskRequest&& create_task_request) const;
     models::TaskId Transform(handlers::TaskIdRequest&& task_id_request) const;
 
 private:

@@ -6,21 +6,22 @@ info:
 
 paths:
     /current-actions/v1/task/list:
-        get:
+        post:
             summary: Получение списка текущих действий
             operationId: listTasks
-            parameters:
-              - $ref: 'definitions.yaml#/components/parameters/UserId'
-              - $ref: 'definitions.yaml#/components/parameters/Status'
-              - $ref: 'definitions.yaml#/components/parameters/Limit'
-              - $ref: 'definitions.yaml#/components/parameters/Offset'
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListTasksRequest'
             responses:
                 200:
                     description: Список текущих действий
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/TaskListResponse'
+                                $ref: '#/components/schemas/ListTasksResponse'
                 400:
                     description: Некорректные параметры запроса
                     content:
@@ -138,8 +139,24 @@ components:
                     description: Идентификатор задачи
             required:
               - task_id
+
+        ListTasksRequest:
+            type: object
+            additionalProperties: false
+            properties:
+                user_id:
+                    type: integer
+                    format: int64
+                    description: Идентификатор пользователя
+                status:
+                    $ref: 'definitions.yaml#/components/schemas/TaskStatus'
+                cursor:
+                    type: string
+                    description: Курсор для пагинации
+            required:
+              - user_id
         
-        TaskListResponse:
+        ListTasksResponse:
             type: object
             additionalProperties: false
             properties:
@@ -148,9 +165,8 @@ components:
                     items:
                         $ref: 'definitions.yaml#/components/schemas/Task'
                     description: Список задач
-                offset:
-                    type: integer
-                    description: Смещение от начала списка задач
+                cursor:
+                    type: string
+                    description: Курсор для пагинации
             required:
               - tasks
-              - offset

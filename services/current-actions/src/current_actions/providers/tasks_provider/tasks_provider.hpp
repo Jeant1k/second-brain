@@ -3,7 +3,7 @@
 #include <userver/components/component_base.hpp>
 #include <userver/storages/postgres/cluster.hpp>
 
-#include "../../models/task.hpp"
+#include "../../models/tasks_provider_structures.hpp"
 
 namespace current_actions::providers::tasks_provider {
 
@@ -16,13 +16,23 @@ public:
         const userver::components::ComponentContext& component_context
     );
 
-    void InsertTask(models::Task&& task) const;
+    void InsertTask(models::TaskInfo&& task) const;
 
     enum class MarkTaskAsCompletedResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsCompletedResult MarkTaskAsCompleted(models::TaskId&& task_id) const;
 
     enum class MarkTaskAsActiveResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsActiveResult MarkTaskAsActive(models::TaskId&& task_id) const;
+
+    struct SelectTasksResult {
+        std::optional<models::Cursor> cursor;
+        std::vector<models::FullTaskInfo> tasks;
+    };
+    SelectTasksResult SelectTasks(
+        models::UserId&& user_id,
+        std::optional<models::Cursor>&& cursor = std::nullopt,
+        std::optional<models::Status>&& status = std::nullopt
+    ) const;
 
 private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;

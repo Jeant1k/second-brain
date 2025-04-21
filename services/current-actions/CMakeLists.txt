@@ -25,12 +25,14 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/views/current-actions/v1/task/complete/view.cpp
     src/views/current-actions/v1/task/reactivate/view.hpp
     src/views/current-actions/v1/task/reactivate/view.cpp
+    src/views/current-actions/v1/task/list/view.hpp
+    src/views/current-actions/v1/task/list/view.cpp
 
     # current_actions
     src/current_actions/contract/models/exceptions.hpp
     src/current_actions/contract/managers/tasks_manager.hpp
     src/current_actions/managers/tasks_manager.cpp
-    src/current_actions/models/task.hpp
+    src/current_actions/models/tasks_provider_structures.hpp
     src/current_actions/providers/tasks_provider/tasks_provider.hpp
     src/current_actions/providers/tasks_provider/tasks_provider.cpp
 

@@ -10,10 +10,12 @@ namespace current_actions::contract::managers {
 namespace {
 
 using current_actions::models::kMapPriority;
-using current_actions::models::Task;
+using current_actions::models::TaskInfo;
 using current_actions::models::TaskId;
 using handlers::CreateTaskRequest;
 using handlers::TaskIdRequest;
+using handlers::ListTasksRequest;
+using handlers::ListTasksResponse;
 using providers::tasks_provider::TasksProvider;
 
 }  // namespace
@@ -25,7 +27,7 @@ TasksManager::TasksManager(
     : userver::components::ComponentBase(config, component_context),
       tasks_provider_(component_context.FindComponent<TasksProvider>()) {}
 
-Task TasksManager::Transform(CreateTaskRequest&& create_task_request) const {
+TaskInfo TasksManager::Transform(CreateTaskRequest&& create_task_request) const {
     std::vector<std::string> tags;
     if (create_task_request.tags.has_value()) {
         tags.reserve(create_task_request.tags.value().size());
@@ -65,6 +67,10 @@ void TasksManager::ReactivateTask(handlers::TaskIdRequest&& task_id_request) con
     if (result == TasksProvider::MarkTaskAsActiveResult::kTaskNotFound) {
         throw models::TaskNotFoundException{"Task to mark as active was not found"};
     }
+}
+
+ListTasksResponse TasksManager::ListTasks(ListTasksRequest&& list_task_request) const {
+    auto result = tasks_provider_.SelectTasks()
 }
 
 }  // namespace current_actions::contract::managers
