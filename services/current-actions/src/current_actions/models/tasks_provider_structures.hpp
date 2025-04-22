@@ -22,9 +22,19 @@ enum class Priority {
     kLow
 };
 
+std::optional<handlers::Priority> Transform(const std::optional<Priority> priority);
+std::optional<Priority> Transform(const std::optional<handlers::Priority> priority);
+
 enum class Status {
     kActive,
     kCompleted
+};
+
+std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status);
+std::optional<Status> Transform(const std::optional<handlers::TaskStatus> status);
+
+struct Tag {
+
 };
 
 struct TaskInfo {
@@ -54,9 +64,9 @@ struct Cursor {
     TaskId id;
 };
 
-Cursor DeserializeCursorFromString(const std::string& cursor);
+std::optional<Cursor> DeserializeCursorFromString(const std::optional<std::string>& cursor);
 
-std::string SerializeCursorToString(const Cursor& cursor);
+std::optional<std::string> SerializeCursorToString(const std::optional<Cursor>& cursor);
 
 }  // namespace current_actions::models
 

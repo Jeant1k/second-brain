@@ -8,6 +8,7 @@ namespace current_actions::models {
 
 namespace {
 
+using handlers::TaskStatus;
 using d_duration = std::chrono::duration<double>;
 
 std::chrono::system_clock::time_point DeserializeStringToTimePoint(std::string_view timestamp_begin) {
@@ -25,19 +26,83 @@ std::string SerializeTimePointToString(std::chrono::system_clock::time_point tp)
 
 }  // namespace
 
-Cursor DeserializeCursorFromString(const std::string& cursor) {
-    const auto separator_position = cursor.find('_');
-    UINVARIANT(separator_position != std::string::npos, "cursor is not valid: `_` separator not found" + cursor);
+std::optional<handlers::Priority> Transform(const std::optional<Priority> priority) {
+    if (!priority.has_value()) {
+        return std::nullopt;
+    }
 
-    const auto cursor_id = boost::uuids::string_generator()(cursor.substr(0, separator_position));
-    const auto cursor_updated_at = cursor.substr(separator_position + 1);
-
-    return {userver::storages::postgres::TimePointTz{DeserializeStringToTimePoint(cursor_updated_at)}, TaskId{cursor_id}};
+    switch (priority.value()) {
+        case Priority::kHigh:
+            return handlers::Priority::kHigh;
+        case Priority::kLow:
+            return handlers::Priority::kLow;
+        case Priority::kMedium:
+            return handlers::Priority::kMedium;
+    }
 }
 
-std::string SerializeCursorToString(const Cursor& cursor) {
+std::optional<Priority> Transform(const std::optional<handlers::Priority> priority) {
+    if (!priority.has_value()) {
+        return std::nullopt;
+    }
+
+    switch (priority.value()) {
+        case handlers::Priority::kHigh:
+            return Priority::kHigh;
+        case handlers::Priority::kLow:
+            return Priority::kLow;
+        case handlers::Priority::kMedium:
+            return Priority::kMedium;
+    }
+}
+
+std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status) {
+    if (!status.has_value()) {
+        return std::nullopt;
+    }
+
+    switch (status.value()) {
+        case Status::kActive:
+            return TaskStatus::kActive;
+        case Status::kCompleted:
+            return TaskStatus::kCompleted;
+    }
+}
+
+std::optional<Status> Transform(const std::optional<handlers::TaskStatus> status) {
+    if (!status.has_value()) {
+        return std::nullopt;
+    }
+
+    switch (status.value()) {
+        case TaskStatus::kActive:
+            return Status::kActive;
+        case TaskStatus::kCompleted:
+            return Status::kCompleted;
+    }
+}
+
+std::optional<Cursor> DeserializeCursorFromString(const std::optional<std::string>& cursor) {
+    if (!cursor.has_value()) {
+        return std::nullopt;
+    }
+
+    const auto separator_position = cursor.value().find('_');
+    UINVARIANT(separator_position != std::string::npos, "cursor is not valid: `_` separator not found" + cursor.value());
+
+    const auto cursor_id = boost::uuids::string_generator()(cursor.value().substr(0, separator_position));
+    const auto cursor_updated_at = cursor.value().substr(separator_position + 1);
+
+    return {{userver::storages::postgres::TimePointTz{DeserializeStringToTimePoint(cursor_updated_at)}, TaskId{cursor_id}}};
+}
+
+std::optional<std::string> SerializeCursorToString(const std::optional<Cursor>& cursor) {
+    if (!cursor.has_value()) {
+        return std::nullopt;
+    }
+
     return fmt::format(
-        "{}_{}", cursor.id, SerializeTimePointToString(cursor.updated_at.GetUnderlying())
+        "{}_{}", cursor.value().id, SerializeTimePointToString(cursor.value().updated_at.GetUnderlying())
     );
 }
 

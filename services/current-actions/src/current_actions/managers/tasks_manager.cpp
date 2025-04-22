@@ -12,10 +12,13 @@ namespace {
 using current_actions::models::kMapPriority;
 using current_actions::models::TaskInfo;
 using current_actions::models::TaskId;
+using current_actions::models::UserId;
+using current_actions::models::FullTaskInfo;
 using handlers::CreateTaskRequest;
 using handlers::TaskIdRequest;
 using handlers::ListTasksRequest;
 using handlers::ListTasksResponse;
+using current_actions::handlers::Task;
 using providers::tasks_provider::TasksProvider;
 
 }  // namespace
@@ -37,7 +40,7 @@ TaskInfo TasksManager::Transform(CreateTaskRequest&& create_task_request) const 
     }
 
     return {
-        create_task_request.user_id,
+        UserId{create_task_request.user_id},
         std::move(create_task_request.description),
         std::move(create_task_request.project_id),
         kMapPriority.at(create_task_request.priority),
@@ -47,6 +50,35 @@ TaskInfo TasksManager::Transform(CreateTaskRequest&& create_task_request) const 
 
 TaskId TasksManager::Transform(TaskIdRequest&& task_id_request) const {
     return TaskId{std::move(task_id_request.task_id)};
+}
+
+ListTasksResponse TasksManager::Transform(std::vector<FullTaskInfo>&& tasks, std::optional<std::string>&& cursor) const {
+    std::vector<Task> result_tasks;
+    result_tasks.reserve(tasks.size());
+
+    for (auto&& task : tasks) {
+        std::vector<current_actions::handlers::Tag> tags;
+        tags.reserve(task.tags.size());
+        for (auto&& name : task.tags) {
+            tags.emplace_back(std::move(name));
+        }
+        
+        result_tasks.emplace_back(Task{
+            std::move(task.id.GetUnderlying()),
+            std::move(task.user_id.GetUnderlying()),
+            std::move(task.description),
+            current_actions::models::Transform(task.status).value(),
+            std::move(task.project_id),
+            current_actions::models::Transform(task.priority).value(),
+            {std::move(tags)},
+            
+        });
+    }
+
+    return {
+        std::move(result_tasks),
+        std::move(cursor)
+    };
 }
 
 void TasksManager::CreateTask(CreateTaskRequest&& task) const {
@@ -70,7 +102,9 @@ void TasksManager::ReactivateTask(handlers::TaskIdRequest&& task_id_request) con
 }
 
 ListTasksResponse TasksManager::ListTasks(ListTasksRequest&& list_task_request) const {
-    auto result = tasks_provider_.SelectTasks()
+    auto result = tasks_provider_.SelectTasks(UserId{list_task_request.user_id}, current_actions::models::DeserializeCursorFromString(list_task_request.cursor), current_actions::models::Transform(list_task_request.status));
+
+
 }
 
 }  // namespace current_actions::contract::managers

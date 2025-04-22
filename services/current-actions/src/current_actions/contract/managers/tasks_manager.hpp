@@ -28,6 +28,7 @@ public:
 private:
     models::TaskInfo Transform(handlers::CreateTaskRequest&& create_task_request) const;
     models::TaskId Transform(handlers::TaskIdRequest&& task_id_request) const;
+    handlers::ListTasksResponse Transform(std::vector<models::FullTaskInfo>&& tasks, std::optional<std::string>&& cursor) const;
 
 private:
     const providers::tasks_provider::TasksProvider& tasks_provider_;

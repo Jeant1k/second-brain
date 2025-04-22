@@ -124,6 +124,7 @@ components:
                     type: array
                     items:
                         type: string
+                        format: uuid
                     description: Список тегов
             required:
               - user_id
