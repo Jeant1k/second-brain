@@ -77,14 +77,18 @@ TasksProvider::MarkTaskAsActiveResult TasksProvider::MarkTaskAsActive(models::Ta
     return MarkTaskAsActiveResult::kSuccess;
 }
 
-TasksProvider::SelectTasksResult TasksProvider::SelectTasks(models::UserId&& user_id, std::optional<models::Cursor>&& cursor, std::optional<models::Status>&& status) const {
+TasksProvider::SelectTasksResult TasksProvider::SelectTasks(
+    models::UserId&& user_id,
+    std::optional<models::Cursor>&& cursor,
+    std::optional<models::Status>&& status
+) const {
     std::optional<userver::storages::postgres::TimePointTz> updated_at;
     std::optional<boost::uuids::uuid> task_id;
     if (cursor.has_value()) {
         updated_at = cursor.value().updated_at;
         task_id = std::move(cursor.value().id.GetUnderlying());
     }
-    
+
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
         sql::kSelectTasks,
@@ -97,19 +101,16 @@ TasksProvider::SelectTasksResult TasksProvider::SelectTasks(models::UserId&& use
 
     SelectTasksResult select_tasks_result;
     select_tasks_result.tasks = result.AsContainer<std::vector<models::Task>>(userver::storages::postgres::kRowTag);
-    
+
     if (select_tasks_result.tasks.size() > kTasksLimit) {
         auto& last_task = select_tasks_result.tasks.back();
-        select_tasks_result.cursor = {
-            last_task.updated_at,
-            last_task.id
-        };
-        
+        select_tasks_result.cursor = {last_task.updated_at, last_task.id};
+
         select_tasks_result.tasks.resize(kTasksLimit);
     }
-    
+
     LOG_INFO() << fmt::format("Selected {} tasks for user_id = {}", select_tasks_result.tasks.size(), user_id);
-    
+
     return select_tasks_result;
 }
 

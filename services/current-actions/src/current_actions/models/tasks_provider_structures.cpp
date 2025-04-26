@@ -15,7 +15,8 @@ std::chrono::system_clock::time_point DeserializeStringToTimePoint(std::string_v
     d_duration since_epoch_full{std::stod(std::string(timestamp_begin))};
 
     return std::chrono::system_clock::time_point{
-        std::chrono::duration_cast<std::chrono::system_clock::duration>(since_epoch_full)};
+        std::chrono::duration_cast<std::chrono::system_clock::duration>(since_epoch_full)
+    };
 }
 
 std::string SerializeTimePointToString(std::chrono::system_clock::time_point tp) {
@@ -88,12 +89,16 @@ std::optional<Cursor> DeserializeCursorFromString(const std::optional<std::strin
     }
 
     const auto separator_position = cursor.value().find('_');
-    UINVARIANT(separator_position != std::string::npos, "cursor is not valid: `_` separator not found" + cursor.value());
+    UINVARIANT(
+        separator_position != std::string::npos, "cursor is not valid: `_` separator not found" + cursor.value()
+    );
 
     const auto cursor_id = boost::uuids::string_generator()(cursor.value().substr(0, separator_position));
     const auto cursor_updated_at = cursor.value().substr(separator_position + 1);
 
-    return {{userver::storages::postgres::TimePointTz{DeserializeStringToTimePoint(cursor_updated_at)}, TaskId{cursor_id}}};
+    return {
+        {userver::storages::postgres::TimePointTz{DeserializeStringToTimePoint(cursor_updated_at)}, TaskId{cursor_id}}
+    };
 }
 
 std::optional<std::string> SerializeCursorToString(const std::optional<Cursor>& cursor) {
@@ -102,7 +107,9 @@ std::optional<std::string> SerializeCursorToString(const std::optional<Cursor>& 
     }
 
     return fmt::format(
-        "{}_{}", boost::uuids::to_string(cursor.value().id.GetUnderlying()), SerializeTimePointToString(cursor.value().updated_at.GetUnderlying())
+        "{}_{}",
+        boost::uuids::to_string(cursor.value().id.GetUnderlying()),
+        SerializeTimePointToString(cursor.value().updated_at.GetUnderlying())
     );
 }
 

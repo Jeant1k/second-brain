@@ -17,19 +17,12 @@ namespace current_actions::models {
 using TaskId = userver::utils::StrongTypedef<class TaskIdTag, boost::uuids::uuid>;
 using UserId = userver::utils::StrongTypedef<class UserIdTag, std::int64_t>;
 
-enum class Priority {
-    kHigh,
-    kMedium,
-    kLow
-};
+enum class Priority { kHigh, kMedium, kLow };
 
 std::optional<handlers::Priority> Transform(const std::optional<Priority> priority);
 std::optional<Priority> Transform(const std::optional<handlers::Priority> priority);
 
-enum class Status {
-    kActive,
-    kCompleted
-};
+enum class Status { kActive, kCompleted };
 
 std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status);
 std::optional<Status> Transform(const std::optional<handlers::TaskStatus> status);
@@ -88,10 +81,7 @@ struct CppToUserPg<current_actions::models::Priority> : EnumMappingBase<current_
 template <>
 struct CppToUserPg<current_actions::models::Status> : EnumMappingBase<current_actions::models::Status> {
     static constexpr DBTypeName postgres_name = "current_actions.task_status";
-    static constexpr EnumeratorList enumerators{
-        {EnumType::kActive, "active"},
-        {EnumType::kCompleted, "completed"}
-    };
+    static constexpr EnumeratorList enumerators{{EnumType::kActive, "active"}, {EnumType::kCompleted, "completed"}};
 };
 
 }  // namespace userver::storages::postgres::io

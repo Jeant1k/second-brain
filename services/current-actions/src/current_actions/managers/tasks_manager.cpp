@@ -10,10 +10,10 @@ namespace current_actions::contract::managers {
 
 namespace {
 
+using current_actions::models::Task;
 using current_actions::models::TaskForCreate;
 using current_actions::models::TaskId;
 using current_actions::models::UserId;
-using current_actions::models::Task;
 using providers::tasks_provider::TasksProvider;
 
 }  // namespace
@@ -44,7 +44,8 @@ TaskId TasksManager::Transform(handlers::TaskIdRequest&& task_id_request) const 
     return TaskId{std::move(task_id_request.task_id)};
 }
 
-handlers::ListTasksResponse TasksManager::Transform(std::vector<Task>&& tasks, std::optional<std::string>&& cursor) const {
+handlers::ListTasksResponse TasksManager::Transform(std::vector<Task>&& tasks, std::optional<std::string>&& cursor)
+    const {
     using userver::utils::datetime::TimePointTz;
 
     std::vector<current_actions::handlers::Task> result_tasks;
@@ -54,13 +55,9 @@ handlers::ListTasksResponse TasksManager::Transform(std::vector<Task>&& tasks, s
         std::vector<current_actions::handlers::Tag> tags;
         tags.reserve(task.tags.size());
         for (auto&& tag : task.tags) {
-            tags.emplace_back(current_actions::handlers::Tag{
-                tag.id,
-                std::move(tag.name),
-                TimePointTz{tag.created_at}
-            });
+            tags.emplace_back(current_actions::handlers::Tag{tag.id, std::move(tag.name), TimePointTz{tag.created_at}});
         }
-        
+
         result_tasks.emplace_back(current_actions::handlers::Task{
             std::move(task.id.GetUnderlying()),
             std::move(task.user_id.GetUnderlying()),
@@ -75,10 +72,7 @@ handlers::ListTasksResponse TasksManager::Transform(std::vector<Task>&& tasks, s
         });
     }
 
-    return {
-        std::move(result_tasks),
-        std::move(cursor)
-    };
+    return {std::move(result_tasks), std::move(cursor)};
 }
 
 void TasksManager::CreateTask(handlers::CreateTaskRequest&& task) const {
@@ -102,9 +96,13 @@ void TasksManager::ReactivateTask(handlers::TaskIdRequest&& task_id_request) con
 }
 
 handlers::ListTasksResponse TasksManager::ListTasks(handlers::ListTasksRequest&& list_task_request) const {
-    auto [cursor, tasks] = tasks_provider_.SelectTasks(UserId{list_task_request.user_id}, current_actions::models::DeserializeCursorFromString(list_task_request.cursor), ::current_actions::models::Transform(list_task_request.status));
-    
+    auto [cursor, tasks] = tasks_provider_.SelectTasks(
+        UserId{list_task_request.user_id},
+        current_actions::models::DeserializeCursorFromString(list_task_request.cursor),
+        ::current_actions::models::Transform(list_task_request.status)
+    );
+
     return Transform(std::move(tasks), SerializeCursorToString(cursor));
 }
 
-}  // namespace current_actions::contract::managerss
+}  // namespace current_actions::contract::managers
