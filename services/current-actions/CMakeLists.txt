@@ -33,6 +33,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/current_actions/contract/managers/tasks_manager.hpp
     src/current_actions/managers/tasks_manager.cpp
     src/current_actions/models/tasks_provider_structures.hpp
+    src/current_actions/models/tasks_provider_structures.cpp
     src/current_actions/providers/tasks_provider/tasks_provider.hpp
     src/current_actions/providers/tasks_provider/tasks_provider.cpp
 

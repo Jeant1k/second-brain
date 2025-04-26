@@ -124,12 +124,11 @@ components:
                     type: array
                     items:
                         type: string
-                        format: uuid
                     description: Список тегов
             required:
               - user_id
               - description
-        
+
         TaskIdRequest:
             type: object
             additionalProperties: false
@@ -156,7 +155,7 @@ components:
                     description: Курсор для пагинации
             required:
               - user_id
-        
+
         ListTasksResponse:
             type: object
             additionalProperties: false

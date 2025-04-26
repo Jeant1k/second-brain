@@ -1,13 +1,14 @@
 #pragma once
 
-#include <boost/uuid/uuid_io.hpp>
 #include <string>
-#include <unordered_map>
+#include <vector>
+
+#include <boost/uuid/uuid_io.hpp>
+
 #include <userver/storages/postgres/io/enum_types.hpp>
 #include <userver/storages/postgres/io/io_fwd.hpp>
 #include <userver/storages/postgres/io/supported_types.hpp>
 #include <userver/utils/strong_typedef.hpp>
-#include <vector>
 
 #include "docs/yaml/definitions.hpp"
 
@@ -34,29 +35,31 @@ std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status
 std::optional<Status> Transform(const std::optional<handlers::TaskStatus> status);
 
 struct Tag {
-
+    boost::uuids::uuid id;
+    std::string name;
+    userver::storages::postgres::TimePointTz created_at;
 };
 
-struct TaskInfo {
+struct Task {
+    TaskId id;
     UserId user_id;
     std::string description;
+    Status status;
     std::optional<boost::uuids::uuid> project_id;
     Priority priority;
-    std::vector<std::string> tags;
-};
-
-struct FullTaskInfo : public TaskInfo {
-    TaskId id;
-    Status status;
     userver::storages::postgres::TimePointTz created_at;
     userver::storages::postgres::TimePointTz updated_at;
     std::optional<userver::storages::postgres::TimePointTz> completed_at;
+
+    std::vector<Tag> tags;
 };
 
-const std::unordered_map<handlers::Priority, Priority> kMapPriority = {
-    {handlers::Priority::kLow, Priority::kLow},
-    {handlers::Priority::kMedium, Priority::kMedium},
-    {handlers::Priority::kHigh, Priority::kHigh},
+struct TaskForCreate {
+    UserId user_id;
+    std::string description;
+    std::optional<boost::uuids::uuid> project_id;
+    std::optional<Priority> priority;
+    std::vector<std::string> tags;
 };
 
 struct Cursor {

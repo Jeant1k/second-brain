@@ -16,7 +16,7 @@ public:
         const userver::components::ComponentContext& component_context
     );
 
-    void InsertTask(models::TaskInfo&& task) const;
+    void InsertTask(models::TaskForCreate&& task) const;
 
     enum class MarkTaskAsCompletedResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsCompletedResult MarkTaskAsCompleted(models::TaskId&& task_id) const;
@@ -26,7 +26,7 @@ public:
 
     struct SelectTasksResult {
         std::optional<models::Cursor> cursor;
-        std::vector<models::FullTaskInfo> tasks;
+        std::vector<models::Task> tasks;
     };
     SelectTasksResult SelectTasks(
         models::UserId&& user_id,

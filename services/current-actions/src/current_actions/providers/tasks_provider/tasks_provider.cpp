@@ -14,12 +14,7 @@ namespace current_actions::providers::tasks_provider {
 
 namespace {
 
-using models::TaskInfo;
-using models::TaskId;
-using models::Cursor;
-using models::FullTaskInfo;
-
-constexpr std::size_t kTasksLimit{20};
+constexpr std::int32_t kTasksLimit{10};
 
 }  // namespace
 
@@ -32,7 +27,7 @@ TasksProvider::TasksProvider(
           component_context.FindComponent<userver::components::Postgres>("postgres-current-actions").GetCluster()
       ) {}
 
-void TasksProvider::InsertTask(TaskInfo&& task) const {
+void TasksProvider::InsertTask(models::TaskForCreate&& task) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
         sql::kInsertTask,
@@ -48,7 +43,7 @@ void TasksProvider::InsertTask(TaskInfo&& task) const {
     LOG_INFO() << fmt::format("Task with id = {} was inserted", std::move(task_id));
 }
 
-TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(TaskId&& task_id) const {
+TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(models::TaskId&& task_id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsCompleted, task_id.GetUnderlying()
     );
@@ -65,7 +60,7 @@ TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(Task
     return MarkTaskAsCompletedResult::kSuccess;
 }
 
-TasksProvider::MarkTaskAsActiveResult TasksProvider::MarkTaskAsActive(TaskId&& task_id) const {
+TasksProvider::MarkTaskAsActiveResult TasksProvider::MarkTaskAsActive(models::TaskId&& task_id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsActive, task_id.GetUnderlying()
     );
@@ -93,7 +88,7 @@ TasksProvider::SelectTasksResult TasksProvider::SelectTasks(models::UserId&& use
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
         sql::kSelectTasks,
-        user_id,
+        user_id.GetUnderlying(),
         updated_at,
         task_id,
         status,
@@ -101,7 +96,7 @@ TasksProvider::SelectTasksResult TasksProvider::SelectTasks(models::UserId&& use
     );
 
     SelectTasksResult select_tasks_result;
-    select_tasks_result.tasks = result.AsContainer<std::vector<FullTaskInfo>>(userver::storages::postgres::kRowTag);
+    select_tasks_result.tasks = result.AsContainer<std::vector<models::Task>>(userver::storages::postgres::kRowTag);
     
     if (select_tasks_result.tasks.size() > kTasksLimit) {
         auto& last_task = select_tasks_result.tasks.back();

@@ -102,7 +102,7 @@ std::optional<std::string> SerializeCursorToString(const std::optional<Cursor>& 
     }
 
     return fmt::format(
-        "{}_{}", cursor.value().id, SerializeTimePointToString(cursor.value().updated_at.GetUnderlying())
+        "{}_{}", boost::uuids::to_string(cursor.value().id.GetUnderlying()), SerializeTimePointToString(cursor.value().updated_at.GetUnderlying())
     );
 }
 

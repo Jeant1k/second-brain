@@ -7,33 +7,23 @@
 
 namespace views::current_actions::v1::task::reactivate::post {
 
-namespace {
-
-using contract::models::ApiResponseFactory;
-using ::current_actions::contract::managers::TasksManager;
-using ::current_actions::contract::models::TaskNotFoundException;
-using ::current_actions::handlers::TaskIdRequest;
-using views::contract::models::ApiResponse;
-
-}  // namespace
-
 CurrentActionsV1TaskReactivatePost::CurrentActionsV1TaskReactivatePost(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : views::contract::BaseHandler<TaskIdRequest>(config, component_context),
-      tasks_manager_(component_context.FindComponent<TasksManager>()) {}
+    : views::contract::BaseHandler<::current_actions::handlers::TaskIdRequest>(config, component_context),
+      tasks_manager_(component_context.FindComponent<::current_actions::contract::managers::TasksManager>()) {}
 
-ApiResponse
-CurrentActionsV1TaskReactivatePost::Handle(TaskIdRequest&& request, userver::server::request::RequestContext&&) const {
+views::contract::models::ApiResponse
+CurrentActionsV1TaskReactivatePost::Handle(::current_actions::handlers::TaskIdRequest&& request, userver::server::request::RequestContext&&) const {
     try {
         tasks_manager_.ReactivateTask(std::move(request));
-    } catch (const TaskNotFoundException& ex) {
-        return ApiResponseFactory::NotFound(fmt::format("An error occurred while processing the request: {}", ex.what())
+    } catch (const ::current_actions::contract::models::TaskNotFoundException& ex) {
+        return contract::models::ApiResponseFactory::NotFound(fmt::format("An error occurred while processing the request: {}", ex.what())
         );
     }
 
-    return ApiResponseFactory::Ok();
+    return contract::models::ApiResponseFactory::Ok();
 }
 
 }  // namespace views::current_actions::v1::task::reactivate::post
