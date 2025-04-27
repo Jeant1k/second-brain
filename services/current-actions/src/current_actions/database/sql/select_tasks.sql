@@ -34,25 +34,16 @@ WITH selected_tasks AS (
 SELECT
     t.id,
     t.user_id,
+    t.name,
     t.description,
     t.status,
-    t.project_id,
-    t.priority,
     t.created_at,
     t.updated_at,
-    t.completed_at,
-    COALESCE(
-        array_agg((tg.id, tg.name, tg.created_at)) FILTER (WHERE tg.id IS NOT NULL),
-         ARRAY[]::record[]
-    ) AS tags
+    t.completed_at
 FROM
     current_actions.tasks t
 JOIN
     selected_tasks s ON t.id = s.id
-LEFT JOIN
-    current_actions.tags tg ON t.id = tg.task_id
-GROUP BY
-    t.id
 ORDER BY
     t.updated_at ASC,
     t.id ASC;

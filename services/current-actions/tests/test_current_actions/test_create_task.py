@@ -1,17 +1,17 @@
 import pytest
+import json
 
 from testsuite.databases import pgsql
-from .plugins.utils import select_user_tasks_and_tags
+from .plugins.utils import select_user_tasks
 
 
 @pytest.mark.parametrize(
     'testcase',
     [
-        pytest.param('user_id_not_found'),
-        pytest.param('description_not_found'),
-        pytest.param('project_id_wrong_format'),
-        pytest.param('happy_path'),
-        pytest.param('full_happy_path'),
+        pytest.param('empty_user_id'),
+        pytest.param('empty_name'),
+        pytest.param('empty_description'),
+        pytest.param('happy_path')
     ],
 )
 async def test_create_task(
@@ -31,9 +31,11 @@ async def test_create_task(
         json=initial_data['request_body'],
     )
 
+    print(json.dumps(response.json(), indent=2, ensure_ascii=False))
+
     # assert
     assert response.status == expected_data['status_code']
-    assert response.text == expected_data['response']
+    assert json.loads(response.text) == expected_data['response']
 
-    assert select_user_tasks_and_tags(pgsql, initial_data['request_body'].get(
+    assert select_user_tasks(pgsql, initial_data['request_body'].get(
         'user_id', 0)) == expected_data['database_data']

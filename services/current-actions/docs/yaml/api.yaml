@@ -49,6 +49,32 @@ paths:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
     
+    /current-actions/v1/task/update:
+        post:
+            summary: Обновить данные задачи
+            operationId: updateTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateTaskRequest'
+            responses:
+                200:
+                    description: Задача успешно обновлена
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+                404:
+                    description: Задача не найдена
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+
     /current-actions/v1/task/complete:
         post:
             summary: Отметить задачу как выполненную
@@ -100,6 +126,58 @@ paths:
                         application/json:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
+    
+    /current-actions/v1/task/sometime/later:
+        post:
+            summary: Переместить задачу в когда-нибудь потом
+            operationId: sometimeLaterTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TaskIdRequest'
+            responses:
+                200:
+                    description: Задача успешно перемещена
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+                404:
+                    description: Задача не найдена
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+    
+    /current-actions/v1/task/delete:
+        post:
+            summary: Удалить задачу
+            operationId: deleteTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TaskIdRequest'
+            responses:
+                200:
+                    description: Задача успешно удалена
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+                404:
+                    description: Задача не найдена
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
 
 components:
     schemas:
@@ -111,22 +189,15 @@ components:
                     type: integer
                     format: int64
                     description: Идентификатор пользователя
+                name:
+                    type: string
+                    description: Название задачи
                 description:
                     type: string
                     description: Описание задачи
-                project_id:
-                    type: string
-                    format: uuid
-                    description: Идентификатор проекта, к которому относится задача
-                priority:
-                    $ref: 'definitions.yaml#/components/schemas/Priority'
-                tags:
-                    type: array
-                    items:
-                        type: string
-                    description: Список тегов
             required:
               - user_id
+              - name
               - description
 
         TaskIdRequest:
@@ -170,3 +241,20 @@ components:
                     description: Курсор для пагинации
             required:
               - tasks
+
+        UpdateTaskRequest:
+            type: object
+            additionalProperties: false
+            properties:
+                user_id:
+                    type: integer
+                    format: int64
+                    description: Идентификатор пользователя
+                name:
+                    type: string
+                    description: Название задачи
+                description:
+                    type: string
+                    description: Описание задачи
+            required:
+              - user_id

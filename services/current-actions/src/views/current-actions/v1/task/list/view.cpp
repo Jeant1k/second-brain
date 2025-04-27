@@ -15,8 +15,6 @@ CurrentActionsV1TaskListPost::CurrentActionsV1TaskListPost(
 
 views::contract::models::ApiResponse CurrentActionsV1TaskListPost::
     Handle(::current_actions::handlers::ListTasksRequest&& request, userver::server::request::RequestContext&&) const {
-    LOG_INFO() << "[CurrentActionsV1TaskListPost][Handle] Current time is " << userver::utils::datetime::Now();
-
     return contract::models::ApiResponseFactory::Ok(tasks_manager_.ListTasks(std::move(request)));
 }
 

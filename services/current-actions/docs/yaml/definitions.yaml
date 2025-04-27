@@ -13,10 +13,9 @@ components:
             name: status
             in: query
             required: false
-            schema:
-                type: string
-                enum: [active, completed]
             description: Статус задач для фильтрации
+            schema:
+                $ref: '#/components/schemas/TaskStatus'
 
         Limit:
             name: limit
@@ -60,35 +59,9 @@ components:
             enum:
               - active
               - completed
+              - moved_to_someday_later
+              - deleted
             description: Статус задачи
-        
-        Priority:
-            type: string
-            enum:
-              - high
-              - medium
-              - low
-            description: Приоритет задачи
-            default: medium
-        
-        Tag:
-            type: object
-            additionalProperties: false
-            properties:
-                id:
-                    type: string
-                    format: uuid
-                    description: Уникальный идентификатор тега
-                name:
-                    type: string
-                    description: Название тега
-                created_at:
-                    type: string
-                    format: date-time
-                    description: Время создания тега
-            required:
-              - id
-              - name
 
         Task:
             type: object
@@ -102,22 +75,14 @@ components:
                     type: integer
                     format: int64
                     description: Идентификатор пользователя
+                name:
+                    type: string
+                    description: Название задачи
                 description:
                     type: string
                     description: Описание задачи
                 status:
                     $ref: '#/components/schemas/TaskStatus'
-                project_id:
-                    type: string
-                    format: uuid
-                    description: Идентификатор проекта, к которому относится задача
-                priority:
-                    $ref: '#/components/schemas/Priority'
-                tags:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Tag'
-                    description: Теги, связанные с задачей
                 created_at:
                     type: string
                     format: date-time
@@ -134,5 +99,5 @@ components:
             required:
               - id
               - user_id
+              - name
               - description
-              - status

@@ -32,10 +32,8 @@ void TasksProvider::InsertTask(models::TaskForCreate&& task) const {
         userver::storages::postgres::ClusterHostType::kMaster,
         sql::kInsertTask,
         task.user_id,
-        std::move(task.description),
-        std::move(task.project_id),
-        task.priority,
-        std::move(task.tags)
+        task.name,
+        task.description
     );
 
     auto task_id = boost::uuids::to_string((*result.cbegin())["id"].As<boost::uuids::uuid>());

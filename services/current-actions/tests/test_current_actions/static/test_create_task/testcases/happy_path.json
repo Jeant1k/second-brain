@@ -1,14 +1,12 @@
 {
   "expected_result": {
-    "response": "{}",
+    "response": {},
     "database_data": [
       {
         "user_id": 123456,
+        "name": "Some task name",
         "description": "Some task description",
-        "status": "active",
-        "project_id": null,
-        "priority": "medium",
-        "tags": []
+        "status": "active"
       }
     ],
     "status_code": 201
@@ -16,6 +14,7 @@
   "initial_data": {
     "request_body": {
       "user_id": 123456,
+      "name": "Some task name",
       "description": "Some task description"
     }
   }

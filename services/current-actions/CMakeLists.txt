@@ -13,6 +13,31 @@ endif()
 userver_setup_environment()
 
 
+# YAML Codegen
+file(GLOB_RECURSE SCHEMAS ${CMAKE_CURRENT_SOURCE_DIR}/docs/yaml/*.yaml)
+userver_target_generate_chaotic(${PROJECT_NAME}-chgen
+    ARGS
+        # Map '/components/schemas/*' JSONSchema types to C++ types in 'current_actions::handlers' namespace
+        -n "/components/schemas/([^/]*)/=current_actions::handlers::{0}"
+        # Generate serializers for responses
+        --generate-serializers
+    OUTPUT_DIR
+        ${CMAKE_CURRENT_BINARY_DIR}/src
+    SCHEMAS
+        ${SCHEMAS}
+    RELATIVE_TO
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+# SQL Codegen
+userver_add_sql_library(
+    ${PROJECT_NAME}_sql
+    NAMESPACE current_actions
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    SQL_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/current_actions/database/sql/*.sql
+)
+
+
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
     # views
@@ -36,46 +61,13 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/current_actions/models/tasks_provider_structures.cpp
     src/current_actions/providers/tasks_provider/tasks_provider.hpp
     src/current_actions/providers/tasks_provider/tasks_provider.cpp
-
-    # codegen
-    include/current_actions/sql_queries.hpp
-    src/current_actions/sql_queries.cpp
-    src/docs/yaml/api_fwd.hpp
-    src/docs/yaml/api_parsers.ipp
-    src/docs/yaml/api.cpp
-    src/docs/yaml/api.hpp
-    src/docs/yaml/definitions_fwd.hpp
-    src/docs/yaml/definitions_parsers.ipp
-    src/docs/yaml/definitions.cpp
-    src/docs/yaml/definitions.hpp
 )
-target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::postgresql)
 
-
-# Codegen
-file(GLOB_RECURSE SCHEMAS ${CMAKE_CURRENT_SOURCE_DIR}/docs/yaml/*.yaml)
-userver_target_generate_chaotic(${PROJECT_NAME}-chgen
-    ARGS
-        # Map '/components/schemas/*' JSONSchema types to C++ types in 'current_actions::handlers' namespace
-        -n "/components/schemas/([^/]*)/=current_actions::handlers::{0}"
-        # Generate serializers for responses
-        --generate-serializers
-    OUTPUT_DIR
-        ${CMAKE_CURRENT_BINARY_DIR}/src
-    SCHEMAS
-        ${SCHEMAS}
-    RELATIVE_TO
-        ${CMAKE_CURRENT_SOURCE_DIR}
+target_link_libraries(${PROJECT_NAME}_objs PUBLIC
+    userver::postgresql
+    ${PROJECT_NAME}-chgen # Зависимость от YAML codegen
+    ${PROJECT_NAME}_sql   # Зависимость от SQL codegen
 )
-target_link_libraries(${PROJECT_NAME}_objs PUBLIC ${PROJECT_NAME}-chgen)
-
-userver_add_sql_library(
-    ${PROJECT_NAME}_sql
-    NAMESPACE current_actions
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    SQL_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/current_actions/database/sql/*.sql
-)
-target_link_libraries(${PROJECT_NAME}_objs PUBLIC ${PROJECT_NAME}_sql)
 
 
 # The Service

@@ -1,12 +1,14 @@
 {
   "expected_result": {
-    "response": "{\"message\":\"An error occurred while processing the request: Task to mark as active was not found\",\"code\":\"NOT_FOUND\"}",
+    "response": {
+      "message": "An error occurred while processing the request: Task to mark as active was not found",
+      "code": "NOT_FOUND"
+    },
     "database_data": {
       "user_id": 123456,
+      "name": "Some task name",
       "description": "Some task description",
-      "status": "completed",
-      "project_id": "123e4567-e89b-12d3-a456-426655440000",
-      "priority": "medium"
+      "status": "completed"
     },
     "status_code": 404
   },

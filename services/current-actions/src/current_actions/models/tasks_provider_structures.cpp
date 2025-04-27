@@ -8,7 +8,6 @@ namespace current_actions::models {
 
 namespace {
 
-using handlers::TaskStatus;
 using d_duration = std::chrono::duration<double>;
 
 std::chrono::system_clock::time_point DeserializeStringToTimePoint(std::string_view timestamp_begin) {
@@ -27,36 +26,6 @@ std::string SerializeTimePointToString(std::chrono::system_clock::time_point tp)
 
 }  // namespace
 
-std::optional<handlers::Priority> Transform(const std::optional<Priority> priority) {
-    if (!priority.has_value()) {
-        return std::nullopt;
-    }
-
-    switch (priority.value()) {
-        case Priority::kHigh:
-            return handlers::Priority::kHigh;
-        case Priority::kLow:
-            return handlers::Priority::kLow;
-        case Priority::kMedium:
-            return handlers::Priority::kMedium;
-    }
-}
-
-std::optional<Priority> Transform(const std::optional<handlers::Priority> priority) {
-    if (!priority.has_value()) {
-        return std::nullopt;
-    }
-
-    switch (priority.value()) {
-        case handlers::Priority::kHigh:
-            return Priority::kHigh;
-        case handlers::Priority::kLow:
-            return Priority::kLow;
-        case handlers::Priority::kMedium:
-            return Priority::kMedium;
-    }
-}
-
 std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status) {
     if (!status.has_value()) {
         return std::nullopt;
@@ -64,9 +33,13 @@ std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status
 
     switch (status.value()) {
         case Status::kActive:
-            return TaskStatus::kActive;
+            return handlers::TaskStatus::kActive;
         case Status::kCompleted:
-            return TaskStatus::kCompleted;
+            return handlers::TaskStatus::kCompleted;
+        case Status::kMovedToSomedayLater:
+            return handlers::TaskStatus::kMovedToSomedayLater;
+        case Status::kDeleted:
+            return handlers::TaskStatus::kDeleted;
     }
 }
 
@@ -76,10 +49,14 @@ std::optional<Status> Transform(const std::optional<handlers::TaskStatus> status
     }
 
     switch (status.value()) {
-        case TaskStatus::kActive:
+        case handlers::TaskStatus::kActive:
             return Status::kActive;
-        case TaskStatus::kCompleted:
+        case handlers::TaskStatus::kCompleted:
             return Status::kCompleted;
+        case handlers::TaskStatus::kMovedToSomedayLater:
+            return Status::kMovedToSomedayLater;
+        case handlers::TaskStatus::kDeleted:
+            return Status::kDeleted;
     }
 }
 

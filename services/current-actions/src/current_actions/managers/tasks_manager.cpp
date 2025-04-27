@@ -26,17 +26,10 @@ TasksManager::TasksManager(
       tasks_provider_(component_context.FindComponent<TasksProvider>()) {}
 
 TaskForCreate TasksManager::Transform(handlers::CreateTaskRequest&& create_task_request) const {
-    std::vector<std::string> tag_names;
-    if (create_task_request.tags.has_value()) {
-        tag_names = std::move(create_task_request.tags.value());
-    }
-
     return {
         UserId{create_task_request.user_id},
+        std::move(create_task_request.name),
         std::move(create_task_request.description),
-        std::move(create_task_request.project_id),
-        ::current_actions::models::Transform(create_task_request.priority),
-        std::move(tag_names)
     };
 }
 
@@ -52,20 +45,12 @@ handlers::ListTasksResponse TasksManager::Transform(std::vector<Task>&& tasks, s
     result_tasks.reserve(tasks.size());
 
     for (auto&& task : tasks) {
-        std::vector<current_actions::handlers::Tag> tags;
-        tags.reserve(task.tags.size());
-        for (auto&& tag : task.tags) {
-            tags.emplace_back(current_actions::handlers::Tag{tag.id, std::move(tag.name), TimePointTz{tag.created_at}});
-        }
-
         result_tasks.emplace_back(current_actions::handlers::Task{
             std::move(task.id.GetUnderlying()),
             std::move(task.user_id.GetUnderlying()),
+            std::move(task.name),
             std::move(task.description),
             ::current_actions::models::Transform(task.status).value(),
-            std::move(task.project_id),
-            ::current_actions::models::Transform(task.priority).value(),
-            {std::move(tags)},
             TimePointTz(task.created_at),
             TimePointTz{task.updated_at},
             task.completed_at.has_value() ? std::make_optional(TimePointTz{task.completed_at.value()}) : std::nullopt
