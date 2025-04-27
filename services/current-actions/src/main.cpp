@@ -12,8 +12,8 @@
 #include "views/current-actions/v1/task/complete/view.hpp"
 #include "views/current-actions/v1/task/list/view.hpp"
 #include "views/current-actions/v1/task/reactivate/view.hpp"
-#include "views/current-actions/v1/task/view.hpp"
 #include "views/current-actions/v1/task/update/view.hpp"
+#include "views/current-actions/v1/task/view.hpp"
 
 int main(int argc, char* argv[]) {
     auto component_list =

@@ -12,9 +12,9 @@ namespace {
 
 using current_actions::models::Task;
 using current_actions::models::TaskForCreate;
+using current_actions::models::TaskForUpdate;
 using current_actions::models::TaskId;
 using current_actions::models::UserId;
-using current_actions::models::TaskForUpdate;
 using providers::tasks_provider::TasksProvider;
 
 }  // namespace

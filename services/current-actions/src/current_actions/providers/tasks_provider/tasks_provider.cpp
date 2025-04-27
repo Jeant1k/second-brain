@@ -85,13 +85,12 @@ TasksProvider::UpdateTaskFieldsResult TasksProvider::UpdateTaskFields(models::Ta
     );
 
     if (result.RowsAffected() == 0) {
-        LOG_WARNING() << fmt::format(
-            "No task with id {} found for update", boost::uuids::to_string(task.task_id.GetUnderlying()));
+        LOG_WARNING(
+        ) << fmt::format("No task with id {} found for update", boost::uuids::to_string(task.task_id.GetUnderlying()));
         return UpdateTaskFieldsResult::kTaskNotFound;
     }
 
-    LOG_INFO() << fmt::format(
-        "Task with id {} updated fields", boost::uuids::to_string(task.task_id.GetUnderlying()));
+    LOG_INFO() << fmt::format("Task with id {} updated fields", boost::uuids::to_string(task.task_id.GetUnderlying()));
     return UpdateTaskFieldsResult::kSuccess;
 }
 
