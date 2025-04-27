@@ -69,6 +69,11 @@ components_manager:
             path: /current-actions/v1/task/list
             method: POST
             task_processor: main-task-processor
+        
+        current-actions-v1-task-update-post:
+            path: /current-actions/v1/task/update
+            method: POST
+            task_processor: main-task-processor
 
         postgres-current-actions:
             dbconnection: $dbconnection

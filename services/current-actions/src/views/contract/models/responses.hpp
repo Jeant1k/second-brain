@@ -50,6 +50,8 @@ public:
 
     static ApiResponse Created() { return ApiResponse(EmptyResponse{}, 201); }
 
+    static ApiResponse Accepted() { return ApiResponse(EmptyResponse{}, 202); }
+
     static ApiResponse BadRequest(const std::string& message, const std::string& code = "BAD_REQUEST") {
         ErrorResponse error{current_actions::handlers::Error{message, code}};
         return ApiResponse(std::move(error), 400);

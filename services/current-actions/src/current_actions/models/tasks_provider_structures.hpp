@@ -38,6 +38,12 @@ struct TaskForCreate {
     std::string description;
 };
 
+struct TaskForUpdate {
+    TaskId task_id;
+    std::optional<std::string> name;
+    std::optional<std::string> description;
+};
+
 struct Cursor {
     userver::storages::postgres::TimePointTz updated_at;
     TaskId id;

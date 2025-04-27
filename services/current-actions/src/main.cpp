@@ -13,6 +13,7 @@
 #include "views/current-actions/v1/task/list/view.hpp"
 #include "views/current-actions/v1/task/reactivate/view.hpp"
 #include "views/current-actions/v1/task/view.hpp"
+#include "views/current-actions/v1/task/update/view.hpp"
 
 int main(int argc, char* argv[]) {
     auto component_list =
@@ -29,6 +30,7 @@ int main(int argc, char* argv[]) {
             .Append<views::current_actions::v1::task::complete::post::CurrentActionsV1TaskCompletePost>()
             .Append<views::current_actions::v1::task::reactivate::post::CurrentActionsV1TaskReactivatePost>()
             .Append<views::current_actions::v1::task::list::post::CurrentActionsV1TaskListPost>()
+            .Append<views::current_actions::v1::task::update::post::CurrentActionsV1TaskUpdatePost>()
 
             // current_actions
             .Append<current_actions::contract::managers::TasksManager>()

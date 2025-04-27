@@ -24,6 +24,9 @@ public:
     enum class MarkTaskAsActiveResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsActiveResult MarkTaskAsActive(models::TaskId&& task_id) const;
 
+    enum class UpdateTaskFieldsResult : char { kSuccess, kTaskNotFound };
+    UpdateTaskFieldsResult UpdateTaskFields(models::TaskForUpdate&& task) const;
+
     struct SelectTasksResult {
         std::optional<models::Cursor> cursor;
         std::vector<models::Task> tasks;

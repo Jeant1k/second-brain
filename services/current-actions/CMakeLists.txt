@@ -52,6 +52,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/views/current-actions/v1/task/reactivate/view.cpp
     src/views/current-actions/v1/task/list/view.hpp
     src/views/current-actions/v1/task/list/view.cpp
+    src/views/current-actions/v1/task/update/view.hpp
+    src/views/current-actions/v1/task/update/view.cpp
 
     # current_actions
     src/current_actions/contract/models/exceptions.hpp

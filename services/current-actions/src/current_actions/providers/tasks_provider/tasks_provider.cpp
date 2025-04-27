@@ -31,7 +31,7 @@ void TasksProvider::InsertTask(models::TaskForCreate&& task) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
         sql::kInsertTask,
-        task.user_id,
+        task.user_id.GetUnderlying(),
         task.name,
         task.description
     );
@@ -73,6 +73,26 @@ TasksProvider::MarkTaskAsActiveResult TasksProvider::MarkTaskAsActive(models::Ta
     LOG_INFO(
     ) << fmt::format("Task with id = {} was marked as active", boost::uuids::to_string(task_id.GetUnderlying()));
     return MarkTaskAsActiveResult::kSuccess;
+}
+
+TasksProvider::UpdateTaskFieldsResult TasksProvider::UpdateTaskFields(models::TaskForUpdate&& task) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        sql::kUpdateNameOrDescription,
+        task.task_id.GetUnderlying(),
+        task.name,
+        task.description
+    );
+
+    if (result.RowsAffected() == 0) {
+        LOG_WARNING() << fmt::format(
+            "No task with id {} found for update", boost::uuids::to_string(task.task_id.GetUnderlying()));
+        return UpdateTaskFieldsResult::kTaskNotFound;
+    }
+
+    LOG_INFO() << fmt::format(
+        "Task with id {} updated fields", boost::uuids::to_string(task.task_id.GetUnderlying()));
+    return UpdateTaskFieldsResult::kSuccess;
 }
 
 TasksProvider::SelectTasksResult TasksProvider::SelectTasks(

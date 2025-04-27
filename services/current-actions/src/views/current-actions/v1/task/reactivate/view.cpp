@@ -2,8 +2,9 @@
 
 #include <userver/components/component.hpp>
 
-#include "../../../../../current_actions/contract/models/exceptions.hpp"
 #include "docs/yaml/api.hpp"
+
+#include "../../../../../current_actions/contract/models/exceptions.hpp"
 
 namespace views::current_actions::v1::task::reactivate::post {
 

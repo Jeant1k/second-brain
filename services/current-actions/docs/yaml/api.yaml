@@ -60,7 +60,7 @@ paths:
                         schema:
                             $ref: '#/components/schemas/UpdateTaskRequest'
             responses:
-                200:
+                202:
                     description: Задача успешно обновлена
                 400:
                     description: Некорректные параметры запроса
@@ -246,10 +246,10 @@ components:
             type: object
             additionalProperties: false
             properties:
-                user_id:
-                    type: integer
-                    format: int64
-                    description: Идентификатор пользователя
+                task_id:
+                    type: string
+                    format: uuid
+                    description: Идентификатор задачи
                 name:
                     type: string
                     description: Название задачи
@@ -257,4 +257,4 @@ components:
                     type: string
                     description: Описание задачи
             required:
-              - user_id
+              - task_id

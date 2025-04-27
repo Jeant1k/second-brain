@@ -14,6 +14,7 @@ using current_actions::models::Task;
 using current_actions::models::TaskForCreate;
 using current_actions::models::TaskId;
 using current_actions::models::UserId;
+using current_actions::models::TaskForUpdate;
 using providers::tasks_provider::TasksProvider;
 
 }  // namespace
@@ -60,6 +61,14 @@ handlers::ListTasksResponse TasksManager::Transform(std::vector<Task>&& tasks, s
     return {std::move(result_tasks), std::move(cursor)};
 }
 
+TaskForUpdate TasksManager::Transform(handlers::UpdateTaskRequest&& update_task_request) const {
+    return {
+        TaskId{update_task_request.task_id},
+        std::move(update_task_request.name),
+        std::move(update_task_request.description)
+    };
+}
+
 void TasksManager::CreateTask(handlers::CreateTaskRequest&& task) const {
     tasks_provider_.InsertTask(Transform(std::move(task)));
 }
@@ -88,6 +97,18 @@ handlers::ListTasksResponse TasksManager::ListTasks(handlers::ListTasksRequest&&
     );
 
     return Transform(std::move(tasks), SerializeCursorToString(cursor));
+}
+
+void TasksManager::UpdateTask(handlers::UpdateTaskRequest&& update_task_request) const {
+    if (!update_task_request.name.has_value() && !update_task_request.description.has_value()) {
+        throw models::NoFieldsProvidedException{"No task fields provided for update"};
+    }
+
+    const auto result = tasks_provider_.UpdateTaskFields(Transform(std::move(update_task_request)));
+
+    if (result == TasksProvider::UpdateTaskFieldsResult::kTaskNotFound) {
+        throw models::TaskNotFoundException{"Task to update fields was not found"};
+    }
 }
 
 }  // namespace current_actions::contract::managers
