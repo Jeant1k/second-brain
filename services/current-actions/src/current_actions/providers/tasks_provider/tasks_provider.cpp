@@ -75,6 +75,23 @@ TasksProvider::MarkTaskAsActiveResult TasksProvider::MarkTaskAsActive(models::Ta
     return MarkTaskAsActiveResult::kSuccess;
 }
 
+TasksProvider::MarkTaskAsDeletedResult TasksProvider::MarkTaskAsDeleted(models::TaskId&& task_id) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsDeleted, task_id.GetUnderlying()
+    );
+
+    if (result.RowsAffected() == 0) {
+        LOG_WARNING() << fmt::format(
+            "Task with id = {} was not marked as deleted", boost::uuids::to_string(task_id.GetUnderlying())
+        );
+        return MarkTaskAsDeletedResult::kTaskNotFound;
+    }
+
+    LOG_INFO(
+    ) << fmt::format("Task with id = {} was marked as deleted", boost::uuids::to_string(task_id.GetUnderlying()));
+    return MarkTaskAsDeletedResult::kSuccess;
+}
+
 TasksProvider::UpdateTaskFieldsResult TasksProvider::UpdateTaskFields(models::TaskForUpdate&& task) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,

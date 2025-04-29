@@ -26,6 +26,56 @@ TasksManager::TasksManager(
     : userver::components::ComponentBase(config, component_context),
       tasks_provider_(component_context.FindComponent<TasksProvider>()) {}
 
+void TasksManager::CreateTask(handlers::CreateTaskRequest&& task) const {
+    tasks_provider_.InsertTask(Transform(std::move(task)));
+}
+
+void TasksManager::UpdateTask(handlers::UpdateTaskRequest&& update_task_request) const {
+    if (!update_task_request.name.has_value() && !update_task_request.description.has_value()) {
+        throw models::NoFieldsProvidedException{"No task fields provided for update"};
+    }
+
+    const auto result = tasks_provider_.UpdateTaskFields(Transform(std::move(update_task_request)));
+
+    if (result == TasksProvider::UpdateTaskFieldsResult::kTaskNotFound) {
+        throw models::TaskNotFoundException{"Task to update fields was not found"};
+    }
+}
+
+void TasksManager::CompleteTask(handlers::TaskIdRequest&& task_id_request) const {
+    const auto result = tasks_provider_.MarkTaskAsCompleted(Transform(std::move(task_id_request)));
+
+    if (result == TasksProvider::MarkTaskAsCompletedResult::kTaskNotFound) {
+        throw models::TaskNotFoundException{"Task to mark as completed was not found"};
+    }
+}
+
+void TasksManager::ReactivateTask(handlers::TaskIdRequest&& task_id_request) const {
+    const auto result = tasks_provider_.MarkTaskAsActive(Transform(std::move(task_id_request)));
+
+    if (result == TasksProvider::MarkTaskAsActiveResult::kTaskNotFound) {
+        throw models::TaskNotFoundException{"Task to mark as active was not found"};
+    }
+}
+
+void TasksManager::DeleteTask(handlers::TaskIdRequest&& task_id_request) const {
+    const auto result = tasks_provider_.MarkTaskAsDeleted(Transform(std::move(task_id_request)));
+
+    if (result == TasksProvider::MarkTaskAsDeletedResult::kTaskNotFound) {
+        throw models::TaskNotFoundException{"Task to mark as deleted was not found"};
+    }
+}
+
+handlers::ListTasksResponse TasksManager::ListTasks(handlers::ListTasksRequest&& list_task_request) const {
+    auto [cursor, tasks] = tasks_provider_.SelectTasks(
+        UserId{list_task_request.user_id},
+        current_actions::models::DeserializeCursorFromString(list_task_request.cursor),
+        ::current_actions::models::Transform(list_task_request.status)
+    );
+
+    return Transform(std::move(tasks), SerializeCursorToString(cursor));
+}
+
 TaskForCreate TasksManager::Transform(handlers::CreateTaskRequest&& create_task_request) const {
     return {
         UserId{create_task_request.user_id},
@@ -67,48 +117,6 @@ TaskForUpdate TasksManager::Transform(handlers::UpdateTaskRequest&& update_task_
         std::move(update_task_request.name),
         std::move(update_task_request.description)
     };
-}
-
-void TasksManager::CreateTask(handlers::CreateTaskRequest&& task) const {
-    tasks_provider_.InsertTask(Transform(std::move(task)));
-}
-
-void TasksManager::CompleteTask(handlers::TaskIdRequest&& task_id_request) const {
-    const auto result = tasks_provider_.MarkTaskAsCompleted(Transform(std::move(task_id_request)));
-
-    if (result == TasksProvider::MarkTaskAsCompletedResult::kTaskNotFound) {
-        throw models::TaskNotFoundException{"Task to mark as completed was not found"};
-    }
-}
-
-void TasksManager::ReactivateTask(handlers::TaskIdRequest&& task_id_request) const {
-    const auto result = tasks_provider_.MarkTaskAsActive(Transform(std::move(task_id_request)));
-
-    if (result == TasksProvider::MarkTaskAsActiveResult::kTaskNotFound) {
-        throw models::TaskNotFoundException{"Task to mark as active was not found"};
-    }
-}
-
-handlers::ListTasksResponse TasksManager::ListTasks(handlers::ListTasksRequest&& list_task_request) const {
-    auto [cursor, tasks] = tasks_provider_.SelectTasks(
-        UserId{list_task_request.user_id},
-        current_actions::models::DeserializeCursorFromString(list_task_request.cursor),
-        ::current_actions::models::Transform(list_task_request.status)
-    );
-
-    return Transform(std::move(tasks), SerializeCursorToString(cursor));
-}
-
-void TasksManager::UpdateTask(handlers::UpdateTaskRequest&& update_task_request) const {
-    if (!update_task_request.name.has_value() && !update_task_request.description.has_value()) {
-        throw models::NoFieldsProvidedException{"No task fields provided for update"};
-    }
-
-    const auto result = tasks_provider_.UpdateTaskFields(Transform(std::move(update_task_request)));
-
-    if (result == TasksProvider::UpdateTaskFieldsResult::kTaskNotFound) {
-        throw models::TaskNotFoundException{"Task to update fields was not found"};
-    }
 }
 
 }  // namespace current_actions::contract::managers

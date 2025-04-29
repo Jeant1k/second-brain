@@ -1,0 +1,21 @@
+{
+  "expected_result": {
+    "response": {
+      "message": "An error occurred while processing the request: Task to mark as deleted was not found",
+      "code": "NOT_FOUND"
+    },
+    "database_data": {
+      "user_id": 123456,
+      "name": "Some task name",
+      "description": "Some task description",
+      "status": "active"
+    },
+    "status_code": 404
+  },
+  "initial_data": {
+    "request_body": {
+      "task_id": "a8098c1a-f86e-11da-bd1a-001124440001"
+    }
+  }
+}
+  

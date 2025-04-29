@@ -20,13 +20,15 @@ public:
 
     void CreateTask(handlers::CreateTaskRequest&& create_task_request) const;
 
+    void UpdateTask(handlers::UpdateTaskRequest&& update_task_request) const;
+
     void CompleteTask(handlers::TaskIdRequest&& task_id_request) const;
 
     void ReactivateTask(handlers::TaskIdRequest&& task_id_request) const;
 
-    handlers::ListTasksResponse ListTasks(handlers::ListTasksRequest&& list_task_request) const;
+    void DeleteTask(handlers::TaskIdRequest&& task_id_request) const;
 
-    void UpdateTask(handlers::UpdateTaskRequest&& update_task_request) const;
+    handlers::ListTasksResponse ListTasks(handlers::ListTasksRequest&& list_task_request) const;
 
 private:
     models::TaskForCreate Transform(handlers::CreateTaskRequest&& create_task_request) const;

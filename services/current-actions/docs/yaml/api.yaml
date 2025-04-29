@@ -127,6 +127,7 @@ paths:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
     
+    # TODO
     /current-actions/v1/task/sometime/later:
         post:
             summary: Переместить задачу в когда-нибудь потом
@@ -153,10 +154,11 @@ paths:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
     
-    /current-actions/v1/task/delete:
+    # TODO
+    /current-actions/v1/task/remove:
         post:
             summary: Удалить задачу
-            operationId: deleteTask
+            operationId: removeTask
             requestBody:
                 required: true
                 content:
