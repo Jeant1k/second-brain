@@ -80,6 +80,11 @@ components_manager:
             method: POST
             task_processor: main-task-processor
 
+        internal-current-actions-v1-task-move-post:
+            path: /internal/current-actions/v1/task/move
+            method: POST
+            task_processor: main-task-processor
+
         postgres-current-actions:
             dbconnection: $dbconnection
             dbconnection#env: DB_CONNECTION

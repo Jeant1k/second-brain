@@ -153,8 +153,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
-    
-    # TODO
+
     /current-actions/v1/task/remove:
         post:
             summary: Удалить задачу

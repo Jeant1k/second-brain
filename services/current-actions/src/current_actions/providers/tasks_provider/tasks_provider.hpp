@@ -18,6 +18,8 @@ public:
 
     void InsertTask(models::TaskForCreate&& task) const;
 
+    void UpsertTask(models::Task&& task) const;
+
     enum class MarkTaskAsCompletedResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsCompletedResult MarkTaskAsCompleted(models::TaskId&& task_id) const;
 

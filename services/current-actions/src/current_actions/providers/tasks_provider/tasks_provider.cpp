@@ -41,6 +41,27 @@ void TasksProvider::InsertTask(models::TaskForCreate&& task) const {
     LOG_INFO() << fmt::format("Task with id = {} was inserted", std::move(task_id));
 }
 
+void TasksProvider::UpsertTask(models::Task&& task) const {
+    const auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        sql::kUpsertTask,
+        task.id.GetUnderlying(),
+        task.user_id.GetUnderlying(),
+        task.name,
+        task.description,
+        task.status,
+        task.created_at,
+        task.updated_at,
+        task.completed_at
+    );
+
+    const bool inserted = (*result.cbegin())["inserted"].As<bool>();
+
+    LOG_INFO() << fmt::format(
+        "Task with id = {} was {}", boost::uuids::to_string(task.id.GetUnderlying()), inserted ? "inserted" : "updated"
+    );
+}
+
 TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(models::TaskId&& task_id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsCompleted, task_id.GetUnderlying()

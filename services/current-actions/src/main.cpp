@@ -15,6 +15,7 @@
 #include "views/current-actions/v1/task/remove/view.hpp"
 #include "views/current-actions/v1/task/update/view.hpp"
 #include "views/current-actions/v1/task/view.hpp"
+#include "views/internal/current-actions/v1/task/move/view.hpp"
 
 int main(int argc, char* argv[]) {
     auto component_list =
@@ -33,6 +34,7 @@ int main(int argc, char* argv[]) {
             .Append<views::current_actions::v1::task::list::post::CurrentActionsV1TaskListPost>()
             .Append<views::current_actions::v1::task::update::post::CurrentActionsV1TaskUpdatePost>()
             .Append<views::current_actions::v1::task::remove::post::CurrentActionsV1TaskRemovePost>()
+            .Append<views::internal::current_actions::v1::task::move::post::InternalCurrentActionsV1TaskMovePost>()
 
             // current_actions
             .Append<current_actions::contract::managers::TasksManager>()
