@@ -26,7 +26,9 @@ CREATE INDEX idx_tasks_user_id_status ON current_actions.tasks(user_id, status);
 CREATE OR REPLACE FUNCTION current_actions.set_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at = now();
+    IF NEW.updated_at IS NULL THEN
+        NEW.updated_at = now();
+    END IF;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -41,9 +43,11 @@ EXECUTE FUNCTION current_actions.set_updated_at();
 CREATE OR REPLACE FUNCTION current_actions.set_completed_at()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.status = 'completed' AND OLD.status = 'active' THEN
-        NEW.completed_at = now();
-    ELSIF NEW.status = 'active' AND OLD.status = 'completed' THEN
+    IF NEW.status = 'completed' AND OLD.status <> 'completed' THEN
+        IF NEW.completed_at IS NULL OR NEW.completed_at = OLD.completed_at THEN
+            NEW.completed_at = now();
+        END IF;
+    ELSIF NEW.status <> 'completed' THEN
         NEW.completed_at = NULL;
     END IF;
     RETURN NEW;

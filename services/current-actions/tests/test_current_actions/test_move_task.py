@@ -3,6 +3,7 @@ import json
 
 from testsuite.databases import pgsql
 from .plugins.utils import select_user_full_tasks
+from .plugins.constants import NOW
 
 
 @pytest.mark.parametrize(
@@ -30,10 +31,14 @@ from .plugins.utils import select_user_full_tasks
             marks=[pytest.mark.pgsql(
                 'current_actions', files=['database.sql'])]
         ),
-        # TODO: add testcase, where trying to insert task another user
-        # Add constrain for this case
+        pytest.param(
+            'happy_path_update_from_other_user',
+            marks=[pytest.mark.pgsql(
+                'current_actions', files=['database.sql'])]
+        ),
     ],
 )
+@pytest.mark.now(NOW)
 async def test_move_task(
     service_client,
     load_json,

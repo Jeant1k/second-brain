@@ -42,6 +42,10 @@ void TasksProvider::InsertTask(models::TaskForCreate&& task) const {
 }
 
 void TasksProvider::UpsertTask(models::Task&& task) const {
+    LOG_INFO() << "created_at = " << task.created_at.GetUnderlying()
+               << " updated_at = " << task.updated_at.GetUnderlying() << " completed_at = "
+               << task.completed_at.value_or(userver::storages::postgres::TimePointTz{}).GetUnderlying();
+
     const auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
         sql::kUpsertTask,
@@ -60,6 +64,22 @@ void TasksProvider::UpsertTask(models::Task&& task) const {
     LOG_INFO() << fmt::format(
         "Task with id = {} was {}", boost::uuids::to_string(task.id.GetUnderlying()), inserted ? "inserted" : "updated"
     );
+}
+
+std::optional<models::UserId> TasksProvider::SelectUserIdByTaskId(models::TaskId&& task_id) const {
+    const auto user_id_opt = pg_cluster_
+                                 ->Execute(
+                                     userver::storages::postgres::ClusterHostType::kMaster,
+                                     sql::kSelectUserIdByTaskId,
+                                     task_id.GetUnderlying()
+                                 )
+                                 .AsOptionalSingleRow<std::int64_t>(userver::storages::postgres::kFieldTag);
+
+    if (!user_id_opt.has_value()) {
+        return std::nullopt;
+    }
+
+    return models::UserId{user_id_opt.value()};
 }
 
 TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(models::TaskId&& task_id) const {

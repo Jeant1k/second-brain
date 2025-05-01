@@ -32,6 +32,13 @@ void TasksManager::CreateTask(handlers::CreateTaskRequest&& task) const {
 }
 
 void TasksManager::MoveTask(handlers::MoveTaskRequest&& move_task_request) const {
+    const auto user_id_opt = tasks_provider_.SelectUserIdByTaskId(TaskId{move_task_request.task.id});
+    if (user_id_opt.has_value() && user_id_opt.value().GetUnderlying() != move_task_request.task.user_id) {
+        throw models::WrongUserIdException{
+            fmt::format("Task with id = {} belongs to another user", boost::uuids::to_string(move_task_request.task.id))
+        };
+    }
+
     tasks_provider_.UpsertTask(Transform(std::move(move_task_request)));
 }
 
@@ -127,6 +134,13 @@ TaskForUpdate TasksManager::Transform(handlers::UpdateTaskRequest&& update_task_
 Task TasksManager::Transform(handlers::MoveTaskRequest&& move_task_request) const {
     using userver::storages::postgres::TimePointTz;
 
+    LOG_INFO() << "created_at = "
+               << move_task_request.task.created_at.value_or(userver::utils::datetime::TimePointTz{}).GetTimePoint()
+               << " updated_at = "
+               << move_task_request.task.updated_at.value_or(userver::utils::datetime::TimePointTz{}).GetTimePoint()
+               << " completed_at = "
+               << move_task_request.task.completed_at.value_or(userver::utils::datetime::TimePointTz{}).GetTimePoint();
+
     return {
         TaskId{move_task_request.task.id},
         UserId{move_task_request.task.user_id},
@@ -137,9 +151,8 @@ Task TasksManager::Transform(handlers::MoveTaskRequest&& move_task_request) cons
                                                       : TimePointTz{userver::utils::datetime::Now()},
         move_task_request.task.updated_at.has_value() ? TimePointTz{move_task_request.task.updated_at.value()}
                                                       : TimePointTz{userver::utils::datetime::Now()},
-        move_task_request.task.completed_at.has_value()
-            ? std::make_optional(TimePointTz{move_task_request.task.completed_at.value()})
-            : std::nullopt,
+        move_task_request.task.completed_at.has_value() ? TimePointTz{move_task_request.task.completed_at.value()}
+                                                        : TimePointTz{userver::utils::datetime::Now()},
     };
 }
 

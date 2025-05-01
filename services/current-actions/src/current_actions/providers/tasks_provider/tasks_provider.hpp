@@ -20,6 +20,8 @@ public:
 
     void UpsertTask(models::Task&& task) const;
 
+    std::optional<models::UserId> SelectUserIdByTaskId(models::TaskId&& task_id) const;
+
     enum class MarkTaskAsCompletedResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsCompletedResult MarkTaskAsCompleted(models::TaskId&& task_id) const;
 

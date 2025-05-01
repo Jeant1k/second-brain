@@ -2,6 +2,8 @@
 
 #include <userver/components/component.hpp>
 
+#include "../../../../../../current_actions/contract/models/exceptions.hpp"
+
 namespace views::internal::current_actions::v1::task::move::post {
 
 InternalCurrentActionsV1TaskMovePost::InternalCurrentActionsV1TaskMovePost(
@@ -13,7 +15,13 @@ InternalCurrentActionsV1TaskMovePost::InternalCurrentActionsV1TaskMovePost(
 
 views::contract::models::ApiResponse InternalCurrentActionsV1TaskMovePost::
     Handle(::current_actions::handlers::MoveTaskRequest&& request, userver::server::request::RequestContext&&) const {
-    tasks_manager_.MoveTask(std::move(request));
+    try {
+        tasks_manager_.MoveTask(std::move(request));
+    } catch (const ::current_actions::contract::models::WrongUserIdException& ex) {
+        return contract::models::ApiResponseFactory::BadRequest(
+            fmt::format("An error occurred while processing the request: {}", ex.what())
+        );
+    }
 
     return contract::models::ApiResponseFactory::Ok();
 }
