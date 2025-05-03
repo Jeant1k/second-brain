@@ -1,0 +1,16 @@
+{
+  "expected_result": {
+    "response": {
+      "message": "Invalid request format: Error at path 'description': Field is missing",
+      "code": "BAD_REQUEST"
+    },
+    "database_data": [],
+    "status_code": 400
+  },
+  "initial_data": {
+    "request_body": {
+      "user_id": 123456,
+      "name": "Some task name"
+    }
+  }
+}
