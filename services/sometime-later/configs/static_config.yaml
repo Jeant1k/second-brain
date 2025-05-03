@@ -79,6 +79,11 @@ components_manager:
             path: /sometime-later/v1/task/remove
             method: POST
             task_processor: main-task-processor
+        
+        sometime-later-v1-task-current-actions-post:
+            path: /sometime-later/v1/task/current/actions
+            method: POST
+            task_processor: main-task-processor
 
         internal-sometime-later-v1-task-move-post:
             path: /internal/sometime-later/v1/task/move
@@ -99,3 +104,14 @@ components_manager:
         # Custom components
         tasks-manager:
         tasks-provider:
+
+        # clients
+        http-client: # Нужен для работы клиента
+            pool-size: 16 # Пример
+            thread-name-prefix: http-client
+            threads: 4
+            user_agent: $<MY_SERVICE_NAME/1.0> #(Замени)
+            # ... другие настройки HTTP клиента
+        current-actions-client: # Объявление нашего клиента
+            # Наследует base-url из config_vars.yaml
+

@@ -61,8 +61,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     # sometime_later
     src/sometime_later/contract/models/exceptions.hpp
     src/sometime_later/contract/managers/tasks_manager.hpp
+    src/sometime_later/contract/models/tasks_provider_structures.hpp
     src/sometime_later/managers/tasks_manager.cpp
-    src/sometime_later/models/tasks_provider_structures.hpp
     src/sometime_later/models/tasks_provider_structures.cpp
     src/sometime_later/providers/tasks_provider/tasks_provider.hpp
     src/sometime_later/providers/tasks_provider/tasks_provider.cpp

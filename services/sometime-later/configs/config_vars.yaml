@@ -7,3 +7,6 @@ is-testing: false
 server-port: 8080
 
 dbconnection: 'postgresql://sometime_later_user:password@localhost:5432/sometime_later'
+
+current-actions-client:
+  base-url: http://localhost:8080

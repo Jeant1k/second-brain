@@ -11,7 +11,7 @@
 
 #include "docs/yaml/definitions.hpp"
 
-namespace sometime_later::models {
+namespace sometime_later::contract::models {
 
 using TaskId = userver::utils::StrongTypedef<class TaskIdTag, boost::uuids::uuid>;
 using UserId = userver::utils::StrongTypedef<class UserIdTag, std::int64_t>;
@@ -53,12 +53,13 @@ std::optional<Cursor> DeserializeCursorFromString(const std::optional<std::strin
 
 std::optional<std::string> SerializeCursorToString(const std::optional<Cursor>& cursor);
 
-}  // namespace sometime_later::models
+}  // namespace sometime_later::contract::models
 
 namespace userver::storages::postgres::io {
 
 template <>
-struct CppToUserPg<sometime_later::models::Status> : EnumMappingBase<sometime_later::models::Status> {
+struct CppToUserPg<sometime_later::contract::models::Status>
+    : EnumMappingBase<sometime_later::contract::models::Status> {
     static constexpr DBTypeName postgres_name = "sometime_later.task_status";
     static constexpr EnumeratorList enumerators{
         {EnumType::kPending, "pending"},

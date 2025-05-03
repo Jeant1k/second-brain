@@ -11,6 +11,7 @@
 #include "sometime_later/providers/tasks_provider/tasks_provider.hpp"
 #include "views/internal/sometime-later/v1/task/move/view.hpp"
 #include "views/sometime-later/v1/task/complete/view.hpp"
+#include "views/sometime-later/v1/task/current/actions/view.hpp"
 #include "views/sometime-later/v1/task/list/view.hpp"
 #include "views/sometime-later/v1/task/pend/view.hpp"
 #include "views/sometime-later/v1/task/remove/view.hpp"
@@ -34,6 +35,7 @@ int main(int argc, char* argv[]) {
             .Append<views::sometime_later::v1::task::list::post::SometimeLaterV1TaskListPost>()
             .Append<views::sometime_later::v1::task::update::post::SometimeLaterV1TaskUpdatePost>()
             .Append<views::sometime_later::v1::task::remove::post::SometimeLaterV1TaskRemovePost>()
+            .Append<views::sometime_later::v1::task::current::actions::post::SometimeLaterV1TaskCurrentActionsPost>()
             .Append<views::internal::sometime_later::v1::task::move::post::InternalSometimeLaterV1TaskMovePost>()
 
             // sometime_later

@@ -11,12 +11,12 @@ namespace sometime_later::contract::managers {
 
 namespace {
 
+using models::Task;
+using models::TaskForCreate;
+using models::TaskForUpdate;
+using models::TaskId;
+using models::UserId;
 using providers::tasks_provider::TasksProvider;
-using sometime_later::models::Task;
-using sometime_later::models::TaskForCreate;
-using sometime_later::models::TaskForUpdate;
-using sometime_later::models::TaskId;
-using sometime_later::models::UserId;
 
 }  // namespace
 
@@ -81,11 +81,22 @@ void TasksManager::DeleteTask(handlers::TaskIdRequest&& task_id_request) const {
 handlers::ListTasksResponse TasksManager::ListTasks(handlers::ListTasksRequest&& list_task_request) const {
     auto [cursor, tasks] = tasks_provider_.SelectTasks(
         UserId{list_task_request.user_id},
-        sometime_later::models::DeserializeCursorFromString(list_task_request.cursor),
-        ::sometime_later::models::Transform(list_task_request.status)
+        models::DeserializeCursorFromString(list_task_request.cursor),
+        models::Transform(list_task_request.status)
     );
 
     return Transform(std::move(tasks), SerializeCursorToString(cursor));
+}
+
+models::Task TasksManager::MoveToCurrentActionsTask(handlers::TaskIdRequest&& task_id_request) const {
+    const auto result = tasks_provider_.MarkTaskAsMovedToCurrentActions(Transform(std::move(task_id_request)));
+    if (result.status == TasksProvider::MarkTaskAsMovedToCurrentActionsResult::MarkTaskAsMovedToCurrentActionsStatus::
+                             kTaskNotFound ||
+        !result.task.has_value()) {
+        throw models::TaskNotFoundException{"Task to move to current actions was not found"};
+    }
+
+    return result.task.value();
 }
 
 TaskForCreate TasksManager::Transform(handlers::CreateTaskRequest&& create_task_request) const {
@@ -113,7 +124,7 @@ handlers::ListTasksResponse TasksManager::Transform(std::vector<Task>&& tasks, s
             std::move(task.user_id.GetUnderlying()),
             std::move(task.name),
             std::move(task.description),
-            ::sometime_later::models::Transform(task.status).value(),
+            models::Transform(task.status).value(),
             TimePointTz(task.created_at),
             TimePointTz{task.updated_at},
             task.completed_at.has_value() ? std::make_optional(TimePointTz{task.completed_at.value()}) : std::nullopt
@@ -146,7 +157,7 @@ Task TasksManager::Transform(handlers::MoveTaskRequest&& move_task_request) cons
         UserId{move_task_request.task.user_id},
         std::move(move_task_request.task.name),
         std::move(move_task_request.task.description),
-        ::sometime_later::models::Transform(move_task_request.task.status).value(),
+        models::Transform(move_task_request.task.status).value(),
         move_task_request.task.created_at.has_value() ? TimePointTz{move_task_request.task.created_at.value()}
                                                       : TimePointTz{userver::utils::datetime::Now()},
         move_task_request.task.updated_at.has_value() ? TimePointTz{move_task_request.task.updated_at.value()}

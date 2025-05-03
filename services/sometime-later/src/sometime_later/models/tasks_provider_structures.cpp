@@ -1,10 +1,10 @@
-#include "tasks_provider_structures.hpp"
+#include "../contract/models/tasks_provider_structures.hpp"
 
 #include <iomanip>
 
 #include <boost/uuid/uuid_generators.hpp>
 
-namespace sometime_later::models {
+namespace sometime_later::contract::models {
 
 namespace {
 
@@ -90,4 +90,4 @@ std::optional<std::string> SerializeCursorToString(const std::optional<Cursor>& 
     );
 }
 
-}  // namespace sometime_later::models
+}  // namespace sometime_later::contract::models

@@ -3,7 +3,7 @@
 #include <userver/components/component_base.hpp>
 #include <userver/storages/postgres/cluster.hpp>
 
-#include "../../models/tasks_provider_structures.hpp"
+#include "../../contract/models/tasks_provider_structures.hpp"
 
 namespace sometime_later::providers::tasks_provider {
 
@@ -16,32 +16,40 @@ public:
         const userver::components::ComponentContext& component_context
     );
 
-    void InsertTask(models::TaskForCreate&& task) const;
+    void InsertTask(contract::models::TaskForCreate&& task) const;
 
-    void UpsertTask(models::Task&& task) const;
+    void UpsertTask(contract::models::Task&& task) const;
 
-    std::optional<models::UserId> SelectUserIdByTaskId(models::TaskId&& task_id) const;
+    std::optional<contract::models::UserId> SelectUserIdByTaskId(contract::models::TaskId&& task_id) const;
 
     enum class MarkTaskAsCompletedResult : char { kSuccess, kTaskNotFound };
-    MarkTaskAsCompletedResult MarkTaskAsCompleted(models::TaskId&& task_id) const;
+    MarkTaskAsCompletedResult MarkTaskAsCompleted(contract::models::TaskId&& task_id) const;
 
     enum class MarkTaskAsPendingResult : char { kSuccess, kTaskNotFound };
-    MarkTaskAsPendingResult MarkTaskAsPending(models::TaskId&& task_id) const;
+    MarkTaskAsPendingResult MarkTaskAsPending(contract::models::TaskId&& task_id) const;
 
     enum class MarkTaskAsDeletedResult : char { kSuccess, kTaskNotFound };
-    MarkTaskAsDeletedResult MarkTaskAsDeleted(models::TaskId&& task_id) const;
+    MarkTaskAsDeletedResult MarkTaskAsDeleted(contract::models::TaskId&& task_id) const;
+
+    struct MarkTaskAsMovedToCurrentActionsResult {
+        enum class MarkTaskAsMovedToCurrentActionsStatus : char { kSuccess, kTaskNotFound };
+
+        MarkTaskAsMovedToCurrentActionsStatus status;
+        std::optional<contract::models::Task> task;
+    };
+    MarkTaskAsMovedToCurrentActionsResult MarkTaskAsMovedToCurrentActions(contract::models::TaskId&& task_id) const;
 
     enum class UpdateTaskFieldsResult : char { kSuccess, kTaskNotFound };
-    UpdateTaskFieldsResult UpdateTaskFields(models::TaskForUpdate&& task) const;
+    UpdateTaskFieldsResult UpdateTaskFields(contract::models::TaskForUpdate&& task) const;
 
     struct SelectTasksResult {
-        std::optional<models::Cursor> cursor;
-        std::vector<models::Task> tasks;
+        std::optional<contract::models::Cursor> cursor;
+        std::vector<contract::models::Task> tasks;
     };
     SelectTasksResult SelectTasks(
-        models::UserId&& user_id,
-        std::optional<models::Cursor>&& cursor = std::nullopt,
-        std::optional<models::Status>&& status = std::nullopt
+        contract::models::UserId&& user_id,
+        std::optional<contract::models::Cursor>&& cursor = std::nullopt,
+        std::optional<contract::models::Status>&& status = std::nullopt
     ) const;
 
 private:

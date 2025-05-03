@@ -2,8 +2,8 @@
 
 #include <userver/components/component_base.hpp>
 
-#include "../../models/tasks_provider_structures.hpp"
 #include "../../providers/tasks_provider/tasks_provider.hpp"
+#include "../models/tasks_provider_structures.hpp"
 
 #include "docs/yaml/api_fwd.hpp"
 #include "docs/yaml/internal_fwd.hpp"
@@ -32,6 +32,8 @@ public:
     void DeleteTask(handlers::TaskIdRequest&& task_id_request) const;
 
     handlers::ListTasksResponse ListTasks(handlers::ListTasksRequest&& list_task_request) const;
+
+    models::Task MoveToCurrentActionsTask(handlers::TaskIdRequest&& task_id_request) const;
 
 private:
     models::TaskForCreate Transform(handlers::CreateTaskRequest&& create_task_request) const;

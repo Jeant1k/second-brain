@@ -14,6 +14,14 @@ namespace sometime_later::providers::tasks_provider {
 
 namespace {
 
+using contract::models::Cursor;
+using contract::models::Status;
+using contract::models::Task;
+using contract::models::TaskForCreate;
+using contract::models::TaskForUpdate;
+using contract::models::TaskId;
+using contract::models::UserId;
+
 constexpr std::int32_t kTasksLimit{10};
 
 }  // namespace
@@ -26,7 +34,7 @@ TasksProvider::TasksProvider(
       pg_cluster_(component_context.FindComponent<userver::components::Postgres>("postgres-sometime-later").GetCluster()
       ) {}
 
-void TasksProvider::InsertTask(models::TaskForCreate&& task) const {
+void TasksProvider::InsertTask(TaskForCreate&& task) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
         sql::kInsertTask,
@@ -40,7 +48,7 @@ void TasksProvider::InsertTask(models::TaskForCreate&& task) const {
     LOG_INFO() << fmt::format("Task with id = {} was inserted", std::move(task_id));
 }
 
-void TasksProvider::UpsertTask(models::Task&& task) const {
+void TasksProvider::UpsertTask(Task&& task) const {
     LOG_INFO() << "created_at = " << task.created_at.GetUnderlying()
                << " updated_at = " << task.updated_at.GetUnderlying() << " completed_at = "
                << task.completed_at.value_or(userver::storages::postgres::TimePointTz{}).GetUnderlying();
@@ -65,7 +73,7 @@ void TasksProvider::UpsertTask(models::Task&& task) const {
     );
 }
 
-std::optional<models::UserId> TasksProvider::SelectUserIdByTaskId(models::TaskId&& task_id) const {
+std::optional<UserId> TasksProvider::SelectUserIdByTaskId(TaskId&& task_id) const {
     const auto user_id_opt = pg_cluster_
                                  ->Execute(
                                      userver::storages::postgres::ClusterHostType::kMaster,
@@ -78,10 +86,10 @@ std::optional<models::UserId> TasksProvider::SelectUserIdByTaskId(models::TaskId
         return std::nullopt;
     }
 
-    return models::UserId{user_id_opt.value()};
+    return UserId{user_id_opt.value()};
 }
 
-TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(models::TaskId&& task_id) const {
+TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(TaskId&& task_id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsCompleted, task_id.GetUnderlying()
     );
@@ -98,7 +106,7 @@ TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(mode
     return MarkTaskAsCompletedResult::kSuccess;
 }
 
-TasksProvider::MarkTaskAsPendingResult TasksProvider::MarkTaskAsPending(models::TaskId&& task_id) const {
+TasksProvider::MarkTaskAsPendingResult TasksProvider::MarkTaskAsPending(TaskId&& task_id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsPending, task_id.GetUnderlying()
     );
@@ -115,7 +123,7 @@ TasksProvider::MarkTaskAsPendingResult TasksProvider::MarkTaskAsPending(models::
     return MarkTaskAsPendingResult::kSuccess;
 }
 
-TasksProvider::MarkTaskAsDeletedResult TasksProvider::MarkTaskAsDeleted(models::TaskId&& task_id) const {
+TasksProvider::MarkTaskAsDeletedResult TasksProvider::MarkTaskAsDeleted(TaskId&& task_id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsDeleted, task_id.GetUnderlying()
     );
@@ -132,7 +140,35 @@ TasksProvider::MarkTaskAsDeletedResult TasksProvider::MarkTaskAsDeleted(models::
     return MarkTaskAsDeletedResult::kSuccess;
 }
 
-TasksProvider::UpdateTaskFieldsResult TasksProvider::UpdateTaskFields(models::TaskForUpdate&& task) const {
+TasksProvider::MarkTaskAsMovedToCurrentActionsResult TasksProvider::MarkTaskAsMovedToCurrentActions(
+    contract::models::TaskId&& task_id
+) const {
+    auto result = pg_cluster_
+                      ->Execute(
+                          userver::storages::postgres::ClusterHostType::kMaster,
+                          sql::kMarkTaskAsMovedToCurrentActions,
+                          task_id.GetUnderlying()
+                      )
+                      .AsContainer<std::optional<contract::models::Task>>(userver::storages::postgres::kRowTag);
+
+    if (!result.has_value()) {
+        LOG_WARNING() << fmt::format(
+            "Task with id = {} was not marked as moved to current actions",
+            boost::uuids::to_string(task_id.GetUnderlying())
+        );
+        return {
+            MarkTaskAsMovedToCurrentActionsResult::MarkTaskAsMovedToCurrentActionsStatus::kTaskNotFound, std::nullopt
+        };
+    }
+
+    LOG_INFO() << fmt::format(
+        "Task with id = {} was marked as moved to current actions", boost::uuids::to_string(task_id.GetUnderlying())
+    );
+
+    return {MarkTaskAsMovedToCurrentActionsResult::MarkTaskAsMovedToCurrentActionsStatus::kSuccess, std::move(result)};
+}
+
+TasksProvider::UpdateTaskFieldsResult TasksProvider::UpdateTaskFields(TaskForUpdate&& task) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
         sql::kUpdateNameOrDescription,
@@ -151,11 +187,8 @@ TasksProvider::UpdateTaskFieldsResult TasksProvider::UpdateTaskFields(models::Ta
     return UpdateTaskFieldsResult::kSuccess;
 }
 
-TasksProvider::SelectTasksResult TasksProvider::SelectTasks(
-    models::UserId&& user_id,
-    std::optional<models::Cursor>&& cursor,
-    std::optional<models::Status>&& status
-) const {
+TasksProvider::SelectTasksResult
+TasksProvider::SelectTasks(UserId&& user_id, std::optional<Cursor>&& cursor, std::optional<Status>&& status) const {
     std::optional<userver::storages::postgres::TimePointTz> updated_at;
     std::optional<boost::uuids::uuid> task_id;
     if (cursor.has_value()) {
@@ -174,7 +207,7 @@ TasksProvider::SelectTasksResult TasksProvider::SelectTasks(
     );
 
     SelectTasksResult select_tasks_result;
-    select_tasks_result.tasks = result.AsContainer<std::vector<models::Task>>(userver::storages::postgres::kRowTag);
+    select_tasks_result.tasks = result.AsContainer<std::vector<Task>>(userver::storages::postgres::kRowTag);
 
     if (select_tasks_result.tasks.size() > kTasksLimit) {
         auto& last_task = select_tasks_result.tasks.back();
