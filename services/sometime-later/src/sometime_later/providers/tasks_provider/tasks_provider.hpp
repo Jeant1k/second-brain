@@ -31,13 +31,15 @@ public:
     enum class MarkTaskAsDeletedResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsDeletedResult MarkTaskAsDeleted(contract::models::TaskId&& task_id) const;
 
-    struct MarkTaskAsMovedToCurrentActionsResult {
-        enum class MarkTaskAsMovedToCurrentActionsStatus : char { kSuccess, kTaskNotFound };
+    void MarkTaskAsMovedToCurrentActions(contract::models::TaskId&& task_id) const;
 
-        MarkTaskAsMovedToCurrentActionsStatus status;
+    struct SelectTaskByIdResult {
+        enum class SelectTaskByIdStatus : char { kSuccess, kTaskNotFound };
+
+        SelectTaskByIdStatus status;
         std::optional<contract::models::Task> task;
     };
-    MarkTaskAsMovedToCurrentActionsResult MarkTaskAsMovedToCurrentActions(contract::models::TaskId&& task_id) const;
+    SelectTaskByIdResult SelectTaskById(contract::models::TaskId&& task_id) const;
 
     enum class UpdateTaskFieldsResult : char { kSuccess, kTaskNotFound };
     UpdateTaskFieldsResult UpdateTaskFields(contract::models::TaskForUpdate&& task) const;

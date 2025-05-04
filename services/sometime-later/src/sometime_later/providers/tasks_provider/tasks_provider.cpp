@@ -140,32 +140,32 @@ TasksProvider::MarkTaskAsDeletedResult TasksProvider::MarkTaskAsDeleted(TaskId&&
     return MarkTaskAsDeletedResult::kSuccess;
 }
 
-TasksProvider::MarkTaskAsMovedToCurrentActionsResult TasksProvider::MarkTaskAsMovedToCurrentActions(
+void TasksProvider::MarkTaskAsMovedToCurrentActions(contract::models::TaskId&& task_id) const {
+    pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsMovedToCurrentActions, task_id.GetUnderlying()
+    );
+}
+
+TasksProvider::SelectTaskByIdResult TasksProvider::SelectTaskById(
     contract::models::TaskId&& task_id
 ) const {
-    auto result = pg_cluster_
+    auto task = pg_cluster_
                       ->Execute(
                           userver::storages::postgres::ClusterHostType::kMaster,
-                          sql::kMarkTaskAsMovedToCurrentActions,
+                          sql::kSelectTaskById,
                           task_id.GetUnderlying()
                       )
                       .AsContainer<std::optional<contract::models::Task>>(userver::storages::postgres::kRowTag);
 
-    if (!result.has_value()) {
+    if (!task.has_value()) {
         LOG_WARNING() << fmt::format(
-            "Task with id = {} was not marked as moved to current actions",
+            "Task with id = {} was not found",
             boost::uuids::to_string(task_id.GetUnderlying())
         );
-        return {
-            MarkTaskAsMovedToCurrentActionsResult::MarkTaskAsMovedToCurrentActionsStatus::kTaskNotFound, std::nullopt
-        };
+        return {SelectTaskByIdResult::SelectTaskByIdStatus::kTaskNotFound, std::nullopt};
     }
 
-    LOG_INFO() << fmt::format(
-        "Task with id = {} was marked as moved to current actions", boost::uuids::to_string(task_id.GetUnderlying())
-    );
-
-    return {MarkTaskAsMovedToCurrentActionsResult::MarkTaskAsMovedToCurrentActionsStatus::kSuccess, std::move(result)};
+    return {SelectTaskByIdResult::SelectTaskByIdStatus::kSuccess, std::move(task)};
 }
 
 TasksProvider::UpdateTaskFieldsResult TasksProvider::UpdateTaskFields(TaskForUpdate&& task) const {

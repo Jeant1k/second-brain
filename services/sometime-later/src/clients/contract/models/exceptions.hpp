@@ -11,13 +11,11 @@
 
 namespace clients::contract::models {
 
-// Базовое исключение для всех клиентских ошибок
 class ClientException : public std::runtime_error {
 public:
     explicit ClientException(const std::string& message) : std::runtime_error(message) {}
 };
 
-// Исключение для ошибок HTTP-запроса (не 2xx)
 class HttpClientException : public ClientException {
 public:
     HttpClientException(
@@ -35,7 +33,6 @@ private:
     std::optional<sometime_later::handlers::Error> error_body_;
 };
 
-// Конкретные исключения для стандартных ошибок API
 class BadRequestError : public HttpClientException {
 public:
     explicit BadRequestError(std::optional<sometime_later::handlers::Error>&& error_body = std::nullopt)

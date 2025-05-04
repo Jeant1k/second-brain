@@ -78,6 +78,10 @@ void TasksManager::DeleteTask(handlers::TaskIdRequest&& task_id_request) const {
     }
 }
 
+void TasksManager::CurrentActionsTask(models::TaskId&& task_id) const {
+    tasks_provider_.MarkTaskAsMovedToCurrentActions(std::move(task_id));
+}
+
 handlers::ListTasksResponse TasksManager::ListTasks(handlers::ListTasksRequest&& list_task_request) const {
     auto [cursor, tasks] = tasks_provider_.SelectTasks(
         UserId{list_task_request.user_id},
@@ -88,12 +92,11 @@ handlers::ListTasksResponse TasksManager::ListTasks(handlers::ListTasksRequest&&
     return Transform(std::move(tasks), SerializeCursorToString(cursor));
 }
 
-models::Task TasksManager::MoveToCurrentActionsTask(handlers::TaskIdRequest&& task_id_request) const {
-    const auto result = tasks_provider_.MarkTaskAsMovedToCurrentActions(Transform(std::move(task_id_request)));
-    if (result.status == TasksProvider::MarkTaskAsMovedToCurrentActionsResult::MarkTaskAsMovedToCurrentActionsStatus::
-                             kTaskNotFound ||
+models::Task TasksManager::GetTask(handlers::TaskIdRequest&& task_id_request) const {
+    const auto result = tasks_provider_.SelectTaskById(Transform(std::move(task_id_request)));
+    if (result.status == TasksProvider::SelectTaskByIdResult::SelectTaskByIdStatus::kTaskNotFound ||
         !result.task.has_value()) {
-        throw models::TaskNotFoundException{"Task to move to current actions was not found"};
+        throw models::TaskNotFoundException{"Task was not found"};
     }
 
     return result.task.value();

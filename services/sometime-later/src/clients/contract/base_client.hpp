@@ -11,6 +11,7 @@
 #include <userver/logging/log.hpp>
 #include <userver/tracing/span.hpp>
 #include <userver/utils/fmt_compat.hpp>
+#include <userver/compiler/demangle.hpp>
 
 #include "docs/yaml/definitions.hpp"
 #include "models/exceptions.hpp"
@@ -36,7 +37,6 @@ public:
     virtual ~BaseClient() = default;
 
 protected:
-    // Обобщенный метод для выполнения запросов
     template <typename ResponseType, typename RequestType = userver::formats::json::Value>
     ResponseType PerformRequest(
         userver::clients::http::HttpMethod method,
@@ -45,45 +45,32 @@ protected:
         const userver::clients::http::Headers& headers = {},
         std::chrono::milliseconds timeout = std::chrono::seconds{5}
     ) const {
-        userver::tracing::Span span(fmt::format("http_client_{}", GetClientName()));  // Имя для трейсинга
-        span.AddTag("http.url", base_url_ + path);
-        span.AddTag("http.method", userver::clients::http::ToString(method));
-
         std::string body_str;
-        if (request_body) {
+        if (request_body.has_value()) {
             userver::formats::json::Value json_body;
-            // Проверяем, есть ли у RequestType метод As<JsonValue> (codegen структура)
             if constexpr (impl::HasAsMethod<RequestType>::value) {
-                json_body = userver::formats::json::ValueBuilder(*request_body).ExtractValue();
+                json_body = userver::formats::json::ValueBuilder(request_body.value()).ExtractValue();
             } else if constexpr (std::is_same_v<RequestType, userver::formats::json::Value>) {
-                json_body = *request_body;
+                json_body = request_body.value();
             } else {
-                // Попытка сериализовать стандартными средствами (если поддерживается)
-                // Можно добавить статическую проверку или кастомную сериализацию, если нужно
-                json_body = userver::formats::json::ValueBuilder(*request_body).ExtractValue();
+                json_body = userver::formats::json::ValueBuilder(request_body.value()).ExtractValue();
             }
             body_str = userver::formats::json::ToString(json_body);
-            span.AddTag("http.request_body_size", std::to_string(body_str.length()));
         }
 
-        auto http_request =
-            http_client_.CreateRequest(method, base_url_ + path).headers(headers).timeout(timeout).data(body_str);
+        auto http_request = http_client_.CreateRequest().method(method).url(base_url_ + path).headers(headers).timeout(timeout).data(body_str);
 
-        // Устанавливаем Content-Type если есть тело запроса
         if (!body_str.empty()) {
             http_request.headers({{"Content-Type", "application/json"}});
         }
 
-        LOG_INFO() << "Performing HTTP request: " << userver::clients::http::ToString(method) << " "
+        LOG_INFO() << "Performing HTTP request: " << std::string{userver::clients::http::ToStringView(method)} << " "
                    << base_url_ + path;
 
         auto response_ptr = http_request.perform();
-        span.AddTag("http.status_code", std::to_string(response_ptr->StatusCodeInt()));
-        span.AddTag("http.response_body_size", std::to_string(response_ptr->body().length()));
 
-        LOG_INFO() << "Received HTTP response: Status " << response_ptr->StatusCodeInt();
+        LOG_INFO() << "Received HTTP response: Status " << ToString(response_ptr->status_code());
 
-        // Обработка ответа
         try {
             return ParseResponse<ResponseType>(*response_ptr);
         } catch (const models::HttpClientException& ex) {
@@ -93,10 +80,10 @@ protected:
                 LOG_WARNING() << "Error body: code=" << ex.GetErrorBody()->code
                               << ", message=" << ex.GetErrorBody()->message;
             }
-            throw;  // Перебрасываем исключение дальше
+            throw;
         } catch (const std::exception& ex) {
             LOG_ERROR() << "Failed to parse response or unexpected client error: " << ex.what()
-                        << ", URL: " << base_url_ + path << ", Status: " << response_ptr->StatusCodeInt()
+                        << ", URL: " << base_url_ + path << ", Status: " << ToString(response_ptr->status_code())
                         << ", Body: " << response_ptr->body();
             throw models::ClientException(
                 fmt::format("Failed to handle response from {}: {}", base_url_ + path, ex.what())
@@ -104,18 +91,15 @@ protected:
         }
     }
 
-    // Метод для парсинга ответа и обработки ошибок HTTP
     template <typename ResponseType>
     ResponseType ParseResponse(const userver::clients::http::Response& response) const {
         const auto status_code = response.status_code();
         const auto& body = response.body();
 
-        if (status_code < userver::clients::http::Status::kBadRequest) {  // 2xx
+        if (status_code < userver::clients::http::Status::kBadRequest) {
             if constexpr (std::is_void_v<ResponseType>) {
-                // Если ожидаемый тип ответа void, просто возвращаем
                 return;
             } else {
-                // Пытаемся распарсить тело как ResponseType
                 try {
                     if (body.empty() && !std::is_same_v<ResponseType, userver::formats::json::Value>) {
                         // Если тело пустое, а ожидается не json::Value, возможно, это ошибка
@@ -135,12 +119,11 @@ protected:
                     return json_response.As<ResponseType>();
                 } catch (const std::exception& e) {
                     throw models::ClientException(fmt::format(
-                        "Failed to parse {} response body: {}", userver::utils::TypeName<ResponseType>(), e.what()
+                        "Failed to parse {} response body: {}", userver::compiler::GetTypeName<ResponseType>(), e.what()
                     ));
                 }
             }
-        } else {  // 4xx, 5xx
-            // Пытаемся распарсить тело как стандартную ошибку
+        } else {
             std::optional<sometime_later::handlers::Error> error_body;
             try {
                 if (!body.empty()) {
@@ -148,13 +131,11 @@ protected:
                 }
             } catch (const std::exception& e) {
                 LOG_WARNING() << "Failed to parse error response body: " << e.what()
-                              << ", Status: " << response.StatusCodeInt() << ", Body: " << body;
-                // Оставляем error_body = std::nullopt
+                              << ", Status: " << ToString(response.status_code()) << ", Body: " << body;
             }
 
-            // Бросаем конкретное исключение по коду статуса
             std::string error_message =
-                error_body ? error_body->message : fmt::format("HTTP error {}", response.StatusCodeInt());
+                error_body ? error_body->message : fmt::format("HTTP error {}", ToString(response.status_code()));
 
             switch (status_code) {
                 case userver::clients::http::Status::kBadRequest:
@@ -168,9 +149,6 @@ protected:
             }
         }
     }
-
-    // Виртуальный метод для получения имени клиента (для логов/трейсов)
-    virtual std::string GetClientName() const = 0;
 
 private:
     userver::clients::http::Client& http_client_;
