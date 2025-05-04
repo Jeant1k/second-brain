@@ -8,5 +8,4 @@ server-port: 8080
 
 dbconnection: 'postgresql://testsuite@localhost:15433/sometime-later_sometime_later'
 
-current-actions-client:
-  base-url: http://localhost:8080
+current-actions-client.base-url: http://localhost:8080

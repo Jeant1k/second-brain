@@ -155,7 +155,7 @@ TasksProvider::SelectTaskByIdResult TasksProvider::SelectTaskById(
                           sql::kSelectTaskById,
                           task_id.GetUnderlying()
                       )
-                      .AsContainer<std::optional<contract::models::Task>>(userver::storages::postgres::kRowTag);
+                      .AsOptionalSingleRow<contract::models::Task>(userver::storages::postgres::kRowTag);
 
     if (!task.has_value()) {
         LOG_WARNING() << fmt::format(

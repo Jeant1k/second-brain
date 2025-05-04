@@ -6,7 +6,7 @@
 
 #include "../../../../../../sometime_later/contract/managers/tasks_manager.hpp"
 #include "../../../../../../views/contract/base_handler.hpp"
-#include "../../../../../../clients/contract/current_actions/client.hpp"
+#include "../../../../../../clients/current_actions/client.hpp"
 
 namespace views::sometime_later::v1::task::current::actions::post {
 
@@ -28,7 +28,7 @@ protected:
 
 private:
     const ::sometime_later::contract::managers::TasksManager& tasks_manager_;
-    const ::clients::contract::current_actions::Client& current_actions_client_;
+    const ::clients::current_actions::CurrentActionsClient& current_actions_client_;
 };
 
 }  // namespace views::sometime_later::v1::task::current::actions::post

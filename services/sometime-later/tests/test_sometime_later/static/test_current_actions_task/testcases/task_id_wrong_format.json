@@ -1,0 +1,22 @@
+{
+  "expected_result": {
+    "response": {
+      "message": "Invalid request format: Error at path 'task_id': invalid uuid string",
+      "code": "BAD_REQUEST"
+    },
+    "database_data": {
+      "user_id": 123456,
+      "name": "Some task name",
+      "description": "Some task description",
+      "status": "pending"
+    },
+    "status_code": 400,
+    "mock_current_actions": {}
+  },
+  "initial_data": {
+    "request_body": {
+      "task_id": "Wrong task_id format"
+    },
+    "mock_current_actions": {}
+  }
+}

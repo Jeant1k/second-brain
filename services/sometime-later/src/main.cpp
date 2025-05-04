@@ -17,6 +17,7 @@
 #include "views/sometime-later/v1/task/remove/view.hpp"
 #include "views/sometime-later/v1/task/update/view.hpp"
 #include "views/sometime-later/v1/task/view.hpp"
+#include "clients/current_actions/client.hpp"
 
 int main(int argc, char* argv[]) {
     auto component_list =
@@ -40,7 +41,10 @@ int main(int argc, char* argv[]) {
 
             // sometime_later
             .Append<sometime_later::contract::managers::TasksManager>()
-            .Append<sometime_later::providers::tasks_provider::TasksProvider>();
+            .Append<sometime_later::providers::tasks_provider::TasksProvider>()
+            
+            // clients
+            .Append<clients::current_actions::CurrentActionsClient>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

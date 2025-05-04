@@ -38,7 +38,7 @@ userver::yaml_config::Schema CurrentActionsClient::GetStaticConfigSchema() {
         properties:
             base-url:
                 type: string
-                description: Base URL of the current-actions service (e.g., http://current-actions-service)
+                description: Base URL of the current-actions service (e.g., http://current-actions)
         )"
     );
 }

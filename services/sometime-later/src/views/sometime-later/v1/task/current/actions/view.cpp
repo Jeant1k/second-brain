@@ -6,6 +6,7 @@
 
 #include "../../../../../../sometime_later/contract/models/exceptions.hpp"
 #include "../../../../../../sometime_later/contract/models/tasks_provider_structures.hpp"
+#include "../../../../../../clients/contract/models/exceptions.hpp"
 
 namespace views::sometime_later::v1::task::current::actions::post {
 
@@ -34,7 +35,7 @@ SometimeLaterV1TaskCurrentActionsPost::SometimeLaterV1TaskCurrentActionsPost(
 )
     : views::contract::BaseHandler<::sometime_later::handlers::TaskIdRequest>(config, component_context),
       tasks_manager_(component_context.FindComponent<::sometime_later::contract::managers::TasksManager>()),
-      current_actions_client_(component_context.FindComponent<::clients::contract::current_actions::Client>())  {}
+      current_actions_client_(component_context.FindComponent<::clients::current_actions::CurrentActionsClient>())  {}
 
 views::contract::models::ApiResponse SometimeLaterV1TaskCurrentActionsPost::
     Handle(::sometime_later::handlers::TaskIdRequest&& request, userver::server::request::RequestContext&&) const {
@@ -50,13 +51,17 @@ views::contract::models::ApiResponse SometimeLaterV1TaskCurrentActionsPost::
     
     if (task.status == ::sometime_later::contract::models::Status::kMovedToCurrentActions) {
         return contract::models::ApiResponseFactory::BadRequest(
-            fmt::format("Task with id = {} was already moved to current-actions", task.id.GetUnderlying())
+            fmt::format("Task with id = {} was already moved to current-actions", boost::uuids::to_string(task.id.GetUnderlying()))
         );
     }
 
     auto task_id = task.id;
 
-    current_actions_client_.MoveTask(Transform(std::move(task)));
+    try {
+        current_actions_client_.MoveTask(Transform(std::move(task)));
+    } catch (const ::clients::contract::models::BadRequestError& ex) {
+        return contract::models::ApiResponseFactory::BadRequest(fmt::format("Failed to move task: {}", ex.what()));
+    }
 
     tasks_manager_.CurrentActionsTask(std::move(task_id));
 
