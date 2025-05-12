@@ -1,0 +1,37 @@
+openapi: 3.0.3
+info:
+    title: Current Actions API
+    description: API для внутреннего управления текущими действиями в системе SECOND BRAIN
+    version: 1.0.0
+
+paths:
+    /internal/waiting/v1/task/move:
+        post:
+            summary: Перемещение задачи из текущих действий
+            operationId: moveTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/MoveTaskRequest'
+            responses:
+                200:
+                    description: Задача успешно перемещена
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+    
+components:
+    schemas:
+        MoveTaskRequest:
+            type: object
+            additionalProperties: false
+            properties:
+                task:
+                    $ref: 'definitions.yaml#/components/schemas/Task'
+            required:
+              - task

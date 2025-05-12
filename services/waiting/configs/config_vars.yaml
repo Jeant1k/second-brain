@@ -1,0 +1,11 @@
+worker-threads: 4
+worker-fs-threads: 2
+logger-level: info
+
+is-testing: false
+
+server-port: 8080
+
+dbconnection: 'postgresql://waiting_user:password@localhost:5432/waiting'
+
+current-actions-client.base-url: http://localhost:8080

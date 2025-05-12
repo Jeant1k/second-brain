@@ -1,0 +1,15 @@
+{
+  "expected_result": {
+    "response": {
+      "message": "Invalid request format: Error at path 'task_id': Field is missing",
+      "code": "BAD_REQUEST"
+    },
+    "database_data": {},
+    "status_code": 400,
+    "mock_current_actions": {}
+  },
+  "initial_data": {
+    "request_body": {},
+    "mock_current_actions": {}
+  }
+}
