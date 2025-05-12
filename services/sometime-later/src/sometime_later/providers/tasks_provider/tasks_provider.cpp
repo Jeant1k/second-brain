@@ -119,7 +119,7 @@ TasksProvider::MarkTaskAsPendingResult TasksProvider::MarkTaskAsPending(TaskId&&
     }
 
     LOG_INFO(
-    ) << fmt::format("Task with id = {} was marked as active", boost::uuids::to_string(task_id.GetUnderlying()));
+    ) << fmt::format("Task with id = {} was marked as pending", boost::uuids::to_string(task_id.GetUnderlying()));
     return MarkTaskAsPendingResult::kSuccess;
 }
 
