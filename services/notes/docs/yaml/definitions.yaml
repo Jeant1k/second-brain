@@ -1,0 +1,103 @@
+components:
+    parameters:
+        UserId:
+            name: user_id
+            in: query
+            required: true
+            schema:
+                type: integer
+                format: int64
+            description: ID пользователя
+        
+        Status:
+            name: status
+            in: query
+            required: false
+            description: Статус задач для фильтрации
+            schema:
+                $ref: '#/components/schemas/TaskStatus'
+
+        Limit:
+            name: limit
+            in: query
+            required: false
+            schema:
+                type: integer
+                default: 100
+                minimum: 1
+                maximum: 1000
+            description: Максимальное количество задач в ответе
+
+        Offset:
+            name: offset
+            in: query
+            required: false
+            schema:
+                type: integer
+                default: 0
+                minimum: 0
+            description: Смещение от начала списка задач
+
+    schemas:
+        Error:
+            description: Описание ошибки
+            type: object
+            additionalProperties: false
+            required:
+              - message
+              - code
+            properties:
+                message:
+                    description: Сообщение об ошибке
+                    type: string
+                code:
+                    description: Код ошибки
+                    type: string
+
+        TaskStatus:
+            type: string
+            enum:
+              - active
+              - completed
+              - deleted
+            description: Статус задачи
+
+        Task:
+            type: object
+            additionalProperties: false
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    description: Уникальный идентификатор задачи
+                user_id:
+                    type: integer
+                    format: int64
+                    description: Идентификатор пользователя
+                name:
+                    type: string
+                    description: Название задачи
+                description:
+                    type: string
+                    description: Описание задачи
+                status:
+                    $ref: '#/components/schemas/TaskStatus'
+                created_at:
+                    type: string
+                    format: date-time
+                    description: Время создания задачи
+                updated_at:
+                    type: string
+                    format: date-time
+                    description: Время последнего обновления задачи
+                completed_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    description: Время выполнения задачи
+            required:
+              - id
+              - user_id
+              - name
+              - description
+              - status

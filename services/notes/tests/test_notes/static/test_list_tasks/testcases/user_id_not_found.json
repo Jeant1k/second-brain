@@ -1,0 +1,13 @@
+{
+  "expected_result": {
+    "response": {
+      "tasks":[]
+    },
+    "status_code": 200
+  },
+  "initial_data": {
+    "request_body": {
+      "user_id": 404
+    }
+  }
+}
