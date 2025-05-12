@@ -1,4 +1,4 @@
-#include "../contract/models/tasks_provider_structures.hpp"
+#include "../contract/models/notes_provider_structures.hpp"
 
 #include <iomanip>
 
@@ -26,32 +26,28 @@ std::string SerializeTimePointToString(std::chrono::system_clock::time_point tp)
 
 }  // namespace
 
-std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status) {
+std::optional<handlers::NoteStatus> Transform(const std::optional<Status> status) {
     if (!status.has_value()) {
         return std::nullopt;
     }
 
     switch (status.value()) {
         case Status::kActive:
-            return handlers::TaskStatus::kActive;
-        case Status::kCompleted:
-            return handlers::TaskStatus::kCompleted;
+            return handlers::NoteStatus::kActive;
         case Status::kDeleted:
-            return handlers::TaskStatus::kDeleted;
+            return handlers::NoteStatus::kDeleted;
     }
 }
 
-std::optional<Status> Transform(const std::optional<handlers::TaskStatus> status) {
+std::optional<Status> Transform(const std::optional<handlers::NoteStatus> status) {
     if (!status.has_value()) {
         return std::nullopt;
     }
 
     switch (status.value()) {
-        case handlers::TaskStatus::kActive:
+        case handlers::NoteStatus::kActive:
             return Status::kActive;
-        case handlers::TaskStatus::kCompleted:
-            return Status::kCompleted;
-        case handlers::TaskStatus::kDeleted:
+        case handlers::NoteStatus::kDeleted:
             return Status::kDeleted;
     }
 }
@@ -70,7 +66,7 @@ std::optional<Cursor> DeserializeCursorFromString(const std::optional<std::strin
     const auto cursor_updated_at = cursor.value().substr(separator_position + 1);
 
     return {
-        {userver::storages::postgres::TimePointTz{DeserializeStringToTimePoint(cursor_updated_at)}, TaskId{cursor_id}}
+        {userver::storages::postgres::TimePointTz{DeserializeStringToTimePoint(cursor_updated_at)}, NoteId{cursor_id}}
     };
 }
 

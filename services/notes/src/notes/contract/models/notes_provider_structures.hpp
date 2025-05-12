@@ -13,40 +13,39 @@
 
 namespace notes::contract::models {
 
-using TaskId = userver::utils::StrongTypedef<class TaskIdTag, boost::uuids::uuid>;
+using NoteId = userver::utils::StrongTypedef<class NoteIdTag, boost::uuids::uuid>;
 using UserId = userver::utils::StrongTypedef<class UserIdTag, std::int64_t>;
 
-enum class Status { kActive, kCompleted, kDeleted };
+enum class Status { kActive, kDeleted };
 
-std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status);
-std::optional<Status> Transform(const std::optional<handlers::TaskStatus> status);
+std::optional<handlers::NoteStatus> Transform(const std::optional<Status> status);
+std::optional<Status> Transform(const std::optional<handlers::NoteStatus> status);
 
-struct Task {
-    TaskId id;
+struct Note {
+    NoteId id;
     UserId user_id;
     std::string name;
     std::string description;
     Status status;
     userver::storages::postgres::TimePointTz created_at;
     userver::storages::postgres::TimePointTz updated_at;
-    std::optional<userver::storages::postgres::TimePointTz> completed_at;
 };
 
-struct TaskForCreate {
+struct NoteForCreate {
     UserId user_id;
     std::string name;
     std::string description;
 };
 
-struct TaskForUpdate {
-    TaskId task_id;
+struct NoteForUpdate {
+    NoteId note_id;
     std::optional<std::string> name;
     std::optional<std::string> description;
 };
 
 struct Cursor {
     userver::storages::postgres::TimePointTz updated_at;
-    TaskId id;
+    NoteId id;
 };
 
 std::optional<Cursor> DeserializeCursorFromString(const std::optional<std::string>& cursor);
@@ -59,10 +58,9 @@ namespace userver::storages::postgres::io {
 
 template <>
 struct CppToUserPg<notes::contract::models::Status> : EnumMappingBase<notes::contract::models::Status> {
-    static constexpr DBTypeName postgres_name = "notes.task_status";
+    static constexpr DBTypeName postgres_name = "notes.note_status";
     static constexpr EnumeratorList enumerators{
         {EnumType::kActive, "active"},
-        {EnumType::kCompleted, "completed"},
         {EnumType::kDeleted, "deleted"}
     };
 };

@@ -6,20 +6,20 @@
 
 #include "../../../../../notes/contract/models/exceptions.hpp"
 
-namespace views::notes::v1::task::reactivate::post {
+namespace views::notes::v1::note::reactivate::post {
 
-NotesV1TaskReactivatePost::NotesV1TaskReactivatePost(
+NotesV1NoteReactivatePost::NotesV1NoteReactivatePost(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : views::contract::BaseHandler<::notes::handlers::TaskIdRequest>(config, component_context),
-      tasks_manager_(component_context.FindComponent<::notes::contract::managers::TasksManager>()) {}
+    : views::contract::BaseHandler<::notes::handlers::NoteIdRequest>(config, component_context),
+      notes_manager_(component_context.FindComponent<::notes::contract::managers::NotesManager>()) {}
 
-views::contract::models::ApiResponse NotesV1TaskReactivatePost::
-    Handle(::notes::handlers::TaskIdRequest&& request, userver::server::request::RequestContext&&) const {
+views::contract::models::ApiResponse NotesV1NoteReactivatePost::
+    Handle(::notes::handlers::NoteIdRequest&& request, userver::server::request::RequestContext&&) const {
     try {
-        tasks_manager_.ReactivateTask(std::move(request));
-    } catch (const ::notes::contract::models::TaskNotFoundException& ex) {
+        notes_manager_.ReactivateNote(std::move(request));
+    } catch (const ::notes::contract::models::NoteNotFoundException& ex) {
         return contract::models::ApiResponseFactory::NotFound(
             fmt::format("An error occurred while processing the request: {}", ex.what())
         );
@@ -28,4 +28,4 @@ views::contract::models::ApiResponse NotesV1TaskReactivatePost::
     return contract::models::ApiResponseFactory::Ok();
 }
 
-}  // namespace views::notes::v1::task::reactivate::post
+}  // namespace views::notes::v1::note::reactivate::post

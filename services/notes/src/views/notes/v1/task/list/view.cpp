@@ -4,19 +4,19 @@
 
 #include "docs/yaml/api.hpp"
 
-namespace views::notes::v1::task::list::post {
+namespace views::notes::v1::note::list::post {
 
-NotesV1TaskListPost::NotesV1TaskListPost(
+NotesV1NoteListPost::NotesV1NoteListPost(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : views::contract::BaseHandler<::notes::handlers::ListTasksRequest>(config, component_context),
-      tasks_manager_(component_context.FindComponent<::notes::contract::managers::TasksManager>()) {}
+    : views::contract::BaseHandler<::notes::handlers::ListNotesRequest>(config, component_context),
+      notes_manager_(component_context.FindComponent<::notes::contract::managers::NotesManager>()) {}
 
 views::contract::models::ApiResponse
-NotesV1TaskListPost::Handle(::notes::handlers::ListTasksRequest&& request, userver::server::request::RequestContext&&)
+NotesV1NoteListPost::Handle(::notes::handlers::ListNotesRequest&& request, userver::server::request::RequestContext&&)
     const {
-    return contract::models::ApiResponseFactory::Ok(tasks_manager_.ListTasks(std::move(request)));
+    return contract::models::ApiResponseFactory::Ok(notes_manager_.ListNotes(std::move(request)));
 }
 
-}  // namespace views::notes::v1::task::list::post
+}  // namespace views::notes::v1::note::list::post

@@ -7,14 +7,14 @@
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
 
-#include "notes/contract/managers/tasks_manager.hpp"
-#include "notes/providers/tasks_provider/tasks_provider.hpp"
-#include "views/notes/v1/task/complete/view.hpp"
-#include "views/notes/v1/task/list/view.hpp"
-#include "views/notes/v1/task/reactivate/view.hpp"
-#include "views/notes/v1/task/remove/view.hpp"
-#include "views/notes/v1/task/update/view.hpp"
-#include "views/notes/v1/task/view.hpp"
+#include "notes/contract/managers/notes_manager.hpp"
+#include "notes/providers/notes_provider/notes_provider.hpp"
+#include "views/notes/v1/note/complete/view.hpp"
+#include "views/notes/v1/note/list/view.hpp"
+#include "views/notes/v1/note/reactivate/view.hpp"
+#include "views/notes/v1/note/remove/view.hpp"
+#include "views/notes/v1/note/update/view.hpp"
+#include "views/notes/v1/note/view.hpp"
 
 int main(int argc, char* argv[]) {
     auto component_list = userver::components::MinimalServerComponentList()
@@ -26,16 +26,16 @@ int main(int argc, char* argv[]) {
                               .Append<userver::components::Postgres>("postgres-notes")
 
                               // views
-                              .Append<views::notes::v1::task::post::NotesV1TaskPost>()
-                              .Append<views::notes::v1::task::complete::post::NotesV1TaskCompletePost>()
-                              .Append<views::notes::v1::task::reactivate::post::NotesV1TaskReactivatePost>()
-                              .Append<views::notes::v1::task::list::post::NotesV1TaskListPost>()
-                              .Append<views::notes::v1::task::update::post::NotesV1TaskUpdatePost>()
-                              .Append<views::notes::v1::task::remove::post::NotesV1TaskRemovePost>()
+                              .Append<views::notes::v1::note::post::NotesV1NotePost>()
+                              .Append<views::notes::v1::note::complete::post::NotesV1NoteCompletePost>()
+                              .Append<views::notes::v1::note::reactivate::post::NotesV1NoteReactivatePost>()
+                              .Append<views::notes::v1::note::list::post::NotesV1NoteListPost>()
+                              .Append<views::notes::v1::note::update::post::NotesV1NoteUpdatePost>()
+                              .Append<views::notes::v1::note::remove::post::NotesV1NoteRemovePost>()
 
                               // notes
-                              .Append<notes::contract::managers::TasksManager>()
-                              .Append<notes::providers::tasks_provider::TasksProvider>();
+                              .Append<notes::contract::managers::NotesManager>()
+                              .Append<notes::providers::notes_provider::NotesProvider>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

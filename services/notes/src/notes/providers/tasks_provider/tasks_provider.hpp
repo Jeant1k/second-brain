@@ -3,52 +3,52 @@
 #include <userver/components/component_base.hpp>
 #include <userver/storages/postgres/cluster.hpp>
 
-#include "../../contract/models/tasks_provider_structures.hpp"
+#include "../../contract/models/notes_provider_structures.hpp"
 
-namespace notes::providers::tasks_provider {
+namespace notes::providers::notes_provider {
 
-class TasksProvider final : public userver::components::ComponentBase {
+class NotesProvider final : public userver::components::ComponentBase {
 public:
-    static constexpr std::string_view kName = "tasks-provider";
+    static constexpr std::string_view kName = "notes-provider";
 
-    TasksProvider(
+    NotesProvider(
         const userver::components::ComponentConfig& config,
         const userver::components::ComponentContext& component_context
     );
 
-    void InsertTask(contract::models::TaskForCreate&& task) const;
+    void InsertNote(contract::models::NoteForCreate&& note) const;
 
-    void UpsertTask(contract::models::Task&& task) const;
+    void UpsertNote(contract::models::Note&& note) const;
 
-    std::optional<contract::models::UserId> SelectUserIdByTaskId(contract::models::TaskId&& task_id) const;
+    std::optional<contract::models::UserId> SelectUserIdByNoteId(contract::models::NoteId&& note_id) const;
 
-    enum class MarkTaskAsCompletedResult : char { kSuccess, kTaskNotFound };
-    MarkTaskAsCompletedResult MarkTaskAsCompleted(contract::models::TaskId&& task_id) const;
+    enum class MarkNoteAsCompletedResult : char { kSuccess, kNoteNotFound };
+    MarkNoteAsCompletedResult MarkNoteAsCompleted(contract::models::NoteId&& note_id) const;
 
-    enum class MarkTaskAsActiveResult : char { kSuccess, kTaskNotFound };
-    MarkTaskAsActiveResult MarkTaskAsActive(contract::models::TaskId&& task_id) const;
+    enum class MarkNoteAsActiveResult : char { kSuccess, kNoteNotFound };
+    MarkNoteAsActiveResult MarkNoteAsActive(contract::models::NoteId&& note_id) const;
 
-    enum class MarkTaskAsDeletedResult : char { kSuccess, kTaskNotFound };
-    MarkTaskAsDeletedResult MarkTaskAsDeleted(contract::models::TaskId&& task_id) const;
+    enum class MarkNoteAsDeletedResult : char { kSuccess, kNoteNotFound };
+    MarkNoteAsDeletedResult MarkNoteAsDeleted(contract::models::NoteId&& note_id) const;
 
-    void MarkTaskAsMovedToCurrentActions(contract::models::TaskId&& task_id) const;
+    void MarkNoteAsMovedToCurrentActions(contract::models::NoteId&& note_id) const;
 
-    struct SelectTaskByIdResult {
-        enum class SelectTaskByIdStatus : char { kSuccess, kTaskNotFound };
+    struct SelectNoteByIdResult {
+        enum class SelectNoteByIdStatus : char { kSuccess, kNoteNotFound };
 
-        SelectTaskByIdStatus status;
-        std::optional<contract::models::Task> task;
+        SelectNoteByIdStatus status;
+        std::optional<contract::models::Note> note;
     };
-    SelectTaskByIdResult SelectTaskById(contract::models::TaskId&& task_id) const;
+    SelectNoteByIdResult SelectNoteById(contract::models::NoteId&& note_id) const;
 
-    enum class UpdateTaskFieldsResult : char { kSuccess, kTaskNotFound };
-    UpdateTaskFieldsResult UpdateTaskFields(contract::models::TaskForUpdate&& task) const;
+    enum class UpdateNoteFieldsResult : char { kSuccess, kNoteNotFound };
+    UpdateNoteFieldsResult UpdateNoteFields(contract::models::NoteForUpdate&& note) const;
 
-    struct SelectTasksResult {
+    struct SelectNotesResult {
         std::optional<contract::models::Cursor> cursor;
-        std::vector<contract::models::Task> tasks;
+        std::vector<contract::models::Note> notes;
     };
-    SelectTasksResult SelectTasks(
+    SelectNotesResult SelectNotes(
         contract::models::UserId&& user_id,
         std::optional<contract::models::Cursor>&& cursor = std::nullopt,
         std::optional<contract::models::Status>&& status = std::nullopt
@@ -58,4 +58,4 @@ private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;
 };
 
-}  // namespace notes::providers::tasks_provider
+}  // namespace notes::providers::notes_provider

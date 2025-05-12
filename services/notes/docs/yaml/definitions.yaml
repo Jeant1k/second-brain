@@ -13,9 +13,9 @@ components:
             name: status
             in: query
             required: false
-            description: Статус задач для фильтрации
+            description: Статус заметок для фильтрации
             schema:
-                $ref: '#/components/schemas/TaskStatus'
+                $ref: '#/components/schemas/NoteStatus'
 
         Limit:
             name: limit
@@ -26,7 +26,7 @@ components:
                 default: 100
                 minimum: 1
                 maximum: 1000
-            description: Максимальное количество задач в ответе
+            description: Максимальное количество заметок в ответе
 
         Offset:
             name: offset
@@ -36,7 +36,7 @@ components:
                 type: integer
                 default: 0
                 minimum: 0
-            description: Смещение от начала списка задач
+            description: Смещение от начала списка заметок
 
     schemas:
         Error:
@@ -54,47 +54,41 @@ components:
                     description: Код ошибки
                     type: string
 
-        TaskStatus:
+        NoteStatus:
             type: string
             enum:
               - active
-              - completed
               - deleted
-            description: Статус задачи
+            description: Статус заметки
 
-        Task:
+        Note:
             type: object
             additionalProperties: false
             properties:
                 id:
                     type: string
                     format: uuid
-                    description: Уникальный идентификатор задачи
+                    description: Уникальный идентификатор заметки
                 user_id:
                     type: integer
                     format: int64
                     description: Идентификатор пользователя
                 name:
                     type: string
-                    description: Название задачи
+                    description: Название заметки
                 description:
                     type: string
-                    description: Описание задачи
+                    description: Описание заметки
                 status:
-                    $ref: '#/components/schemas/TaskStatus'
+                    $ref: '#/components/schemas/NoteStatus'
                 created_at:
                     type: string
                     format: date-time
-                    description: Время создания задачи
+                    description: Время создания заметки
                 updated_at:
                     type: string
                     format: date-time
-                    description: Время последнего обновления задачи
-                completed_at:
-                    type: string
-                    format: date-time
-                    nullable: true
-                    description: Время выполнения задачи
+                    description: Время последнего обновления заметки
             required:
               - id
               - user_id

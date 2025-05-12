@@ -1,27 +1,27 @@
 openapi: 3.0.3
 info:
     title: Current Actions API
-    description: API для управления текущими действиями в системе SECOND BRAIN
+    description: API для управления заметками в системе SECOND BRAIN
     version: 1.0.0
 
 paths:
-    /notes/v1/task/list:
+    /notes/v1/note/list:
         post:
-            summary: Получение списка ожидание
-            operationId: listTasks
+            summary: Получение списка заметок
+            operationId: listNotes
             requestBody:
                 required: true
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/ListTasksRequest'
+                            $ref: '#/components/schemas/ListNotesRequest'
             responses:
                 200:
-                    description: Список ожиданий
+                    description: Список заметок
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ListTasksResponse'
+                                $ref: '#/components/schemas/ListNotesesponse'
                 400:
                     description: Некорректные параметры запроса
                     content:
@@ -29,19 +29,19 @@ paths:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
     
-    /notes/v1/task:
+    /notes/v1/note:
         post:
-            summary: Создание новой задачи
-            operationId: createTask
+            summary: Создание новой заметки
+            operationId: createNote
             requestBody:
                 required: true
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/CreateTaskRequest'
+                            $ref: '#/components/schemas/CreateNoteRequest'
             responses:
                 201:
-                    description: Задача успешно создана
+                    description: Заметка успешно создана
                 400:
                     description: Некорректные параметры запроса
                     content:
@@ -49,19 +49,19 @@ paths:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
     
-    /notes/v1/task/update:
+    /notes/v1/note/update:
         post:
-            summary: Обновить данные задачи
-            operationId: updateTask
+            summary: Обновить данные заметки
+            operationId: updateNote
             requestBody:
                 required: true
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/UpdateTaskRequest'
+                            $ref: '#/components/schemas/UpdateNoteRequest'
             responses:
                 202:
-                    description: Задача успешно обновлена
+                    description: Заметка успешно обновлена
                 400:
                     description: Некорректные параметры запроса
                     content:
@@ -69,25 +69,25 @@ paths:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
                 404:
-                    description: Задача не найдена
+                    description: Заметка не найдена
                     content:
                         application/json:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
 
-    /notes/v1/task/complete:
+    /notes/v1/note/remove:
         post:
-            summary: Отметить задачу как выполненную
-            operationId: completeTask
+            summary: Удалить заметку
+            operationId: removeNote
             requestBody:
                 required: true
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/TaskIdRequest'
+                            $ref: '#/components/schemas/NoteIdRequest'
             responses:
                 200:
-                    description: Задача успешно отмечена как выполненная
+                    description: Заметка успешно удалена
                 400:
                     description: Некорректные параметры запроса
                     content:
@@ -95,59 +95,7 @@ paths:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
                 404:
-                    description: Задача не найдена
-                    content:
-                        application/json:
-                            schema:
-                                $ref: 'definitions.yaml#/components/schemas/Error'
-    
-    /notes/v1/task/reactivate:
-        post:
-            summary: Вернуть задачу в активное состояние
-            operationId: reactivateTask
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/TaskIdRequest'
-            responses:
-                200:
-                    description: Задача успешно возвращена в активное состояние
-                400:
-                    description: Некорректные параметры запроса
-                    content:
-                        application/json:
-                            schema:
-                                $ref: 'definitions.yaml#/components/schemas/Error'
-                404:
-                    description: Задача не найдена
-                    content:
-                        application/json:
-                            schema:
-                                $ref: 'definitions.yaml#/components/schemas/Error'
-    
-    /notes/v1/task/remove:
-        post:
-            summary: Удалить задачу
-            operationId: removeTask
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/TaskIdRequest'
-            responses:
-                200:
-                    description: Задача успешно удалена
-                400:
-                    description: Некорректные параметры запроса
-                    content:
-                        application/json:
-                            schema:
-                                $ref: 'definitions.yaml#/components/schemas/Error'
-                404:
-                    description: Задача не найдена
+                    description: Заметка не найдена
                     content:
                         application/json:
                             schema:
@@ -155,7 +103,7 @@ paths:
 
 components:
     schemas:
-        CreateTaskRequest:
+        CreateNoteRequest:
             type: object
             additionalProperties: false
             properties:
@@ -165,27 +113,27 @@ components:
                     description: Идентификатор пользователя
                 name:
                     type: string
-                    description: Название задачи
+                    description: Название заметки
                 description:
                     type: string
-                    description: Описание задачи
+                    description: Описание заметки
             required:
               - user_id
               - name
               - description
 
-        TaskIdRequest:
+        NoteIdRequest:
             type: object
             additionalProperties: false
             properties:
-                task_id:
+                note_id:
                     type: string
                     format: uuid
-                    description: Идентификатор задачи
+                    description: Идентификатор заметки
             required:
-              - task_id
+              - note_id
 
-        ListTasksRequest:
+        ListNotesRequest:
             type: object
             additionalProperties: false
             properties:
@@ -194,41 +142,41 @@ components:
                     format: int64
                     description: Идентификатор пользователя
                 status:
-                    $ref: 'definitions.yaml#/components/schemas/TaskStatus'
+                    $ref: 'definitions.yaml#/components/schemas/NoteStatus'
                 cursor:
                     type: string
                     description: Курсор для пагинации
             required:
               - user_id
 
-        ListTasksResponse:
+        ListNotesResponse:
             type: object
             additionalProperties: false
             properties:
-                tasks:
+                notes:
                     type: array
                     items:
-                        $ref: 'definitions.yaml#/components/schemas/Task'
-                    description: Список задач
+                        $ref: 'definitions.yaml#/components/schemas/Note'
+                    description: Список заметок
                 cursor:
                     type: string
                     description: Курсор для пагинации
             required:
-              - tasks
+              - notes
 
-        UpdateTaskRequest:
+        UpdateNoteRequest:
             type: object
             additionalProperties: false
             properties:
-                task_id:
+                note_id:
                     type: string
                     format: uuid
-                    description: Идентификатор задачи
+                    description: Идентификатор заметки
                 name:
                     type: string
-                    description: Название задачи
+                    description: Название заметки
                 description:
                     type: string
-                    description: Описание задачи
+                    description: Описание заметки
             required:
-              - task_id
+              - note_id

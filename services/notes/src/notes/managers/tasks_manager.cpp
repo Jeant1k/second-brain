@@ -1,4 +1,4 @@
-#include "../contract/managers/tasks_manager.hpp"
+#include "../contract/managers/notes_manager.hpp"
 
 #include <userver/components/component_context.hpp>
 
@@ -11,162 +11,106 @@ namespace notes::contract::managers {
 
 namespace {
 
-using models::Task;
-using models::TaskForCreate;
-using models::TaskForUpdate;
-using models::TaskId;
+using models::Note;
+using models::NoteForCreate;
+using models::NoteForUpdate;
+using models::NoteId;
 using models::UserId;
-using providers::tasks_provider::TasksProvider;
+using providers::notes_provider::NotesProvider;
 
 }  // namespace
 
-TasksManager::TasksManager(
+NotesManager::NotesManager(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
     : userver::components::ComponentBase(config, component_context),
-      tasks_provider_(component_context.FindComponent<TasksProvider>()) {}
+      notes_provider_(component_context.FindComponent<NotesProvider>()) {}
 
-void TasksManager::CreateTask(handlers::CreateTaskRequest&& task) const {
-    tasks_provider_.InsertTask(Transform(std::move(task)));
+void NotesManager::CreateNote(handlers::CreateNoteRequest&& note) const {
+    notes_provider_.InsertNote(Transform(std::move(note)));
 }
 
-void TasksManager::MoveTask(handlers::MoveTaskRequest&& move_task_request) const {
-    const auto user_id_opt = tasks_provider_.SelectUserIdByTaskId(TaskId{move_task_request.task.id});
-    if (user_id_opt.has_value() && user_id_opt.value().GetUnderlying() != move_task_request.task.user_id) {
-        throw models::WrongUserIdException{
-            fmt::format("Task with id = {} belongs to another user", boost::uuids::to_string(move_task_request.task.id))
-        };
+void NotesManager::UpdateNote(handlers::UpdateNoteRequest&& update_note_request) const {
+    if (!update_note_request.name.has_value() && !update_note_request.description.has_value()) {
+        throw models::NoFieldsProvidedException{"No note fields provided for update"};
     }
 
-    tasks_provider_.UpsertTask(Transform(std::move(move_task_request)));
-}
+    const auto result = notes_provider_.UpdateNoteFields(Transform(std::move(update_note_request)));
 
-void TasksManager::UpdateTask(handlers::UpdateTaskRequest&& update_task_request) const {
-    if (!update_task_request.name.has_value() && !update_task_request.description.has_value()) {
-        throw models::NoFieldsProvidedException{"No task fields provided for update"};
-    }
-
-    const auto result = tasks_provider_.UpdateTaskFields(Transform(std::move(update_task_request)));
-
-    if (result == TasksProvider::UpdateTaskFieldsResult::kTaskNotFound) {
-        throw models::TaskNotFoundException{"Task to update fields was not found"};
+    if (result == NotesProvider::UpdateNoteFieldsResult::kNoteNotFound) {
+        throw models::NoteNotFoundException{"Note to update fields was not found"};
     }
 }
 
-void TasksManager::CompleteTask(handlers::TaskIdRequest&& task_id_request) const {
-    const auto result = tasks_provider_.MarkTaskAsCompleted(Transform(std::move(task_id_request)));
+void NotesManager::DeleteNote(handlers::NoteIdRequest&& note_id_request) const {
+    const auto result = notes_provider_.MarkNoteAsDeleted(Transform(std::move(note_id_request)));
 
-    if (result == TasksProvider::MarkTaskAsCompletedResult::kTaskNotFound) {
-        throw models::TaskNotFoundException{"Task to mark as completed was not found"};
+    if (result == NotesProvider::MarkNoteAsDeletedResult::kNoteNotFound) {
+        throw models::NoteNotFoundException{"Note to mark as deleted was not found"};
     }
 }
 
-void TasksManager::ReactivateTask(handlers::TaskIdRequest&& task_id_request) const {
-    const auto result = tasks_provider_.MarkTaskAsActive(Transform(std::move(task_id_request)));
-
-    if (result == TasksProvider::MarkTaskAsActiveResult::kTaskNotFound) {
-        throw models::TaskNotFoundException{"Task to mark as active was not found"};
-    }
-}
-
-void TasksManager::DeleteTask(handlers::TaskIdRequest&& task_id_request) const {
-    const auto result = tasks_provider_.MarkTaskAsDeleted(Transform(std::move(task_id_request)));
-
-    if (result == TasksProvider::MarkTaskAsDeletedResult::kTaskNotFound) {
-        throw models::TaskNotFoundException{"Task to mark as deleted was not found"};
-    }
-}
-
-void TasksManager::CurrentActionsTask(models::TaskId&& task_id) const {
-    tasks_provider_.MarkTaskAsMovedToCurrentActions(std::move(task_id));
-}
-
-handlers::ListTasksResponse TasksManager::ListTasks(handlers::ListTasksRequest&& list_task_request) const {
-    auto [cursor, tasks] = tasks_provider_.SelectTasks(
-        UserId{list_task_request.user_id},
-        models::DeserializeCursorFromString(list_task_request.cursor),
-        models::Transform(list_task_request.status)
+handlers::ListNotesResponse NotesManager::ListNotes(handlers::ListNotesRequest&& list_note_request) const {
+    auto [cursor, notes] = notes_provider_.SelectNotes(
+        UserId{list_note_request.user_id},
+        models::DeserializeCursorFromString(list_note_request.cursor),
+        models::Transform(list_note_request.status)
     );
 
-    return Transform(std::move(tasks), SerializeCursorToString(cursor));
+    return Transform(std::move(notes), SerializeCursorToString(cursor));
 }
 
-models::Task TasksManager::GetTask(handlers::TaskIdRequest&& task_id_request) const {
-    const auto result = tasks_provider_.SelectTaskById(Transform(std::move(task_id_request)));
-    if (result.status == TasksProvider::SelectTaskByIdResult::SelectTaskByIdStatus::kTaskNotFound ||
-        !result.task.has_value()) {
-        throw models::TaskNotFoundException{"Task was not found"};
+models::Note NotesManager::GetNote(handlers::NoteIdRequest&& note_id_request) const {
+    const auto result = notes_provider_.SelectNoteById(Transform(std::move(note_id_request)));
+    if (result.status == NotesProvider::SelectNoteByIdResult::SelectNoteByIdStatus::kNoteNotFound ||
+        !result.note.has_value()) {
+        throw models::NoteNotFoundException{"Note was not found"};
     }
 
-    return result.task.value();
+    return result.note.value();
 }
 
-TaskForCreate TasksManager::Transform(handlers::CreateTaskRequest&& create_task_request) const {
+NoteForCreate NotesManager::Transform(handlers::CreateNoteRequest&& create_note_request) const {
     return {
-        UserId{create_task_request.user_id},
-        std::move(create_task_request.name),
-        std::move(create_task_request.description),
+        UserId{create_note_request.user_id},
+        std::move(create_note_request.name),
+        std::move(create_note_request.description),
     };
 }
 
-TaskId TasksManager::Transform(handlers::TaskIdRequest&& task_id_request) const {
-    return TaskId{std::move(task_id_request.task_id)};
+NoteId NotesManager::Transform(handlers::NoteIdRequest&& note_id_request) const {
+    return NoteId{std::move(note_id_request.note_id)};
 }
 
-handlers::ListTasksResponse TasksManager::Transform(std::vector<Task>&& tasks, std::optional<std::string>&& cursor)
+handlers::ListNotesResponse NotesManager::Transform(std::vector<Note>&& notes, std::optional<std::string>&& cursor)
     const {
     using userver::utils::datetime::TimePointTz;
 
-    std::vector<notes::handlers::Task> result_tasks;
-    result_tasks.reserve(tasks.size());
+    std::vector<notes::handlers::Note> result_notes;
+    result_notes.reserve(notes.size());
 
-    for (auto&& task : tasks) {
-        result_tasks.emplace_back(notes::handlers::Task{
-            std::move(task.id.GetUnderlying()),
-            std::move(task.user_id.GetUnderlying()),
-            std::move(task.name),
-            std::move(task.description),
-            models::Transform(task.status).value(),
-            TimePointTz(task.created_at),
-            TimePointTz{task.updated_at},
-            task.completed_at.has_value() ? std::make_optional(TimePointTz{task.completed_at.value()}) : std::nullopt
+    for (auto&& note : notes) {
+        result_notes.emplace_back(notes::handlers::Note{
+            std::move(note.id.GetUnderlying()),
+            std::move(note.user_id.GetUnderlying()),
+            std::move(note.name),
+            std::move(note.description),
+            models::Transform(note.status).value(),
+            TimePointTz(note.created_at),
+            TimePointTz{note.updated_at},
+            note.completed_at.has_value() ? std::make_optional(TimePointTz{note.completed_at.value()}) : std::nullopt
         });
     }
 
-    return {std::move(result_tasks), std::move(cursor)};
+    return {std::move(result_notes), std::move(cursor)};
 }
 
-TaskForUpdate TasksManager::Transform(handlers::UpdateTaskRequest&& update_task_request) const {
+NoteForUpdate NotesManager::Transform(handlers::UpdateNoteRequest&& update_note_request) const {
     return {
-        TaskId{update_task_request.task_id},
-        std::move(update_task_request.name),
-        std::move(update_task_request.description)
-    };
-}
-
-Task TasksManager::Transform(handlers::MoveTaskRequest&& move_task_request) const {
-    using userver::storages::postgres::TimePointTz;
-
-    LOG_INFO() << "created_at = "
-               << move_task_request.task.created_at.value_or(userver::utils::datetime::TimePointTz{}).GetTimePoint()
-               << " updated_at = "
-               << move_task_request.task.updated_at.value_or(userver::utils::datetime::TimePointTz{}).GetTimePoint()
-               << " completed_at = "
-               << move_task_request.task.completed_at.value_or(userver::utils::datetime::TimePointTz{}).GetTimePoint();
-
-    return {
-        TaskId{move_task_request.task.id},
-        UserId{move_task_request.task.user_id},
-        std::move(move_task_request.task.name),
-        std::move(move_task_request.task.description),
-        models::Transform(move_task_request.task.status).value(),
-        move_task_request.task.created_at.has_value() ? TimePointTz{move_task_request.task.created_at.value()}
-                                                      : TimePointTz{userver::utils::datetime::Now()},
-        move_task_request.task.updated_at.has_value() ? TimePointTz{move_task_request.task.updated_at.value()}
-                                                      : TimePointTz{userver::utils::datetime::Now()},
-        move_task_request.task.completed_at.has_value() ? TimePointTz{move_task_request.task.completed_at.value()}
-                                                        : TimePointTz{userver::utils::datetime::Now()},
+        NoteId{update_note_request.note_id},
+        std::move(update_note_request.name),
+        std::move(update_note_request.description)
     };
 }
 

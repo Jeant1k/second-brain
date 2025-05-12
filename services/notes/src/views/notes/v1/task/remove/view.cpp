@@ -5,21 +5,21 @@
 #include "../../../../../notes/contract/models/exceptions.hpp"
 #include "docs/yaml/api.hpp"
 
-namespace views::notes::v1::task::remove::post {
+namespace views::notes::v1::note::remove::post {
 
-NotesV1TaskRemovePost::NotesV1TaskRemovePost(
+NotesV1NoteRemovePost::NotesV1NoteRemovePost(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : views::contract::BaseHandler<::notes::handlers::TaskIdRequest>(config, component_context),
-      tasks_manager_(component_context.FindComponent<::notes::contract::managers::TasksManager>()) {}
+    : views::contract::BaseHandler<::notes::handlers::NoteIdRequest>(config, component_context),
+      notes_manager_(component_context.FindComponent<::notes::contract::managers::NotesManager>()) {}
 
 views::contract::models::ApiResponse
-NotesV1TaskRemovePost::Handle(::notes::handlers::TaskIdRequest&& request, userver::server::request::RequestContext&&)
+NotesV1NoteRemovePost::Handle(::notes::handlers::NoteIdRequest&& request, userver::server::request::RequestContext&&)
     const {
     try {
-        tasks_manager_.DeleteTask(std::move(request));
-    } catch (const ::notes::contract::models::TaskNotFoundException& ex) {
+        notes_manager_.DeleteNote(std::move(request));
+    } catch (const ::notes::contract::models::NoteNotFoundException& ex) {
         return contract::models::ApiResponseFactory::NotFound(
             fmt::format("An error occurred while processing the request: {}", ex.what())
         );
@@ -28,4 +28,4 @@ NotesV1TaskRemovePost::Handle(::notes::handlers::TaskIdRequest&& request, userve
     return contract::models::ApiResponseFactory::Ok();
 }
 
-}  // namespace views::notes::v1::task::remove::post
+}  // namespace views::notes::v1::note::remove::post

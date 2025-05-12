@@ -5,21 +5,21 @@
 #include "../../../../../notes/contract/models/exceptions.hpp"
 #include "docs/yaml/api.hpp"
 
-namespace views::notes::v1::task::complete::post {
+namespace views::notes::v1::note::complete::post {
 
-NotesV1TaskCompletePost::NotesV1TaskCompletePost(
+NotesV1NoteCompletePost::NotesV1NoteCompletePost(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : views::contract::BaseHandler<::notes::handlers::TaskIdRequest>(config, component_context),
-      tasks_manager_(component_context.FindComponent<::notes::contract::managers::TasksManager>()) {}
+    : views::contract::BaseHandler<::notes::handlers::NoteIdRequest>(config, component_context),
+      notes_manager_(component_context.FindComponent<::notes::contract::managers::NotesManager>()) {}
 
 views::contract::models::ApiResponse
-NotesV1TaskCompletePost::Handle(::notes::handlers::TaskIdRequest&& request, userver::server::request::RequestContext&&)
+NotesV1NoteCompletePost::Handle(::notes::handlers::NoteIdRequest&& request, userver::server::request::RequestContext&&)
     const {
     try {
-        tasks_manager_.CompleteTask(std::move(request));
-    } catch (const ::notes::contract::models::TaskNotFoundException& ex) {
+        notes_manager_.CompleteNote(std::move(request));
+    } catch (const ::notes::contract::models::NoteNotFoundException& ex) {
         return contract::models::ApiResponseFactory::NotFound(
             fmt::format("An error occurred while processing the request: {}", ex.what())
         );
@@ -28,4 +28,4 @@ NotesV1TaskCompletePost::Handle(::notes::handlers::TaskIdRequest&& request, user
     return contract::models::ApiResponseFactory::Ok();
 }
 
-}  // namespace views::notes::v1::task::complete::post
+}  // namespace views::notes::v1::note::complete::post

@@ -2,29 +2,29 @@
 
 #include <userver/components/component_list.hpp>
 
-#include "../../../../notes/contract/managers/tasks_manager.hpp"
+#include "../../../../notes/contract/managers/notes_manager.hpp"
 #include "../../../../views/contract/base_handler.hpp"
 #include "docs/yaml/api.hpp"
 
-namespace views::notes::v1::task::post {
+namespace views::notes::v1::note::post {
 
-class NotesV1TaskPost final : public views::contract::BaseHandler< ::notes::handlers::CreateTaskRequest> {
+class NotesV1NotePost final : public views::contract::BaseHandler< ::notes::handlers::CreateNoteRequest> {
 public:
-    static constexpr std::string_view kName = "notes-v1-task-post";
+    static constexpr std::string_view kName = "notes-v1-note-post";
 
-    NotesV1TaskPost(
+    NotesV1NotePost(
         const userver::components::ComponentConfig& config,
         const userver::components::ComponentContext& component_context
     );
 
 protected:
     views::contract::models::ApiResponse Handle(
-        ::notes::handlers::CreateTaskRequest&& request,
+        ::notes::handlers::CreateNoteRequest&& request,
         userver::server::request::RequestContext&& context
     ) const override;
 
 private:
-    const ::notes::contract::managers::TasksManager& tasks_manager_;
+    const ::notes::contract::managers::NotesManager& notes_manager_;
 };
 
-}  // namespace views::notes::v1::task::post
+}  // namespace views::notes::v1::note::post

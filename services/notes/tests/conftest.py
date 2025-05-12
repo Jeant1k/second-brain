@@ -19,9 +19,9 @@ def service_source_dir():
 def initial_data_path(service_source_dir):
     """Path for find files with data"""
     return [
-        service_source_dir / 'tests/test_notes/static/test_create_task/testcases',
-        service_source_dir / 'tests/test_notes/static/test_complete_task/testcases',
-        service_source_dir / 'tests/test_notes/static/test_reactivate_task/testcases',
+        service_source_dir / 'tests/test_notes/static/test_create_note/testcases',
+        service_source_dir / 'tests/test_notes/static/test_complete_note/testcases',
+        service_source_dir / 'tests/test_notes/static/test_reactivate_note/testcases',
     ]
 
 
