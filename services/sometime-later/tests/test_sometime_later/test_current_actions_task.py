@@ -14,19 +14,23 @@ from .plugins.constants import TASK_ID
         pytest.param('task_not_found'),
         pytest.param(
             'task_already_moved',
-            marks=[pytest.mark.pgsql('sometime_later', files=['database_moved_to_current_actions_task.sql'])]
+            marks=[pytest.mark.pgsql('sometime_later', files=[
+                                     'database_moved_to_current_actions_task.sql'])]
         ),
         pytest.param(
             '400_from_current_actions',
-            marks=[pytest.mark.pgsql('sometime_later', files=['database_pending_task.sql'])]
+            marks=[pytest.mark.pgsql('sometime_later', files=[
+                                     'database_pending_task.sql'])]
         ),
         pytest.param(
             '500_from_current_actions',
-            marks=[pytest.mark.pgsql('sometime_later', files=['database_pending_task.sql'])]
+            marks=[pytest.mark.pgsql('sometime_later', files=[
+                                     'database_pending_task.sql'])]
         ),
         pytest.param(
             'happy_path',
-            marks=[pytest.mark.pgsql('sometime_later', files=['database_pending_task.sql'])]
+            marks=[pytest.mark.pgsql('sometime_later', files=[
+                                     'database_pending_task.sql'])]
         ),
     ],
 )
@@ -43,7 +47,8 @@ async def test_current_actions_task(
     expected_data = test_data['expected_result']
 
     mock_current_actions.set_response(**initial_data['mock_current_actions'])
-    mock_current_actions.set_expected_request(**expected_data['mock_current_actions'])
+    mock_current_actions.set_expected_request(
+        **expected_data['mock_current_actions'])
 
     # act
     response = await service_client.post(

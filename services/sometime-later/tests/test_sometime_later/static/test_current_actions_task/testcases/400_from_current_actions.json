@@ -1,7 +1,7 @@
 {
   "expected_result": {
     "response": {
-      "message": "An error occurred while processing the request: Task to mark as deleted was not found",
+      "message": "Client error while moving task: Bad Request",
       "code": "BAD_REQUEST"
     },
     "database_data": {
@@ -28,7 +28,7 @@
   },
   "initial_data": {
     "request_body": {
-      "task_id": "a8098c1a-f86e-11da-bd1a-001124440001"
+      "task_id": "a8098c1a-f86e-11da-bd1a-001124440000"
     },
     "mock_current_actions": {
       "status": 400,

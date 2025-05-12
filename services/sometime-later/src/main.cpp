@@ -7,6 +7,7 @@
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
 
+#include "clients/current_actions/client.hpp"
 #include "sometime_later/contract/managers/tasks_manager.hpp"
 #include "sometime_later/providers/tasks_provider/tasks_provider.hpp"
 #include "views/internal/sometime-later/v1/task/move/view.hpp"
@@ -17,7 +18,6 @@
 #include "views/sometime-later/v1/task/remove/view.hpp"
 #include "views/sometime-later/v1/task/update/view.hpp"
 #include "views/sometime-later/v1/task/view.hpp"
-#include "clients/current_actions/client.hpp"
 
 int main(int argc, char* argv[]) {
     auto component_list =
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
             // sometime_later
             .Append<sometime_later::contract::managers::TasksManager>()
             .Append<sometime_later::providers::tasks_provider::TasksProvider>()
-            
+
             // clients
             .Append<clients::current_actions::CurrentActionsClient>();
 

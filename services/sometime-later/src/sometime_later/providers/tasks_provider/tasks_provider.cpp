@@ -142,26 +142,23 @@ TasksProvider::MarkTaskAsDeletedResult TasksProvider::MarkTaskAsDeleted(TaskId&&
 
 void TasksProvider::MarkTaskAsMovedToCurrentActions(contract::models::TaskId&& task_id) const {
     pg_cluster_->Execute(
-        userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsMovedToCurrentActions, task_id.GetUnderlying()
+        userver::storages::postgres::ClusterHostType::kMaster,
+        sql::kMarkTaskAsMovedToCurrentActions,
+        task_id.GetUnderlying()
     );
 }
 
-TasksProvider::SelectTaskByIdResult TasksProvider::SelectTaskById(
-    contract::models::TaskId&& task_id
-) const {
-    auto task = pg_cluster_
-                      ->Execute(
-                          userver::storages::postgres::ClusterHostType::kMaster,
-                          sql::kSelectTaskById,
-                          task_id.GetUnderlying()
-                      )
-                      .AsOptionalSingleRow<contract::models::Task>(userver::storages::postgres::kRowTag);
+TasksProvider::SelectTaskByIdResult TasksProvider::SelectTaskById(contract::models::TaskId&& task_id) const {
+    auto task =
+        pg_cluster_
+            ->Execute(
+                userver::storages::postgres::ClusterHostType::kMaster, sql::kSelectTaskById, task_id.GetUnderlying()
+            )
+            .AsOptionalSingleRow<contract::models::Task>(userver::storages::postgres::kRowTag);
 
     if (!task.has_value()) {
-        LOG_WARNING() << fmt::format(
-            "Task with id = {} was not found",
-            boost::uuids::to_string(task_id.GetUnderlying())
-        );
+        LOG_WARNING(
+        ) << fmt::format("Task with id = {} was not found", boost::uuids::to_string(task_id.GetUnderlying()));
         return {SelectTaskByIdResult::SelectTaskByIdStatus::kTaskNotFound, std::nullopt};
     }
 

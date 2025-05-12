@@ -2,15 +2,14 @@
 
 #include <userver/components/component_base.hpp>
 
-#include "../contract/current_actions/client.hpp"
 #include "../contract/base_client.hpp"
+#include "../contract/current_actions/client.hpp"
 
 namespace clients::current_actions {
 
 class CurrentActionsClient final : public userver::components::LoggableComponentBase,
                                    public contract::current_actions::Client,
-                                   private contract::BaseClient
-{
+                                   private contract::BaseClient {
 public:
     static constexpr std::string_view kName = "current-actions-client";
 

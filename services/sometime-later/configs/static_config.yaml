@@ -9,8 +9,6 @@ components_manager:
 
     default_task_processor: main-task-processor
 
-    config_variables: config_vars.yaml
-
     components:                       # Configuring components that were registered via component_list
         server:
             listener:                 # configuring the main listening socket...
@@ -110,4 +108,4 @@ components_manager:
 
         # Clients
         current-actions-client:
-            base-url: $current-actions-client.base-url  # TODO: fix it
+            base-url: $current-actions-client.base-url

@@ -5,13 +5,13 @@
 
 #include <userver/clients/http/client.hpp>
 #include <userver/clients/http/response.hpp>
+#include <userver/compiler/demangle.hpp>
 #include <userver/formats/json/serialize.hpp>
 #include <userver/formats/json/value.hpp>
 #include <userver/formats/json/value_builder.hpp>
 #include <userver/logging/log.hpp>
 #include <userver/tracing/span.hpp>
 #include <userver/utils/fmt_compat.hpp>
-#include <userver/compiler/demangle.hpp>
 
 #include "docs/yaml/definitions.hpp"
 #include "models/exceptions.hpp"
@@ -58,7 +58,12 @@ protected:
             body_str = userver::formats::json::ToString(json_body);
         }
 
-        auto http_request = http_client_.CreateRequest().method(method).url(base_url_ + path).headers(headers).timeout(timeout).data(body_str);
+        auto http_request = http_client_.CreateRequest()
+                                .method(method)
+                                .url(base_url_ + path)
+                                .headers(headers)
+                                .timeout(timeout)
+                                .data(body_str);
 
         if (!body_str.empty()) {
             http_request.headers({{"Content-Type", "application/json"}});
@@ -76,9 +81,9 @@ protected:
         } catch (const models::HttpClientException& ex) {
             LOG_WARNING() << "HTTP Client Error (" << ex.GetStatusCode() << "): " << ex.what()
                           << ", URL: " << base_url_ + path;
-            if (ex.GetErrorBody()) {
-                LOG_WARNING() << "Error body: code=" << ex.GetErrorBody()->code
-                              << ", message=" << ex.GetErrorBody()->message;
+            if (ex.GetErrorBody().has_value()) {
+                LOG_WARNING() << "Error body: code=" << ex.GetErrorBody().value().code
+                              << ", message=" << ex.GetErrorBody().value().message;
             }
             throw;
         } catch (const std::exception& ex) {
