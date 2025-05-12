@@ -8,7 +8,7 @@
       "user_id": 123456,
       "name": "Some task name",
       "description": "Some task description",
-      "status": "pending"
+      "status": "active"
     },
     "status_code": 400
   },

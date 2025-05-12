@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS waiting;
 
 -- Перечисление для статуса задачи
-CREATE TYPE waiting.task_status AS ENUM ('pending', 'completed', 'moved_to_current_actions', 'deleted');
+CREATE TYPE waiting.task_status AS ENUM ('active', 'completed', 'deleted');
 
 -- Перечисление для приоритета задачи
 CREATE TYPE waiting.task_priority AS ENUM ('high', 'medium', 'low');
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS waiting.tasks (
     user_id         BIGINT                      NOT NULL,
     name            TEXT                        NOT NULL,
     description     TEXT                        NOT NULL,
-    status          waiting.task_status  NOT NULL DEFAULT 'pending',
+    status          waiting.task_status         NOT NULL DEFAULT 'active',
     created_at      TIMESTAMPTZ                 NOT NULL DEFAULT now(),
     updated_at      TIMESTAMPTZ                 NOT NULL DEFAULT now(),
     completed_at    TIMESTAMPTZ                 NULL

@@ -6,13 +6,13 @@
 #include "../../../../../waiting/contract/managers/tasks_manager.hpp"
 #include "docs/yaml/api.hpp"
 
-namespace views::waiting::v1::task::pend::post {
+namespace views::waiting::v1::task::reactivate::post {
 
-class WaitingV1TaskPendPost final : public views::contract::BaseHandler< ::waiting::handlers::TaskIdRequest> {
+class WaitingV1TaskReactivatePost final : public views::contract::BaseHandler< ::waiting::handlers::TaskIdRequest> {
 public:
-    static constexpr std::string_view kName = "waiting-v1-task-pend-post";
+    static constexpr std::string_view kName = "waiting-v1-task-reactivate-post";
 
-    WaitingV1TaskPendPost(
+    WaitingV1TaskReactivatePost(
         const userver::components::ComponentConfig& config,
         const userver::components::ComponentContext& component_context
     );
@@ -27,4 +27,4 @@ private:
     const ::waiting::contract::managers::TasksManager& tasks_manager_;
 };
 
-}  // namespace views::waiting::v1::task::pend::post
+}  // namespace views::waiting::v1::task::reactivate::post

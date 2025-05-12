@@ -25,8 +25,8 @@ public:
     enum class MarkTaskAsCompletedResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsCompletedResult MarkTaskAsCompleted(contract::models::TaskId&& task_id) const;
 
-    enum class MarkTaskAsPendingResult : char { kSuccess, kTaskNotFound };
-    MarkTaskAsPendingResult MarkTaskAsPending(contract::models::TaskId&& task_id) const;
+    enum class MarkTaskAsActiveResult : char { kSuccess, kTaskNotFound };
+    MarkTaskAsActiveResult MarkTaskAsActive(contract::models::TaskId&& task_id) const;
 
     enum class MarkTaskAsDeletedResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsDeletedResult MarkTaskAsDeleted(contract::models::TaskId&& task_id) const;

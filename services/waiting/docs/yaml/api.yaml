@@ -7,7 +7,7 @@ info:
 paths:
     /waiting/v1/task/list:
         post:
-            summary: Получение списка когда-нибудь потом
+            summary: Получение списка ожидание
             operationId: listTasks
             requestBody:
                 required: true
@@ -17,7 +17,7 @@ paths:
                             $ref: '#/components/schemas/ListTasksRequest'
             responses:
                 200:
-                    description: Список текущих действий
+                    description: Список ожиданий
                     content:
                         application/json:
                             schema:
@@ -101,10 +101,10 @@ paths:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
     
-    /waiting/v1/task/pend:
+    /waiting/v1/task/reactivate:
         post:
-            summary: Вернуть задачу в ожидающее состояние
-            operationId: pendTask
+            summary: Вернуть задачу в активное состояние
+            operationId: reactivateTask
             requestBody:
                 required: true
                 content:
@@ -113,7 +113,7 @@ paths:
                             $ref: '#/components/schemas/TaskIdRequest'
             responses:
                 200:
-                    description: Задача успешно возвращена в ожидающее состояние
+                    description: Задача успешно возвращена в активное состояние
                 400:
                     description: Некорректные параметры запроса
                     content:
@@ -127,32 +127,6 @@ paths:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
     
-    /waiting/v1/task/current/actions:
-        post:
-            summary: Переместить задачу в текущие действия
-            operationId: currentActionsTask
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/TaskIdRequest'
-            responses:
-                200:
-                    description: Задача успешно перемещена
-                400:
-                    description: Некорректные параметры запроса
-                    content:
-                        application/json:
-                            schema:
-                                $ref: 'definitions.yaml#/components/schemas/Error'
-                404:
-                    description: Задача не найдена
-                    content:
-                        application/json:
-                            schema:
-                                $ref: 'definitions.yaml#/components/schemas/Error'
-
     /waiting/v1/task/remove:
         post:
             summary: Удалить задачу

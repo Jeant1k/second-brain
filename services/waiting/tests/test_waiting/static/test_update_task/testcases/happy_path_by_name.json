@@ -5,7 +5,7 @@
       "user_id": 123456,
       "name": "Some another task name",
       "description": "Some task description",
-      "status": "pending"
+      "status": "active"
     },
     "status_code": 202
   },

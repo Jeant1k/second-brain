@@ -7,5 +7,3 @@ is-testing: true
 server-port: 8080
 
 dbconnection: 'postgresql://testsuite@localhost:15433/waiting_waiting'
-
-current-actions-client.base-url: $mockserver

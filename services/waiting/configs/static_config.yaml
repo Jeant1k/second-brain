@@ -61,8 +61,8 @@ components_manager:
             method: POST
             task_processor: main-task-processor
         
-        waiting-v1-task-pend-post:
-            path: /waiting/v1/task/pend
+        waiting-v1-task-reactivate-post:
+            path: /waiting/v1/task/reactivate
             method: POST
             task_processor: main-task-processor
 
@@ -81,16 +81,6 @@ components_manager:
             method: POST
             task_processor: main-task-processor
         
-        waiting-v1-task-current-actions-post:
-            path: /waiting/v1/task/current/actions
-            method: POST
-            task_processor: main-task-processor
-
-        internal-waiting-v1-task-move-post:
-            path: /internal/waiting/v1/task/move
-            method: POST
-            task_processor: main-task-processor
-
         postgres-waiting:
             dbconnection: $dbconnection
             dbconnection#env: DB_CONNECTION
@@ -105,7 +95,3 @@ components_manager:
         # Custom components
         tasks-manager:
         tasks-provider:
-
-        # Clients
-        current-actions-client:
-            base-url: $current-actions-client.base-url

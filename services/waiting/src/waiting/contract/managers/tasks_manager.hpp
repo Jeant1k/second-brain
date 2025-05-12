@@ -29,7 +29,7 @@ public:
 
     void CompleteTask(handlers::TaskIdRequest&& task_id_request) const;
 
-    void PendTask(handlers::TaskIdRequest&& task_id_request) const;
+    void ReactivateTask(handlers::TaskIdRequest&& task_id_request) const;
 
     void DeleteTask(handlers::TaskIdRequest&& task_id_request) const;
 

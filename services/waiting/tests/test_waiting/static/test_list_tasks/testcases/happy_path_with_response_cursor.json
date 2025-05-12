@@ -7,7 +7,7 @@
           "user_id": 101,
           "name": "Задача 1",
           "description": "Задача 1 (User 101): Активная",
-          "status": "pending",
+          "status": "active",
           "created_at": "2025-04-19T10:00:00+00:00",
           "updated_at": "2025-04-19T10:00:00+00:00"
         },
@@ -16,7 +16,7 @@
           "user_id": 101,
           "name": "Задача 2",
           "description": "Задача 2 (User 101): Активная",
-          "status": "pending",
+          "status": "active",
           "created_at": "2025-04-19T10:00:00+00:00",
           "updated_at": "2025-04-19T10:00:00+00:00"
         },
@@ -25,7 +25,7 @@
           "user_id": 101,
           "name": "Задача 3",
           "description": "Задача 3 (User 101): Активная",
-          "status": "pending",
+          "status": "active",
           "created_at": "2025-04-19T10:00:00+00:00",
           "updated_at": "2025-04-19T10:00:00+00:00"
         },
@@ -54,7 +54,7 @@
           "user_id": 101,
           "name": "Задача 6",
           "description": "Задача 6 (User 101): Активная",
-          "status": "pending",
+          "status": "active",
           "created_at": "2025-04-19T10:00:00+00:00",
           "updated_at": "2025-04-19T10:00:00+00:00"
         },
@@ -63,7 +63,7 @@
           "user_id": 101,
           "name": "Задача 7",
           "description": "Задача 7 (User 101): Активная",
-          "status": "pending",
+          "status": "active",
           "created_at": "2025-04-19T10:00:00+00:00",
           "updated_at": "2025-04-19T10:00:00+00:00"
         },
@@ -82,7 +82,7 @@
           "user_id": 101,
           "name": "Задача 9",
           "description": "Задача 9 (User 101): Активная",
-          "status": "pending",
+          "status": "active",
           "created_at": "2025-04-19T10:00:00+00:00",
           "updated_at": "2025-04-19T10:00:00+00:00"
         },

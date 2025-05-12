@@ -32,12 +32,10 @@ std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status
     }
 
     switch (status.value()) {
-        case Status::kPending:
-            return handlers::TaskStatus::kPending;
+        case Status::kActive:
+            return handlers::TaskStatus::kActive;
         case Status::kCompleted:
             return handlers::TaskStatus::kCompleted;
-        case Status::kMovedToCurrentActions:
-            return handlers::TaskStatus::kMovedToCurrentActions;
         case Status::kDeleted:
             return handlers::TaskStatus::kDeleted;
     }
@@ -49,12 +47,10 @@ std::optional<Status> Transform(const std::optional<handlers::TaskStatus> status
     }
 
     switch (status.value()) {
-        case handlers::TaskStatus::kPending:
-            return Status::kPending;
+        case handlers::TaskStatus::kActive:
+            return Status::kActive;
         case handlers::TaskStatus::kCompleted:
             return Status::kCompleted;
-        case handlers::TaskStatus::kMovedToCurrentActions:
-            return Status::kMovedToCurrentActions;
         case handlers::TaskStatus::kDeleted:
             return Status::kDeleted;
     }

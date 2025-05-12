@@ -16,7 +16,7 @@ from .plugins.constants import TASK_ID
     ],
 )
 @pytest.mark.pgsql('waiting', files=['database.sql'])
-async def test_pend_task(
+async def test_reactivate_task(
     service_client,
     load_json,
     pgsql,
@@ -29,7 +29,7 @@ async def test_pend_task(
 
     # act
     response = await service_client.post(
-        '/waiting/v1/task/pend',
+        '/waiting/v1/task/reactivate',
         json=initial_data['request_body'],
     )
 

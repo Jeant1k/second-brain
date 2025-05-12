@@ -105,21 +105,21 @@ TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(Task
     return MarkTaskAsCompletedResult::kSuccess;
 }
 
-TasksProvider::MarkTaskAsPendingResult TasksProvider::MarkTaskAsPending(TaskId&& task_id) const {
+TasksProvider::MarkTaskAsActiveResult TasksProvider::MarkTaskAsActive(TaskId&& task_id) const {
     auto result = pg_cluster_->Execute(
-        userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsPending, task_id.GetUnderlying()
+        userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsActive, task_id.GetUnderlying()
     );
 
     if (result.RowsAffected() == 0) {
         LOG_WARNING() << fmt::format(
-            "Task with id = {} was not marked as pending", boost::uuids::to_string(task_id.GetUnderlying())
+            "Task with id = {} was not marked as active", boost::uuids::to_string(task_id.GetUnderlying())
         );
-        return MarkTaskAsPendingResult::kTaskNotFound;
+        return MarkTaskAsActiveResult::kTaskNotFound;
     }
 
     LOG_INFO(
     ) << fmt::format("Task with id = {} was marked as active", boost::uuids::to_string(task_id.GetUnderlying()));
-    return MarkTaskAsPendingResult::kSuccess;
+    return MarkTaskAsActiveResult::kSuccess;
 }
 
 TasksProvider::MarkTaskAsDeletedResult TasksProvider::MarkTaskAsDeleted(TaskId&& task_id) const {

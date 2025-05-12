@@ -47,18 +47,14 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/views/waiting/v1/task/view.cpp
     src/views/waiting/v1/task/complete/view.hpp
     src/views/waiting/v1/task/complete/view.cpp
-    src/views/waiting/v1/task/pend/view.hpp
-    src/views/waiting/v1/task/pend/view.cpp
+    src/views/waiting/v1/task/reactivate/view.hpp
+    src/views/waiting/v1/task/reactivate/view.cpp
     src/views/waiting/v1/task/list/view.hpp
     src/views/waiting/v1/task/list/view.cpp
     src/views/waiting/v1/task/update/view.hpp
     src/views/waiting/v1/task/update/view.cpp
     src/views/waiting/v1/task/remove/view.hpp
     src/views/waiting/v1/task/remove/view.cpp
-    src/views/internal/waiting/v1/task/move/view.hpp
-    src/views/internal/waiting/v1/task/move/view.cpp
-    src/views/waiting/v1/task/current/actions/view.hpp
-    src/views/waiting/v1/task/current/actions/view.cpp
 
     # waiting
     src/waiting/contract/models/exceptions.hpp
@@ -68,13 +64,6 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/waiting/models/tasks_provider_structures.cpp
     src/waiting/providers/tasks_provider/tasks_provider.hpp
     src/waiting/providers/tasks_provider/tasks_provider.cpp
-
-    # clients
-    src/clients/contract/base_client.hpp
-    src/clients/contract/models/exceptions.hpp
-    src/clients/contract/current_actions/client.hpp
-    src/clients/current_actions/client.hpp
-    src/clients/current_actions/client.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC

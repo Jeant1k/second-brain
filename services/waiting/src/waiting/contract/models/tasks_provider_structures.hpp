@@ -16,7 +16,7 @@ namespace waiting::contract::models {
 using TaskId = userver::utils::StrongTypedef<class TaskIdTag, boost::uuids::uuid>;
 using UserId = userver::utils::StrongTypedef<class UserIdTag, std::int64_t>;
 
-enum class Status { kPending, kCompleted, kMovedToCurrentActions, kDeleted };
+enum class Status { kActive, kCompleted, kDeleted };
 
 std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status);
 std::optional<Status> Transform(const std::optional<handlers::TaskStatus> status);
@@ -61,9 +61,8 @@ template <>
 struct CppToUserPg<waiting::contract::models::Status> : EnumMappingBase<waiting::contract::models::Status> {
     static constexpr DBTypeName postgres_name = "waiting.task_status";
     static constexpr EnumeratorList enumerators{
-        {EnumType::kPending, "pending"},
+        {EnumType::kActive, "active"},
         {EnumType::kCompleted, "completed"},
-        {EnumType::kMovedToCurrentActions, "moved_to_current_actions"},
         {EnumType::kDeleted, "deleted"}
     };
 };

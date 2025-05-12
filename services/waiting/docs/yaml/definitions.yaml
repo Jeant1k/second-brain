@@ -57,9 +57,8 @@ components:
         TaskStatus:
             type: string
             enum:
-              - pending
+              - active
               - completed
-              - moved_to_current_actions
               - deleted
             description: Статус задачи
 

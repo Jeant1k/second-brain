@@ -1,7 +1,7 @@
 {
   "expected_result": {
     "response": {
-      "message": "An error occurred while processing the request: Task to mark as pending was not found",
+      "message": "An error occurred while processing the request: Task to mark as active was not found",
       "code": "NOT_FOUND"
     },
     "database_data": {
