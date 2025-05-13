@@ -51,26 +51,6 @@ components_manager:
             throttling_enabled: false
             url_trailing_slash: strict-match
 
-        calendar-v1-note-post:
-            path: /calendar/v1/note
-            method: POST
-            task_processor: main-task-processor
-        
-        calendar-v1-note-list-post:
-            path: /calendar/v1/note/list
-            method: POST
-            task_processor: main-task-processor
-        
-        calendar-v1-note-update-post:
-            path: /calendar/v1/note/update
-            method: POST
-            task_processor: main-task-processor
-        
-        calendar-v1-note-remove-post:
-            path: /calendar/v1/note/remove
-            method: POST
-            task_processor: main-task-processor
-        
         postgres-calendar:
             dbconnection: $dbconnection
             dbconnection#env: DB_CONNECTION

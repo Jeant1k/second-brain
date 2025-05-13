@@ -5,43 +5,19 @@ info:
     version: 1.0.0
 
 paths:
-    /calendar/v1/note/list:
+    /calendar/v1/generate:
         post:
-            summary: Получение списка заметок
-            operationId: listCalendar
+            summary: Генерация файла события для календаря .ics
+            operationId: generateEvent
             requestBody:
                 required: true
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/ListCalendarRequest'
-            responses:
-                200:
-                    description: Список заметок
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListCalendaresponse'
-                400:
-                    description: Некорректные параметры запроса
-                    content:
-                        application/json:
-                            schema:
-                                $ref: 'definitions.yaml#/components/schemas/Error'
-    
-    /calendar/v1/note:
-        post:
-            summary: Создание новой заметки
-            operationId: createNote
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateNoteRequest'
+                            $ref: '#/components/schemas/GenerateEventRequest'
             responses:
                 201:
-                    description: Заметка успешно создана
+                    description: Файл успешно сгенерирован
                 400:
                     description: Некорректные параметры запроса
                     content:
@@ -49,61 +25,9 @@ paths:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
     
-    /calendar/v1/note/update:
-        post:
-            summary: Обновить данные заметки
-            operationId: updateNote
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UpdateNoteRequest'
-            responses:
-                202:
-                    description: Заметка успешно обновлена
-                400:
-                    description: Некорректные параметры запроса
-                    content:
-                        application/json:
-                            schema:
-                                $ref: 'definitions.yaml#/components/schemas/Error'
-                404:
-                    description: Заметка не найдена
-                    content:
-                        application/json:
-                            schema:
-                                $ref: 'definitions.yaml#/components/schemas/Error'
-
-    /calendar/v1/note/remove:
-        post:
-            summary: Удалить заметку
-            operationId: removeNote
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/NoteIdRequest'
-            responses:
-                200:
-                    description: Заметка успешно удалена
-                400:
-                    description: Некорректные параметры запроса
-                    content:
-                        application/json:
-                            schema:
-                                $ref: 'definitions.yaml#/components/schemas/Error'
-                404:
-                    description: Заметка не найдена
-                    content:
-                        application/json:
-                            schema:
-                                $ref: 'definitions.yaml#/components/schemas/Error'
-
 components:
     schemas:
-        CreateNoteRequest:
+        GenerateEventRequest:
             type: object
             additionalProperties: false
             properties:
@@ -111,72 +35,21 @@ components:
                     type: integer
                     format: int64
                     description: Идентификатор пользователя
-                name:
+                summary:
                     type: string
-                    description: Название заметки
+                    description: Название события
                 description:
                     type: string
-                    description: Описание заметки
+                    description: Описание события
+                dtstart:
+                    type: string
+                    format: date-time
+                    description: Дата и время начала события
+                dtend:
+                    type: string
+                    format: date-time
+                    description: Дата и время окончания события
             required:
               - user_id
-              - name
-              - description
-
-        NoteIdRequest:
-            type: object
-            additionalProperties: false
-            properties:
-                note_id:
-                    type: string
-                    format: uuid
-                    description: Идентификатор заметки
-            required:
-              - note_id
-
-        ListCalendarRequest:
-            type: object
-            additionalProperties: false
-            properties:
-                user_id:
-                    type: integer
-                    format: int64
-                    description: Идентификатор пользователя
-                status:
-                    $ref: 'definitions.yaml#/components/schemas/NoteStatus'
-                cursor:
-                    type: string
-                    description: Курсор для пагинации
-            required:
-              - user_id
-
-        ListCalendarResponse:
-            type: object
-            additionalProperties: false
-            properties:
-                calendar:
-                    type: array
-                    items:
-                        $ref: 'definitions.yaml#/components/schemas/Note'
-                    description: Список заметок
-                cursor:
-                    type: string
-                    description: Курсор для пагинации
-            required:
-              - calendar
-
-        UpdateNoteRequest:
-            type: object
-            additionalProperties: false
-            properties:
-                note_id:
-                    type: string
-                    format: uuid
-                    description: Идентификатор заметки
-                name:
-                    type: string
-                    description: Название заметки
-                description:
-                    type: string
-                    description: Описание заметки
-            required:
-              - note_id
+              - summary
+              - dtstart

@@ -43,23 +43,6 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/views/contract/models/responses.hpp
     src/views/models/responses.cpp
     src/views/contract/base_handler.hpp
-    src/views/calendar/v1/note/view.hpp
-    src/views/calendar/v1/note/view.cpp
-    src/views/calendar/v1/note/list/view.hpp
-    src/views/calendar/v1/note/list/view.cpp
-    src/views/calendar/v1/note/update/view.hpp
-    src/views/calendar/v1/note/update/view.cpp
-    src/views/calendar/v1/note/remove/view.hpp
-    src/views/calendar/v1/note/remove/view.cpp
-
-    # calendar
-    src/calendar/contract/models/exceptions.hpp
-    src/calendar/contract/managers/calendar_manager.hpp
-    src/calendar/contract/models/calendar_provider_structures.hpp
-    src/calendar/managers/calendar_manager.cpp
-    src/calendar/models/calendar_provider_structures.cpp
-    src/calendar/providers/calendar_provider/calendar_provider.hpp
-    src/calendar/providers/calendar_provider/calendar_provider.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC
