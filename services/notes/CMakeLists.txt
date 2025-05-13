@@ -43,27 +43,23 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/views/contract/models/responses.hpp
     src/views/models/responses.cpp
     src/views/contract/base_handler.hpp
-    src/views/notes/v1/task/view.hpp
-    src/views/notes/v1/task/view.cpp
-    src/views/notes/v1/task/complete/view.hpp
-    src/views/notes/v1/task/complete/view.cpp
-    src/views/notes/v1/task/reactivate/view.hpp
-    src/views/notes/v1/task/reactivate/view.cpp
-    src/views/notes/v1/task/list/view.hpp
-    src/views/notes/v1/task/list/view.cpp
-    src/views/notes/v1/task/update/view.hpp
-    src/views/notes/v1/task/update/view.cpp
-    src/views/notes/v1/task/remove/view.hpp
-    src/views/notes/v1/task/remove/view.cpp
+    src/views/notes/v1/note/view.hpp
+    src/views/notes/v1/note/view.cpp
+    src/views/notes/v1/note/list/view.hpp
+    src/views/notes/v1/note/list/view.cpp
+    src/views/notes/v1/note/update/view.hpp
+    src/views/notes/v1/note/update/view.cpp
+    src/views/notes/v1/note/remove/view.hpp
+    src/views/notes/v1/note/remove/view.cpp
 
     # notes
     src/notes/contract/models/exceptions.hpp
-    src/notes/contract/managers/tasks_manager.hpp
-    src/notes/contract/models/tasks_provider_structures.hpp
-    src/notes/managers/tasks_manager.cpp
-    src/notes/models/tasks_provider_structures.cpp
-    src/notes/providers/tasks_provider/tasks_provider.hpp
-    src/notes/providers/tasks_provider/tasks_provider.cpp
+    src/notes/contract/managers/notes_manager.hpp
+    src/notes/contract/models/notes_provider_structures.hpp
+    src/notes/managers/notes_manager.cpp
+    src/notes/models/notes_provider_structures.cpp
+    src/notes/providers/notes_provider/notes_provider.hpp
+    src/notes/providers/notes_provider/notes_provider.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC

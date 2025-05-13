@@ -59,10 +59,7 @@ namespace userver::storages::postgres::io {
 template <>
 struct CppToUserPg<notes::contract::models::Status> : EnumMappingBase<notes::contract::models::Status> {
     static constexpr DBTypeName postgres_name = "notes.note_status";
-    static constexpr EnumeratorList enumerators{
-        {EnumType::kActive, "active"},
-        {EnumType::kDeleted, "deleted"}
-    };
+    static constexpr EnumeratorList enumerators{{EnumType::kActive, "active"}, {EnumType::kDeleted, "deleted"}};
 };
 
 }  // namespace userver::storages::postgres::io

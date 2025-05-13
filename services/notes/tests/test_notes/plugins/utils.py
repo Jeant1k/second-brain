@@ -1,17 +1,17 @@
 import psycopg2
 
 
-def select_user_tasks(pgsql, user_id):
+def select_user_notes(pgsql, user_id):
     cursor = pgsql['notes'].dict_cursor()
     cursor.execute(
         f"""
             SELECT
-                tasks.user_id,
-                tasks.name,
-                tasks.description,
-                tasks.status
-            FROM notes.tasks AS tasks
-            WHERE tasks.user_id = {user_id}
+                notes.user_id,
+                notes.name,
+                notes.description,
+                notes.status
+            FROM notes.notes AS notes
+            WHERE notes.user_id = {user_id}
         """
     )
 
@@ -23,21 +23,20 @@ def select_user_tasks(pgsql, user_id):
     return result
 
 
-def select_user_full_tasks(pgsql, user_id):
+def select_user_full_notes(pgsql, user_id):
     cursor = pgsql['notes'].dict_cursor()
     cursor.execute(
         f"""
             SELECT
-                tasks.id,
-                tasks.user_id,
-                tasks.name,
-                tasks.description,
-                tasks.status,
-                tasks.created_at,
-                tasks.updated_at,
-                tasks.completed_at
-            FROM notes.tasks AS tasks
-            WHERE tasks.user_id = {user_id}
+                notes.id,
+                notes.user_id,
+                notes.name,
+                notes.description,
+                notes.status,
+                notes.created_at,
+                notes.updated_at
+            FROM notes.notes AS notes
+            WHERE notes.user_id = {user_id}
         """
     )
 
@@ -46,25 +45,24 @@ def select_user_full_tasks(pgsql, user_id):
     for row in cursor.fetchall():
         row['created_at'] = row['created_at'].isoformat()
         row['updated_at'] = row['updated_at'].isoformat()
-        row['completed_at'] = row['completed_at'].isoformat()
         result.append(dict(row))
 
     return result
 
 
-def select_task(pgsql, task_id):
+def select_note(pgsql, note_id):
     cursor = pgsql['notes'].dict_cursor()
 
     try:
         cursor.execute(
             f"""
                 SELECT
-                    tasks.user_id,
-                    tasks.name,
-                    tasks.description,
-                    tasks.status
-                FROM notes.tasks AS tasks
-                WHERE tasks.id = '{task_id}'::uuid
+                    notes.user_id,
+                    notes.name,
+                    notes.description,
+                    notes.status
+                FROM notes.notes AS notes
+                WHERE notes.id = '{note_id}'::uuid
             """
         )
     except psycopg2.errors.InvalidTextRepresentation:

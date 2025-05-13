@@ -1,9 +1,9 @@
 -- kUpdateNameOrDescription
--- $1 - task id
--- $2 - task name
--- $3 - task description
+-- $1 - note id
+-- $2 - note name
+-- $3 - note description
 
-UPDATE notes.tasks
+UPDATE notes.notes
 SET
     name = COALESCE($2, name),
     description = COALESCE($3, description)

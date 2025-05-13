@@ -51,33 +51,23 @@ components_manager:
             throttling_enabled: false
             url_trailing_slash: strict-match
 
-        notes-v1-task-post:
-            path: /notes/v1/task
+        notes-v1-note-post:
+            path: /notes/v1/note
             method: POST
             task_processor: main-task-processor
         
-        notes-v1-task-complete-post:
-            path: /notes/v1/task/complete
+        notes-v1-note-list-post:
+            path: /notes/v1/note/list
             method: POST
             task_processor: main-task-processor
         
-        notes-v1-task-reactivate-post:
-            path: /notes/v1/task/reactivate
-            method: POST
-            task_processor: main-task-processor
-
-        notes-v1-task-list-post:
-            path: /notes/v1/task/list
+        notes-v1-note-update-post:
+            path: /notes/v1/note/update
             method: POST
             task_processor: main-task-processor
         
-        notes-v1-task-update-post:
-            path: /notes/v1/task/update
-            method: POST
-            task_processor: main-task-processor
-        
-        notes-v1-task-remove-post:
-            path: /notes/v1/task/remove
+        notes-v1-note-remove-post:
+            path: /notes/v1/note/remove
             method: POST
             task_processor: main-task-processor
         
@@ -93,5 +83,5 @@ components_manager:
             fs-task-processor: fs-task-processor
 
         # Custom components
-        tasks-manager:
-        tasks-provider:
+        notes-manager:
+        notes-provider:

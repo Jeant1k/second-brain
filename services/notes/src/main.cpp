@@ -9,9 +9,7 @@
 
 #include "notes/contract/managers/notes_manager.hpp"
 #include "notes/providers/notes_provider/notes_provider.hpp"
-#include "views/notes/v1/note/complete/view.hpp"
 #include "views/notes/v1/note/list/view.hpp"
-#include "views/notes/v1/note/reactivate/view.hpp"
 #include "views/notes/v1/note/remove/view.hpp"
 #include "views/notes/v1/note/update/view.hpp"
 #include "views/notes/v1/note/view.hpp"
@@ -27,8 +25,6 @@ int main(int argc, char* argv[]) {
 
                               // views
                               .Append<views::notes::v1::note::post::NotesV1NotePost>()
-                              .Append<views::notes::v1::note::complete::post::NotesV1NoteCompletePost>()
-                              .Append<views::notes::v1::note::reactivate::post::NotesV1NoteReactivatePost>()
                               .Append<views::notes::v1::note::list::post::NotesV1NoteListPost>()
                               .Append<views::notes::v1::note::update::post::NotesV1NoteUpdatePost>()
                               .Append<views::notes::v1::note::remove::post::NotesV1NoteRemovePost>()
