@@ -1,0 +1,18 @@
+{
+  "expected_result": {
+    "response": {},
+    "database_data": {
+      "user_id": 123456,
+      "name": "Some another note name",
+      "description": "Some note description",
+      "status": "active"
+    },
+    "status_code": 202
+  },
+  "initial_data": {
+    "request_body": {
+      "note_id": "a8098c1a-f86e-11da-bd1a-001124440000",
+      "name": "Some another note name"
+    }
+  }
+}

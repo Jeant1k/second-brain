@@ -1,0 +1,97 @@
+components:
+    parameters:
+        UserId:
+            name: user_id
+            in: query
+            required: true
+            schema:
+                type: integer
+                format: int64
+            description: ID пользователя
+        
+        Status:
+            name: status
+            in: query
+            required: false
+            description: Статус заметок для фильтрации
+            schema:
+                $ref: '#/components/schemas/NoteStatus'
+
+        Limit:
+            name: limit
+            in: query
+            required: false
+            schema:
+                type: integer
+                default: 100
+                minimum: 1
+                maximum: 1000
+            description: Максимальное количество заметок в ответе
+
+        Offset:
+            name: offset
+            in: query
+            required: false
+            schema:
+                type: integer
+                default: 0
+                minimum: 0
+            description: Смещение от начала списка заметок
+
+    schemas:
+        Error:
+            description: Описание ошибки
+            type: object
+            additionalProperties: false
+            required:
+              - message
+              - code
+            properties:
+                message:
+                    description: Сообщение об ошибке
+                    type: string
+                code:
+                    description: Код ошибки
+                    type: string
+
+        NoteStatus:
+            type: string
+            enum:
+              - active
+              - deleted
+            description: Статус заметки
+
+        Note:
+            type: object
+            additionalProperties: false
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    description: Уникальный идентификатор заметки
+                user_id:
+                    type: integer
+                    format: int64
+                    description: Идентификатор пользователя
+                name:
+                    type: string
+                    description: Название заметки
+                description:
+                    type: string
+                    description: Описание заметки
+                status:
+                    $ref: '#/components/schemas/NoteStatus'
+                created_at:
+                    type: string
+                    format: date-time
+                    description: Время создания заметки
+                updated_at:
+                    type: string
+                    format: date-time
+                    description: Время последнего обновления заметки
+            required:
+              - id
+              - user_id
+              - name
+              - description
+              - status

@@ -1,0 +1,20 @@
+{
+  "expected_result": {
+    "response": {
+      "message": "Invalid request format: Error at path 'note_id': invalid uuid string",
+      "code": "BAD_REQUEST"
+    },
+    "database_data": {
+      "user_id": 123456,
+      "name": "Some note name",
+      "description": "Some note description",
+      "status": "active"
+    },
+    "status_code": 400
+  },
+  "initial_data": {
+    "request_body": {
+      "note_id": "Wrong note_id format"
+    }
+  }
+}

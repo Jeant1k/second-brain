@@ -1,0 +1,22 @@
+{
+  "expected_result": {
+    "response": {
+      "message": "An error occurred while processing the request: Note to update fields was not found",
+      "code": "NOT_FOUND"
+    },
+    "database_data": {
+      "user_id": 123456,
+      "name": "Some note name",
+      "description": "Some note description",
+      "status": "active"
+    },
+    "status_code": 404
+  },
+  "initial_data": {
+    "request_body": {
+      "note_id": "a8098c1a-f86e-11da-bd1a-001124440001",
+      "name": "Some another note name"
+    }
+  }
+}
+  
