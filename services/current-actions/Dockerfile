@@ -1,77 +1,37 @@
-# Stage 1: Build the service
-# Используем тот же базовый образ, что и в вашем Makefile для консистентности
-# Вы можете зафиксировать тег, если хотите, например, ubuntu-24.04-userver:v1.2.3
-ARG USERVER_IMAGE_TAG=latest
-FROM ghcr.io/userver-framework/ubuntu-24.04-userver:${USERVER_IMAGE_TAG} as builder
+# ==== STAGE 1: Build ======
+FROM ghcr.io/userver-framework/ubuntu-24.04-userver:latest AS builder
 
-ARG PROJECT_NAME=current-actions
-# Аргумент для количества потоков сборки, по умолчанию 4
-ARG NPROCS_BUILD_ARG=4
-ENV NPROCS=${NPROCS_BUILD_ARG}
+WORKDIR /build
 
-# ccache для ускорения повторных сборок (userver-образы обычно его содержат)
-ENV CCACHE_DIR=/.ccache
-ENV CCACHE_MAXSIZE=2G
-# Если ccache не установлен в базовом образе, можно добавить:
-# RUN apt-get update && apt-get install -y ccache
-
-WORKDIR /opt/service
-
-# Копируем исходный код проекта
 COPY . .
 
-# Создаем директорию для сборки и конфигурируем CMake для release
-# Предполагается, что у вас есть CMakePresets.json с пресетом 'release'
-# или CMakeLists.txt корректно настроен для сборки без явного пресета
+# Можно установить дополнительные пакеты, если нужно (пример с clang-format, вдруг пригодится)
+RUN apt-get update && \
+    apt-get install -y clang-format && \
+    rm -rf /var/lib/apt/lists/*
+
+# Собираем проект (prod сборку)
 RUN cmake --preset release -B build-release -S .
+RUN cmake --build build-release -j $(nproc)
 
-# Собираем проект (только таргет самого сервиса)
-RUN cmake --build build-release -j ${NPROCS} --target ${PROJECT_NAME}
+# ==== STAGE 2: Runner =====
+FROM ghcr.io/userver-framework/ubuntu-24.04-userver:latest AS runner
 
-# Устанавливаем собранный сервис и его конфигурации в промежуточную директорию
-# CMAKE_INSTALL_PREFIX определяет, куда будут установлены артефакты
-# Компонент ${PROJECT_NAME} должен быть определен в вашем CMakeLists.txt для install()
-RUN cmake --install build-release --prefix /opt/service/install --component ${PROJECT_NAME}
+# Добавим system user для запуска приложения
+RUN groupadd -r serviceuser && useradd -r -g serviceuser serviceuser
 
-# Stage 2: Create the runtime image
-FROM ghcr.io/userver-framework/ubuntu-24.04-userver:${USERVER_IMAGE_TAG} as runtime
+WORKDIR /app
 
-ARG PROJECT_NAME=current-actions
-ENV APP_DIR=/opt/${PROJECT_NAME}
-ENV CONFIG_DIR=${APP_DIR}/configs
-# Директории для логов и данных, если сервис их пишет в файлы (рекомендуется логировать в stdout/stderr в Docker)
-ENV LOG_DIR=/var/log/${PROJECT_NAME}
-ENV DATA_DIR=/var/lib/${PROJECT_NAME}
+# Копируем собранный бинарник и конфиги
+COPY --from=builder /build/build-release/current-actions /app/current-actions
+COPY configs/static_config.yaml /app/static_config.yaml
+COPY configs/config_vars.docker.yaml /app/config_vars.yaml
 
-# Создаем необходимые директории и пользователя без привилегий для запуска сервиса
-RUN mkdir -p ${APP_DIR}/bin ${CONFIG_DIR} ${LOG_DIR} ${DATA_DIR} && \
-    useradd --system --home-dir ${APP_DIR} --no-create-home --shell /usr/sbin/nologin appuser && \
-    chown -R appuser:appuser ${APP_DIR} ${LOG_DIR} ${DATA_DIR}
+# Если нужны какие-то другие файлы - копируй по аналогии
 
-WORKDIR ${APP_DIR}
+USER serviceuser
 
-# Копируем исполняемый файл из builder stage
-COPY --from=builder /opt/service/install/bin/${PROJECT_NAME} ./bin/
-# Копируем статический конфиг, установленный CMake
-# Путь /etc/${PROJECT_NAME}/static_config.yaml является стандартным для userver при install()
-COPY --from=builder /opt/service/install/etc/${PROJECT_NAME}/static_config.yaml ${CONFIG_DIR}/
-# Копируем config_vars.docker.yaml как основной config_vars.yaml для контейнера
-COPY configs/config_vars.docker.yaml ${CONFIG_DIR}/config_vars.yaml
-
-# Если ваш сервис устанавливает какие-то дополнительные ресурсы (например, SQL миграции, шаблоны и т.д.)
-# через `install(DIRECTORY ...)` в CMake, они могут оказаться в /opt/service/install/share/${PROJECT_NAME}
-# COPY --from=builder /opt/service/install/share/${PROJECT_NAME}/ ./share/
-
-USER appuser
-
-# Порт, который будет слушать сервис (из config_vars.docker.yaml)
 EXPOSE 8080
 
-# Переменные окружения для путей к конфигам (userver может их подхватывать)
-ENV USERVER_CONFIG_PATH=${CONFIG_DIR}/static_config.yaml
-ENV USERVER_CONFIG_VARS_PATH=${CONFIG_DIR}/config_vars.yaml
-
-# Команда для запуска сервиса
-# Сервис будет искать конфиги по путям, указанным в переменных окружения,
-# или по путям, переданным через аргументы командной строки.
-CMD ["./bin/current-actions"]
+# Запуск по умолчанию
+CMD ["./current-actions", "--config", "static_config.yaml", "--config_vars", "config_vars.yaml"]

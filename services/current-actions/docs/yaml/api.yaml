@@ -127,7 +127,6 @@ paths:
                             schema:
                                 $ref: 'definitions.yaml#/components/schemas/Error'
     
-    # TODO
     /current-actions/v1/task/sometime/later:
         post:
             summary: Переместить задачу в когда-нибудь потом

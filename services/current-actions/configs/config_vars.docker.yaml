@@ -5,3 +5,5 @@ logger-level: debug
 is-testing: false
 
 server-port: 8080
+
+dbconnection: 'postgresql://current_actions_user:password@postgres:5432/current_actions'
