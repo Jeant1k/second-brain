@@ -16,7 +16,7 @@ namespace current_actions::models {
 using TaskId = userver::utils::StrongTypedef<class TaskIdTag, boost::uuids::uuid>;
 using UserId = userver::utils::StrongTypedef<class UserIdTag, std::int64_t>;
 
-enum class Status { kActive, kCompleted, kMovedToSomedayLater, kDeleted };
+enum class Status { kActive, kCompleted, kMovedToSometimeLater, kDeleted };
 
 std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status);
 std::optional<Status> Transform(const std::optional<handlers::TaskStatus> status);
@@ -63,7 +63,7 @@ struct CppToUserPg<current_actions::models::Status> : EnumMappingBase<current_ac
     static constexpr EnumeratorList enumerators{
         {EnumType::kActive, "active"},
         {EnumType::kCompleted, "completed"},
-        {EnumType::kMovedToSomedayLater, "moved_to_someday_later"},
+        {EnumType::kMovedToSometimeLater, "moved_to_sometime_later"},
         {EnumType::kDeleted, "deleted"}
     };
 };

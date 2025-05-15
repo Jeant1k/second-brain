@@ -73,7 +73,7 @@
           "user_id": 101,
           "name": "Задача 16",
           "description": "Задача 16 (User 101): Отложена на потом",
-          "status": "moved_to_someday_later",
+          "status": "moved_to_sometime_later",
           "created_at": "2025-04-19T10:00:00+00:00",
           "updated_at": "2025-04-19T10:00:00+00:00"
         },

@@ -36,8 +36,8 @@ std::optional<handlers::TaskStatus> Transform(const std::optional<Status> status
             return handlers::TaskStatus::kActive;
         case Status::kCompleted:
             return handlers::TaskStatus::kCompleted;
-        case Status::kMovedToSomedayLater:
-            return handlers::TaskStatus::kMovedToSomedayLater;
+        case Status::kMovedToSometimeLater:
+            return handlers::TaskStatus::kMovedToSometimeLater;
         case Status::kDeleted:
             return handlers::TaskStatus::kDeleted;
     }
@@ -53,8 +53,8 @@ std::optional<Status> Transform(const std::optional<handlers::TaskStatus> status
             return Status::kActive;
         case handlers::TaskStatus::kCompleted:
             return Status::kCompleted;
-        case handlers::TaskStatus::kMovedToSomedayLater:
-            return Status::kMovedToSomedayLater;
+        case handlers::TaskStatus::kMovedToSometimeLater:
+            return Status::kMovedToSometimeLater;
         case handlers::TaskStatus::kDeleted:
             return Status::kDeleted;
     }

@@ -21,14 +21,14 @@ INSERT INTO current_actions.tasks (id, user_id, name, description, status, compl
     ('00000000-0000-0000-0000-000000000012', 101, 'Задача 12', 'Задача 12 (User 101): Завершена', 'completed', static_completed_time, frozen_creation_time, frozen_creation_time),
     ('00000000-0000-0000-0000-000000000013', 101, 'Задача 13', 'Задача 13 (User 101): Активная', 'active', NULL, frozen_creation_time, frozen_creation_time),
     ('00000000-0000-0000-0000-000000000021', 101, '!@#$%^&*()', 'Задача со спецсимволами в имени', 'active', NULL, frozen_creation_time, frozen_creation_time),
-    ('00000000-0000-0000-0000-000000000016', 101, 'Задача 16', 'Задача 16 (User 101): Отложена на потом', 'moved_to_someday_later', NULL, frozen_creation_time, frozen_creation_time),
+    ('00000000-0000-0000-0000-000000000016', 101, 'Задача 16', 'Задача 16 (User 101): Отложена на потом', 'moved_to_sometime_later', NULL, frozen_creation_time, frozen_creation_time),
     ('00000000-0000-0000-0000-000000000017', 101, 'Задача 17', 'Задача 17 (User 101): Удалена', 'deleted', NULL, frozen_creation_time, frozen_creation_time);
 
 -- Задачи для user_id = 102 (Обновлено: добавлено имя, убраны project_id и priority)
 INSERT INTO current_actions.tasks (id, user_id, name, description, status, completed_at, created_at, updated_at) VALUES
     ('00000000-0000-0000-0000-000000000014', 102, 'Задача 14', 'Задача 14 (User 102): Активная', 'active', NULL, frozen_creation_time, frozen_creation_time),
     ('00000000-0000-0000-0000-000000000015', 102, 'Задача 15', 'Задача 15 (User 102): Завершена', 'completed', static_completed_time, frozen_creation_time, frozen_creation_time),
-    ('00000000-0000-0000-0000-000000000018', 102, 'Задача 18', 'Задача 18 (User 102): Отложена', 'moved_to_someday_later', NULL, frozen_creation_time, frozen_creation_time),
+    ('00000000-0000-0000-0000-000000000018', 102, 'Задача 18', 'Задача 18 (User 102): Отложена', 'moved_to_sometime_later', NULL, frozen_creation_time, frozen_creation_time),
     ('00000000-0000-0000-0000-000000000019', 102, 'Задача 19', 'Задача 19 (User 102): Удалена', 'deleted', NULL, frozen_creation_time, frozen_creation_time);
 
 END $$;

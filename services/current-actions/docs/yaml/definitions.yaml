@@ -59,7 +59,7 @@ components:
             enum:
               - active
               - completed
-              - moved_to_someday_later
+              - moved_to_sometime_later
               - deleted
             description: Статус задачи
 

@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS current_actions;
 
 -- Перечисление для статуса задачи
-CREATE TYPE current_actions.task_status AS ENUM ('active', 'completed', 'moved_to_someday_later', 'deleted');
+CREATE TYPE current_actions.task_status AS ENUM ('active', 'completed', 'moved_to_sometime_later', 'deleted');
 
 -- Перечисление для приоритета задачи
 CREATE TYPE current_actions.task_priority AS ENUM ('high', 'medium', 'low');
