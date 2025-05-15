@@ -19,6 +19,8 @@ public:
         const userver::components::ComponentContext& component_context
     );
 
+    models::Task GetTask(handlers::TaskIdRequest&& task_id_request) const;
+
     void CreateTask(handlers::CreateTaskRequest&& create_task_request) const;
 
     void MoveTask(handlers::MoveTaskRequest&& move_task_request) const;
@@ -30,6 +32,8 @@ public:
     void ReactivateTask(handlers::TaskIdRequest&& task_id_request) const;
 
     void DeleteTask(handlers::TaskIdRequest&& task_id_request) const;
+
+    void SometimeLaterTask(models::TaskId&& task_id) const;
 
     handlers::ListTasksResponse ListTasks(handlers::ListTasksRequest&& list_task_request) const;
 

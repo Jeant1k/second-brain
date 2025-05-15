@@ -80,6 +80,11 @@ components_manager:
             method: POST
             task_processor: main-task-processor
 
+        current-actions-v1-task-sometime-later-post:
+            path: /current-actions/v1/task/sometime/later
+            method: POST
+            task_processor: main-task-processor
+
         internal-current-actions-v1-task-move-post:
             path: /internal/current-actions/v1/task/move
             method: POST
@@ -99,3 +104,7 @@ components_manager:
         # Custom components
         tasks-manager:
         tasks-provider:
+
+        # Clients
+        sometime-later-client:
+            base-url: $sometime-later-client.base-url

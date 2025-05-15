@@ -27,6 +27,16 @@ TasksManager::TasksManager(
     : userver::components::ComponentBase(config, component_context),
       tasks_provider_(component_context.FindComponent<TasksProvider>()) {}
 
+Task TasksManager::GetTask(handlers::TaskIdRequest&& task_id_request) const {
+    const auto result = tasks_provider_.SelectTaskById(Transform(std::move(task_id_request)));
+    if (result.status == TasksProvider::SelectTaskByIdResult::SelectTaskByIdStatus::kTaskNotFound ||
+        !result.task.has_value()) {
+        throw models::TaskNotFoundException{"Task was not found"};
+    }
+
+    return result.task.value();
+}
+
 void TasksManager::CreateTask(handlers::CreateTaskRequest&& task) const {
     tasks_provider_.InsertTask(Transform(std::move(task)));
 }
@@ -76,6 +86,10 @@ void TasksManager::DeleteTask(handlers::TaskIdRequest&& task_id_request) const {
     if (result == TasksProvider::MarkTaskAsDeletedResult::kTaskNotFound) {
         throw models::TaskNotFoundException{"Task to mark as deleted was not found"};
     }
+}
+
+void TasksManager::SometimeLaterTask(TaskId&& task_id) const {
+    tasks_provider_.MarkTaskAsMovedToSometimeLater(std::move(task_id));
 }
 
 handlers::ListTasksResponse TasksManager::ListTasks(handlers::ListTasksRequest&& list_task_request) const {

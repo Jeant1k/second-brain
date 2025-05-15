@@ -22,6 +22,14 @@ public:
 
     std::optional<models::UserId> SelectUserIdByTaskId(models::TaskId&& task_id) const;
 
+    struct SelectTaskByIdResult {
+        enum class SelectTaskByIdStatus : char { kSuccess, kTaskNotFound };
+
+        SelectTaskByIdStatus status;
+        std::optional<models::Task> task;
+    };
+    SelectTaskByIdResult SelectTaskById(models::TaskId&& task_id) const;
+
     enum class MarkTaskAsCompletedResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsCompletedResult MarkTaskAsCompleted(models::TaskId&& task_id) const;
 
@@ -30,6 +38,8 @@ public:
 
     enum class MarkTaskAsDeletedResult : char { kSuccess, kTaskNotFound };
     MarkTaskAsDeletedResult MarkTaskAsDeleted(models::TaskId&& task_id) const;
+
+    void MarkTaskAsMovedToSometimeLater(models::TaskId&& task_id) const;
 
     enum class UpdateTaskFieldsResult : char { kSuccess, kTaskNotFound };
     UpdateTaskFieldsResult UpdateTaskFields(models::TaskForUpdate&& task) const;

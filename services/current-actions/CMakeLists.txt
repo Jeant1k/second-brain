@@ -55,6 +55,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/views/current-actions/v1/task/update/view.cpp
     src/views/current-actions/v1/task/remove/view.hpp
     src/views/current-actions/v1/task/remove/view.cpp
+    src/views/current-actions/v1/task/sometime/later/view.hpp
+    src/views/current-actions/v1/task/sometime/later/view.cpp
     src/views/internal/current-actions/v1/task/move/view.hpp
     src/views/internal/current-actions/v1/task/move/view.cpp
 
@@ -66,6 +68,13 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/current_actions/models/tasks_provider_structures.cpp
     src/current_actions/providers/tasks_provider/tasks_provider.hpp
     src/current_actions/providers/tasks_provider/tasks_provider.cpp
+
+    # clients
+    src/clients/contract/base_client.hpp
+    src/clients/contract/models/exceptions.hpp
+    src/clients/contract/sometime_later/client.hpp
+    src/clients/sometime_later/client.hpp
+    src/clients/sometime_later/client.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC

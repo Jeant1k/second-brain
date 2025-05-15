@@ -1,0 +1,17 @@
+{
+  "expected_result": {
+    "response": {
+      "message": "An error occurred while processing the request: Task was not found",
+      "code": "NOT_FOUND"
+    },
+    "database_data": {},
+    "status_code": 404,
+    "mock_sometime_later": {}
+  },
+  "initial_data": {
+    "request_body": {
+      "task_id": "a8098c1a-f86e-11da-bd1a-001124440001"
+    },
+    "mock_sometime_later": {}
+  }
+}

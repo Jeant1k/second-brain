@@ -82,6 +82,23 @@ std::optional<models::UserId> TasksProvider::SelectUserIdByTaskId(models::TaskId
     return models::UserId{user_id_opt.value()};
 }
 
+TasksProvider::SelectTaskByIdResult TasksProvider::SelectTaskById(models::TaskId&& task_id) const {
+    auto task =
+        pg_cluster_
+            ->Execute(
+                userver::storages::postgres::ClusterHostType::kMaster, sql::kSelectTaskById, task_id.GetUnderlying()
+            )
+            .AsOptionalSingleRow<models::Task>(userver::storages::postgres::kRowTag);
+
+    if (!task.has_value()) {
+        LOG_WARNING(
+        ) << fmt::format("Task with id = {} was not found", boost::uuids::to_string(task_id.GetUnderlying()));
+        return {SelectTaskByIdResult::SelectTaskByIdStatus::kTaskNotFound, std::nullopt};
+    }
+
+    return {SelectTaskByIdResult::SelectTaskByIdStatus::kSuccess, std::move(task)};
+}
+
 TasksProvider::MarkTaskAsCompletedResult TasksProvider::MarkTaskAsCompleted(models::TaskId&& task_id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster, sql::kMarkTaskAsCompleted, task_id.GetUnderlying()
@@ -131,6 +148,14 @@ TasksProvider::MarkTaskAsDeletedResult TasksProvider::MarkTaskAsDeleted(models::
     LOG_INFO(
     ) << fmt::format("Task with id = {} was marked as deleted", boost::uuids::to_string(task_id.GetUnderlying()));
     return MarkTaskAsDeletedResult::kSuccess;
+}
+
+void TasksProvider::MarkTaskAsMovedToSometimeLater(models::TaskId&& task_id) const {
+    pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        sql::kMarkTaskAsMovedToSometimeLater,
+        task_id.GetUnderlying()
+    );
 }
 
 TasksProvider::UpdateTaskFieldsResult TasksProvider::UpdateTaskFields(models::TaskForUpdate&& task) const {
