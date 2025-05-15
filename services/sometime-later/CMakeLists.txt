@@ -14,12 +14,26 @@ userver_setup_environment()
 
 
 # YAML Codegen
-file(GLOB_RECURSE SCHEMAS ${CMAKE_CURRENT_SOURCE_DIR}/docs/yaml/*.yaml)
+file(GLOB_RECURSE SCHEMAS ${CMAKE_CURRENT_SOURCE_DIR}/docs/yaml/api/*.yaml)
 userver_target_generate_chaotic(${PROJECT_NAME}-chgen
     GENERATE_SERIALIZERS
     # Map '/components/schemas/*' JSONSchema types to C++ types in 'sometime_later::handlers' namespace
     LAYOUT
         "/components/schemas/([^/]*)/=sometime_later::handlers::{0}"
+    OUTPUT_DIR
+        ${CMAKE_CURRENT_BINARY_DIR}/src
+    SCHEMAS
+        ${SCHEMAS}
+    RELATIVE_TO
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+file(GLOB_RECURSE SCHEMAS ${CMAKE_CURRENT_SOURCE_DIR}/docs/yaml/clients/current_actions/*.yaml)
+userver_target_generate_chaotic(${PROJECT_NAME}-chgen-current-actions
+    GENERATE_SERIALIZERS
+    # Map '/components/schemas/*' JSONSchema types to C++ types in 'current_actions::handlers' namespace
+    LAYOUT
+        "/components/schemas/([^/]*)/=current_actions::handlers::{0}"
     OUTPUT_DIR
         ${CMAKE_CURRENT_BINARY_DIR}/src
     SCHEMAS
@@ -80,6 +94,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC
     userver::postgresql
     ${PROJECT_NAME}-chgen # Зависимость от YAML codegen
+    ${PROJECT_NAME}-chgen-current-actions
     ${PROJECT_NAME}_sql   # Зависимость от SQL codegen
 )
 

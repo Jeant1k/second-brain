@@ -2,7 +2,7 @@
 
 #include <userver/components/component.hpp>
 
-#include "docs/yaml/api.hpp"
+#include "docs/yaml/api/api.hpp"
 
 namespace views::sometime_later::v1::task::list::post {
 

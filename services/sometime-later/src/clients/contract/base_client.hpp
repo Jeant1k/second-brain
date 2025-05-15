@@ -13,7 +13,6 @@
 #include <userver/tracing/span.hpp>
 #include <userver/utils/fmt_compat.hpp>
 
-#include "docs/yaml/definitions.hpp"
 #include "models/exceptions.hpp"
 
 namespace clients::contract {
@@ -129,10 +128,10 @@ protected:
                 }
             }
         } else {
-            std::optional<sometime_later::handlers::Error> error_body;
+            std::optional<current_actions::handlers::Error> error_body;
             try {
                 if (!body.empty()) {
-                    error_body = userver::formats::json::FromString(body).As<sometime_later::handlers::Error>();
+                    error_body = userver::formats::json::FromString(body).As<current_actions::handlers::Error>();
                 }
             } catch (const std::exception& e) {
                 LOG_WARNING() << "Failed to parse error response body: " << e.what()

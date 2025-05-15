@@ -18,7 +18,7 @@ public:
         const userver::components::ComponentContext& context
     );
 
-    void MoveTask(::sometime_later::handlers::Task&& task) const override;
+    void MoveTask(::current_actions::handlers::Task&& task) const override;
 
     static userver::yaml_config::Schema GetStaticConfigSchema();
 };

@@ -2,7 +2,7 @@
 
 #include <userver/components/component_list.hpp>
 
-#include "docs/yaml/internal.hpp"
+#include "docs/yaml/api/internal.hpp"
 
 #include "../../../../../../sometime_later/contract/managers/tasks_manager.hpp"
 #include "../../../../../../views/contract/base_handler.hpp"

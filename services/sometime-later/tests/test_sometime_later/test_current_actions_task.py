@@ -18,6 +18,11 @@ from .plugins.constants import TASK_ID
                                      'database_moved_to_current_actions_task.sql'])]
         ),
         pytest.param(
+            'task_is_not_in_pending_status',
+            marks=[pytest.mark.pgsql('sometime_later', files=[
+                                     'database_not_pending_task.sql'])]
+        ),
+        pytest.param(
             '400_from_current_actions',
             marks=[pytest.mark.pgsql('sometime_later', files=[
                                      'database_pending_task.sql'])]

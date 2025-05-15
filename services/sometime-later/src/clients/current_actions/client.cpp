@@ -5,7 +5,7 @@
 #include <userver/components/component_context.hpp>
 #include <userver/yaml_config/merge_schemas.hpp>
 
-#include "docs/yaml/internal.hpp"
+#include "docs/yaml/clients/current_actions/internal.hpp"
 
 namespace clients::current_actions {
 
@@ -19,11 +19,11 @@ CurrentActionsClient::CurrentActionsClient(
           config["base-url"].As<std::string>()
       ) {}
 
-void CurrentActionsClient::MoveTask(::sometime_later::handlers::Task&& task) const {
-    ::sometime_later::handlers::MoveTaskRequest request_body;
+void CurrentActionsClient::MoveTask(::current_actions::handlers::Task&& task) const {
+    ::current_actions::handlers::MoveTaskRequest request_body;
     request_body.task = task;
 
-    PerformRequest<void, ::sometime_later::handlers::MoveTaskRequest>(
+    PerformRequest<void, ::current_actions::handlers::MoveTaskRequest>(
         userver::clients::http::HttpMethod::kPost, "/internal/current-actions/v1/task/move", request_body
     );
 }

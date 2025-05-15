@@ -2,7 +2,7 @@
 
 #include <userver/components/component.hpp>
 
-#include "docs/yaml/api.hpp"
+#include "docs/yaml/api/api.hpp"
 
 #include "../../../../../../clients/contract/models/exceptions.hpp"
 #include "../../../../../../sometime_later/contract/models/exceptions.hpp"
@@ -12,7 +12,7 @@ namespace views::sometime_later::v1::task::current::actions::post {
 
 namespace {
 
-::sometime_later::handlers::Task Transform(::sometime_later::contract::models::Task&& task) {
+::current_actions::handlers::Task Transform(::sometime_later::contract::models::Task&& task) {
     using userver::utils::datetime::TimePointTz;
 
     return {
@@ -20,7 +20,7 @@ namespace {
         task.user_id.GetUnderlying(),
         std::move(task.name),
         std::move(task.description),
-        Transform(task.status).value(),
+        ::current_actions::handlers::TaskStatus::kActive,
         TimePointTz{task.created_at},
         TimePointTz{task.updated_at},
         task.completed_at.has_value() ? std::make_optional(TimePointTz{task.completed_at.value()}) : std::nullopt
@@ -52,6 +52,10 @@ views::contract::models::ApiResponse SometimeLaterV1TaskCurrentActionsPost::
     if (task.status == ::sometime_later::contract::models::Status::kMovedToCurrentActions) {
         return contract::models::ApiResponseFactory::BadRequest(fmt::format(
             "Task with id = {} was already moved to current-actions", boost::uuids::to_string(task.id.GetUnderlying())
+        ));
+    } else if (task.status != ::sometime_later::contract::models::Status::kPending) {
+        return contract::models::ApiResponseFactory::BadRequest(fmt::format(
+            "Task with id = {} is not it pending status", boost::uuids::to_string(task.id.GetUnderlying())
         ));
     }
 

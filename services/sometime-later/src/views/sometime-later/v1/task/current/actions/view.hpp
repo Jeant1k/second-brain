@@ -2,7 +2,7 @@
 
 #include <userver/components/component_list.hpp>
 
-#include "docs/yaml/api.hpp"
+#include "docs/yaml/api/api.hpp"
 
 #include "../../../../../../clients/current_actions/client.hpp"
 #include "../../../../../../sometime_later/contract/managers/tasks_manager.hpp"

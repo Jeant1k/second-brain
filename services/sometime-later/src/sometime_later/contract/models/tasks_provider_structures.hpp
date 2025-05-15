@@ -9,7 +9,7 @@
 #include <userver/storages/postgres/io/supported_types.hpp>
 #include <userver/utils/strong_typedef.hpp>
 
-#include "docs/yaml/definitions.hpp"
+#include "docs/yaml/api/definitions.hpp"
 
 namespace sometime_later::contract::models {
 

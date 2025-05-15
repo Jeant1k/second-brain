@@ -1,0 +1,260 @@
+openapi: 3.0.3
+info:
+    title: Current Actions API
+    description: API для управления текущими действиями в системе SECOND BRAIN
+    version: 1.0.0
+
+paths:
+    /current-actions/v1/task/list:
+        post:
+            summary: Получение списка текущих действий
+            operationId: listTasks
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListTasksRequest'
+            responses:
+                200:
+                    description: Список текущих действий
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListTasksResponse'
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+    
+    /current-actions/v1/task:
+        post:
+            summary: Создание новой задачи
+            operationId: createTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateTaskRequest'
+            responses:
+                201:
+                    description: Задача успешно создана
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+    
+    /current-actions/v1/task/update:
+        post:
+            summary: Обновить данные задачи
+            operationId: updateTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateTaskRequest'
+            responses:
+                202:
+                    description: Задача успешно обновлена
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+                404:
+                    description: Задача не найдена
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+
+    /current-actions/v1/task/complete:
+        post:
+            summary: Отметить задачу как выполненную
+            operationId: completeTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TaskIdRequest'
+            responses:
+                200:
+                    description: Задача успешно отмечена как выполненная
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+                404:
+                    description: Задача не найдена
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+    
+    /current-actions/v1/task/reactivate:
+        post:
+            summary: Вернуть задачу в активное состояние
+            operationId: reactivateTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TaskIdRequest'
+            responses:
+                200:
+                    description: Задача успешно возвращена в активное состояние
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+                404:
+                    description: Задача не найдена
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+    
+    /current-actions/v1/task/sometime/later:
+        post:
+            summary: Переместить задачу в когда-нибудь потом
+            operationId: sometimeLaterTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TaskIdRequest'
+            responses:
+                200:
+                    description: Задача успешно перемещена
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+                404:
+                    description: Задача не найдена
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+
+    /current-actions/v1/task/remove:
+        post:
+            summary: Удалить задачу
+            operationId: removeTask
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TaskIdRequest'
+            responses:
+                200:
+                    description: Задача успешно удалена
+                400:
+                    description: Некорректные параметры запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+                404:
+                    description: Задача не найдена
+                    content:
+                        application/json:
+                            schema:
+                                $ref: 'definitions.yaml#/components/schemas/Error'
+
+components:
+    schemas:
+        CreateTaskRequest:
+            type: object
+            additionalProperties: false
+            properties:
+                user_id:
+                    type: integer
+                    format: int64
+                    description: Идентификатор пользователя
+                name:
+                    type: string
+                    description: Название задачи
+                description:
+                    type: string
+                    description: Описание задачи
+            required:
+              - user_id
+              - name
+              - description
+
+        TaskIdRequest:
+            type: object
+            additionalProperties: false
+            properties:
+                task_id:
+                    type: string
+                    format: uuid
+                    description: Идентификатор задачи
+            required:
+              - task_id
+
+        ListTasksRequest:
+            type: object
+            additionalProperties: false
+            properties:
+                user_id:
+                    type: integer
+                    format: int64
+                    description: Идентификатор пользователя
+                status:
+                    $ref: 'definitions.yaml#/components/schemas/TaskStatus'
+                cursor:
+                    type: string
+                    description: Курсор для пагинации
+            required:
+              - user_id
+
+        ListTasksResponse:
+            type: object
+            additionalProperties: false
+            properties:
+                tasks:
+                    type: array
+                    items:
+                        $ref: 'definitions.yaml#/components/schemas/Task'
+                    description: Список задач
+                cursor:
+                    type: string
+                    description: Курсор для пагинации
+            required:
+              - tasks
+
+        UpdateTaskRequest:
+            type: object
+            additionalProperties: false
+            properties:
+                task_id:
+                    type: string
+                    format: uuid
+                    description: Идентификатор задачи
+                name:
+                    type: string
+                    description: Название задачи
+                description:
+                    type: string
+                    description: Описание задачи
+            required:
+              - task_id

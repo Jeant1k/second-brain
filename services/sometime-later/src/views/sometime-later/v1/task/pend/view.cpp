@@ -2,7 +2,7 @@
 
 #include <userver/components/component.hpp>
 
-#include "docs/yaml/api.hpp"
+#include "docs/yaml/api/api.hpp"
 
 #include "../../../../../sometime_later/contract/models/exceptions.hpp"
 

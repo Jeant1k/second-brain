@@ -3,7 +3,7 @@
 #include <userver/components/component.hpp>
 
 #include "../../../../../sometime_later/contract/models/exceptions.hpp"
-#include "docs/yaml/api.hpp"
+#include "docs/yaml/api/api.hpp"
 
 namespace views::sometime_later::v1::task::remove::post {
 
