@@ -6,4 +6,6 @@ is-testing: false
 
 server-port: 8080
 
-dbconnection: 'postgresql://current_actions_user:password@postgres:5432/current_actions'
+dbconnection: 'postgresql://current_actions_user:password@postgres-current-actions:5432/current_actions'
+
+sometime-later-client.base-url: http://sometime-later:8080

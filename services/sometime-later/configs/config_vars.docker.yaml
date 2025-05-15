@@ -5,3 +5,7 @@ logger-level: debug
 is-testing: false
 
 server-port: 8080
+
+dbconnection: 'postgresql://sometime_later_user:password@postgres-sometime-later:5432/sometime_later'
+
+current-actions-client.base-url: http://current-actions:8080
