@@ -2,8 +2,8 @@
 
 #include <userver/components/component_context.hpp>
 
-#include "docs/yaml/api.hpp"
-#include "docs/yaml/internal.hpp"
+#include "docs/yaml/api/api.hpp"
+#include "docs/yaml/api/internal.hpp"
 
 #include "../contract/models/exceptions.hpp"
 

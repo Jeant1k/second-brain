@@ -4,7 +4,7 @@
 #include <userver/formats/json/value_builder.hpp>
 #include <variant>
 
-#include "docs/yaml/definitions.hpp"
+#include "docs/yaml/api/definitions.hpp"
 
 namespace views::contract::models {
 

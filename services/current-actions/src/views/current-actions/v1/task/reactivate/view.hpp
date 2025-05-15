@@ -4,7 +4,7 @@
 
 #include "../../../../../current_actions/contract/managers/tasks_manager.hpp"
 #include "../../../../../views/contract/base_handler.hpp"
-#include "docs/yaml/api.hpp"
+#include "docs/yaml/api/api.hpp"
 
 namespace views::current_actions::v1::task::reactivate::post {
 

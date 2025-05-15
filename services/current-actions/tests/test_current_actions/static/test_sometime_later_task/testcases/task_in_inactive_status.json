@@ -1,0 +1,22 @@
+{
+  "expected_result": {
+    "response": {
+      "message": "Task with id = a8098c1a-f86e-11da-bd1a-001124440000 is in inactive status",
+      "code": "BAD_REQUEST"
+    },
+    "database_data": {
+      "user_id": 123456,
+      "name": "Some task name",
+      "description": "Some task description",
+      "status": "completed"
+    },
+    "status_code": 400,
+    "mock_sometime_later": {}
+  },
+  "initial_data": {
+    "request_body": {
+      "task_id": "a8098c1a-f86e-11da-bd1a-001124440000"
+    },
+    "mock_sometime_later": {}
+  }
+}

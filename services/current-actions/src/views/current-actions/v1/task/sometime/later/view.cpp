@@ -2,7 +2,7 @@
 
 #include <userver/components/component.hpp>
 
-#include "docs/yaml/api.hpp"
+#include "docs/yaml/api/api.hpp"
 
 #include "../../../../../../clients/contract/models/exceptions.hpp"
 #include "../../../../../../current_actions/contract/models/exceptions.hpp"
@@ -13,7 +13,7 @@ namespace views::current_actions::v1::task::sometime::later::post {
 
 namespace {
 
-::current_actions::handlers::Task Transform(::current_actions::models::Task&& task) {
+::sometime_later::handlers::Task Transform(::current_actions::models::Task&& task) {
     using userver::utils::datetime::TimePointTz;
 
     return {
@@ -21,7 +21,7 @@ namespace {
         task.user_id.GetUnderlying(),
         std::move(task.name),
         std::move(task.description),
-        Transform(task.status).value(),
+        ::sometime_later::handlers::TaskStatus::kPending,
         TimePointTz{task.created_at},
         TimePointTz{task.updated_at},
         task.completed_at.has_value() ? std::make_optional(TimePointTz{task.completed_at.value()}) : std::nullopt
@@ -54,6 +54,10 @@ views::contract::models::ApiResponse CurrentActionsV1TaskSometimeLaterPost::
         return contract::models::ApiResponseFactory::BadRequest(fmt::format(
             "Task with id = {} was already moved to sometime-later", boost::uuids::to_string(task.id.GetUnderlying())
         ));
+    } else if (task.status != ::current_actions::models::Status::kActive) {
+        return contract::models::ApiResponseFactory::BadRequest(
+            fmt::format("Task with id = {} is in inactive status", boost::uuids::to_string(task.id.GetUnderlying()))
+        );
     }
 
     auto task_id = task.id;

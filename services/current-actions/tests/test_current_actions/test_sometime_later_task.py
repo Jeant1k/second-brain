@@ -18,6 +18,11 @@ from .plugins.constants import TASK_ID
                                      'database_moved_to_sometime_later_task.sql'])]
         ),
         pytest.param(
+            'task_in_inactive_status',
+            marks=[pytest.mark.pgsql('current_actions', files=[
+                                     'database_inactive_task.sql'])]
+        ),
+        pytest.param(
             '400_from_sometime_later',
             marks=[pytest.mark.pgsql('current_actions', files=[
                                      'database_active_task.sql'])]

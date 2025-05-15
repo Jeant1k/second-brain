@@ -7,8 +7,6 @@
 
 namespace clients::sometime_later {
 
-// TODO: Использовать во всех клиентах кодогенерацию клиентских структур, а не аналогичных структур текущего сервиса
-
 class SometimeLaterClient final : public userver::components::LoggableComponentBase,
                                   public contract::sometime_later::Client,
                                   private contract::BaseClient {
@@ -20,7 +18,7 @@ public:
         const userver::components::ComponentContext& context
     );
 
-    void MoveTask(::current_actions::handlers::Task&& task) const override;
+    void MoveTask(::sometime_later::handlers::Task&& task) const override;
 
     static userver::yaml_config::Schema GetStaticConfigSchema();
 };

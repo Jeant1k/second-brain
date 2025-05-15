@@ -2,7 +2,7 @@
 
 #include <userver/components/component.hpp>
 
-#include "docs/yaml/api.hpp"
+#include "docs/yaml/api/api.hpp"
 
 namespace views::current_actions::v1::task::post {
 

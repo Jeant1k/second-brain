@@ -5,8 +5,8 @@
 #include "../../models/tasks_provider_structures.hpp"
 #include "../../providers/tasks_provider/tasks_provider.hpp"
 
-#include "docs/yaml/api_fwd.hpp"
-#include "docs/yaml/internal_fwd.hpp"
+#include "docs/yaml/api/api_fwd.hpp"
+#include "docs/yaml/api/internal_fwd.hpp"
 
 namespace current_actions::contract::managers {
 
