@@ -3,7 +3,6 @@
 #include <userver/components/component_context.hpp>
 
 #include "docs/yaml/api.hpp"
-#include "docs/yaml/internal.hpp"
 
 #include "../contract/models/exceptions.hpp"
 
@@ -29,17 +28,6 @@ TasksManager::TasksManager(
 
 void TasksManager::CreateTask(handlers::CreateTaskRequest&& task) const {
     tasks_provider_.InsertTask(Transform(std::move(task)));
-}
-
-void TasksManager::MoveTask(handlers::MoveTaskRequest&& move_task_request) const {
-    const auto user_id_opt = tasks_provider_.SelectUserIdByTaskId(TaskId{move_task_request.task.id});
-    if (user_id_opt.has_value() && user_id_opt.value().GetUnderlying() != move_task_request.task.user_id) {
-        throw models::WrongUserIdException{
-            fmt::format("Task with id = {} belongs to another user", boost::uuids::to_string(move_task_request.task.id))
-        };
-    }
-
-    tasks_provider_.UpsertTask(Transform(std::move(move_task_request)));
 }
 
 void TasksManager::UpdateTask(handlers::UpdateTaskRequest&& update_task_request) const {
@@ -142,31 +130,6 @@ TaskForUpdate TasksManager::Transform(handlers::UpdateTaskRequest&& update_task_
         TaskId{update_task_request.task_id},
         std::move(update_task_request.name),
         std::move(update_task_request.description)
-    };
-}
-
-Task TasksManager::Transform(handlers::MoveTaskRequest&& move_task_request) const {
-    using userver::storages::postgres::TimePointTz;
-
-    LOG_INFO() << "created_at = "
-               << move_task_request.task.created_at.value_or(userver::utils::datetime::TimePointTz{}).GetTimePoint()
-               << " updated_at = "
-               << move_task_request.task.updated_at.value_or(userver::utils::datetime::TimePointTz{}).GetTimePoint()
-               << " completed_at = "
-               << move_task_request.task.completed_at.value_or(userver::utils::datetime::TimePointTz{}).GetTimePoint();
-
-    return {
-        TaskId{move_task_request.task.id},
-        UserId{move_task_request.task.user_id},
-        std::move(move_task_request.task.name),
-        std::move(move_task_request.task.description),
-        models::Transform(move_task_request.task.status).value(),
-        move_task_request.task.created_at.has_value() ? TimePointTz{move_task_request.task.created_at.value()}
-                                                      : TimePointTz{userver::utils::datetime::Now()},
-        move_task_request.task.updated_at.has_value() ? TimePointTz{move_task_request.task.updated_at.value()}
-                                                      : TimePointTz{userver::utils::datetime::Now()},
-        move_task_request.task.completed_at.has_value() ? TimePointTz{move_task_request.task.completed_at.value()}
-                                                        : TimePointTz{userver::utils::datetime::Now()},
     };
 }
 
