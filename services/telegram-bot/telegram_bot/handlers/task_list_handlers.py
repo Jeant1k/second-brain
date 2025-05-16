@@ -13,29 +13,29 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 ITEM_TYPE_MAP = {
-    "Задачи": "current_actions",
-    "Не сейчас": "sometime_later",
+    "Задачи": "curr_act",
+    "Не сейчас": "smt_ltr",
     "Ожидания": "waiting",
     "Заметки": "notes",
     "Выполнено": "completed" # Специальный тип для агрегации
 }
 ITEM_NAME_MAP = {
-    "current_actions": "активных задач",
-    "sometime_later": "отложенных задач",
+    "curr_act": "активных задач",
+    "smt_ltr": "отложенных задач",
     "waiting": "ожиданий",
     "notes": "заметок",
     "completed": "выполненных задач"
 }
 
 SERVICE_LIST_METHODS = {
-    "current_actions": api_client.list_current_actions,
-    "sometime_later": api_client.list_sometime_later_tasks,
+    "curr_act": api_client.list_current_actions,
+    "smt_ltr": api_client.list_sometime_later_tasks,
     "waiting": api_client.list_waiting_tasks,
     "notes": api_client.list_notes,
 }
 SERVICE_ENTITY_NAMES = { # Для сообщений
-    "current_actions": ("Задачи", "задач"),
-    "sometime_later": ("Отложенные", "отложенных задач"),
+    "curr_act": ("Задачи", "задач"),
+    "smt_ltr": ("Отложенные", "отложенных задач"),
     "waiting": ("Ожидания", "ожиданий"),
     "notes": ("Заметки", "заметок"),
     "completed": ("Выполненные", "выполненных задач")
@@ -64,7 +64,7 @@ async def show_item_list(message_or_query: Message | CallbackQuery, item_type: s
         return
         
     status_filter = "active"
-    if item_type == "sometime_later": status_filter = "pending"
+    if item_type == "smt_ltr": status_filter = "pending"
     elif item_type == "notes": status_filter = "active" # notes API ожидает 'active' or 'deleted'
 
     items_data, status_code = await list_method(user_id=user_id, status=status_filter, cursor=cursor)
@@ -136,15 +136,15 @@ async def show_completed_items_list(message_or_query: Message | CallbackQuery, u
     all_completed_tasks = []
     # Предположим, что пагинация для "Выполнено" будет сложной, если каждый сервис имеет свой курсор.
     # Для MVP, "Выполнено" может показывать ограниченное количество последних задач без сложной пагинации
-    # или пагинацию только по одному из сервисов (например, current_actions).
+    # или пагинацию только по одному из сервисов (например, curr_act).
     # В текущей реализации API пагинация по "Выполнено" не очень очевидно работает, если смешивать.
     # Здесь я сделаю сбор без общей пагинации, просто первые страницы каждого.
     # TODO: Уточнить, как должна работать пагинация для "Выполнено" на уровне API.
     # Пока что курсор будет игнорироваться для "Выполнено".
 
     services_to_query = {
-        "current_actions": api_client.list_current_actions,
-        "sometime_later": api_client.list_sometime_later_tasks,
+        "curr_act": api_client.list_current_actions,
+        "smt_ltr": api_client.list_sometime_later_tasks,
         "waiting": api_client.list_waiting_tasks,
     }
     

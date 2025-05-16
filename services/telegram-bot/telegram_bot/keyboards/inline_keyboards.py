@@ -45,30 +45,30 @@ def get_task_view_keyboard(item_id: str, item_name: str, item_type: str, current
         InlineKeyboardButton(text="⬅️ Назад", callback_data=TaskAction(action="back", item_id="0", item_type=item_type, cursor=current_list_cursor).pack())
     ]
 
-    if item_type == "current_actions":
+    if item_type == "curr_act":
         action_buttons.extend([
             InlineKeyboardButton(text="✅ Выполнить", callback_data=TaskAction(action="complete", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack()),
-            InlineKeyboardButton(text="⏳ Отложить", callback_data=TaskAction(action="move_to_sometime", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack()),
-            InlineKeyboardButton(text="🗑️ Удалить", callback_data=TaskAction(action="delete_prompt", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack())
+            InlineKeyboardButton(text="⏳ Отложить", callback_data=TaskAction(action="mv_smtm", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack()),
+            InlineKeyboardButton(text="🗑️ Удалить", callback_data=TaskAction(action="del_prompt", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack())
         ])
-    elif item_type == "sometime_later":
+    elif item_type == "smt_ltr":
         action_buttons.extend([
             InlineKeyboardButton(text="✅ Выполнить", callback_data=TaskAction(action="complete", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack()),
-            InlineKeyboardButton(text="⚡️ В работу", callback_data=TaskAction(action="move_to_current", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack()),
-            InlineKeyboardButton(text="🗑️ Удалить", callback_data=TaskAction(action="delete_prompt", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack())
+            InlineKeyboardButton(text="⚡️ В работу", callback_data=TaskAction(action="mv_curr", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack()),
+            InlineKeyboardButton(text="🗑️ Удалить", callback_data=TaskAction(action="del_prompt", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack())
         ])
     elif item_type == "waiting":
         action_buttons.extend([
             InlineKeyboardButton(text="✅ Выполнить", callback_data=TaskAction(action="complete", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack()),
-            InlineKeyboardButton(text="🗑️ Удалить", callback_data=TaskAction(action="delete_prompt", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack())
+            InlineKeyboardButton(text="🗑️ Удалить", callback_data=TaskAction(action="del_prompt", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack())
         ])
     elif item_type == "notes":
          action_buttons.extend([
-            InlineKeyboardButton(text="🗑️ Удалить", callback_data=TaskAction(action="delete_prompt", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack())
+            InlineKeyboardButton(text="🗑️ Удалить", callback_data=TaskAction(action="del_prompt", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack())
         ])
     elif item_type == "completed": # Для выполненных задач
         action_buttons.extend([
-            InlineKeyboardButton(text="🗑️ Удалить навсегда", callback_data=TaskAction(action="delete_prompt", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack())
+            InlineKeyboardButton(text="🗑️ Удалить навсегда", callback_data=TaskAction(action="del_prompt", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack())
         ])
 
 
@@ -94,7 +94,7 @@ def get_confirm_delete_keyboard(item_id: str, item_type: str, current_list_curso
         builder.row(
             InlineKeyboardButton(
                 text="✅ Да, удалить",
-                callback_data=TaskAction(action="delete_confirm", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack()
+                callback_data=TaskAction(action="del_conf", item_id=item_id, item_type=item_type, cursor=current_list_cursor).pack()
             ),
             InlineKeyboardButton(
                 text="❌ Нет, отмена",

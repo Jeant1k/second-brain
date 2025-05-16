@@ -14,7 +14,7 @@ async def add_item_based_on_type(user_id: int, item_name: str, item_type: str, m
     response_data, status_code = None, None
     type_rus = ""
 
-    if item_type == "current_actions":
+    if item_type == "curr_act":
         response_data, status_code = await api_client.create_current_action(user_id, item_name)
         type_rus = "задача"
     elif item_type == "waiting":
@@ -23,7 +23,7 @@ async def add_item_based_on_type(user_id: int, item_name: str, item_type: str, m
     elif item_type == "notes":
         response_data, status_code = await api_client.create_note(user_id, item_name)
         type_rus = "заметка"
-    # sometime_later не создается через свободный ввод, только через перенос из current_actions
+    # smt_ltr не создается через свободный ввод, только через перенос из curr_act
     
     if status_code in [201, 200]: # 200 может быть, если API так настроен
         await message.reply(f"✅ {type_rus.capitalize()} '{item_name}' успешно добавлена.")
@@ -51,7 +51,7 @@ async def handle_free_text(message: Message, state: FSMContext, bot: Bot):
                 reply_markup=get_confirm_delete_keyboard(item_id="0", item_type="trash_suggestion", original_message_id=message.message_id)
             )
             await state.update_data(original_task_text=task_text, last_bot_message_id=sent_message.message_id)
-        elif task_type in ["current_actions", "waiting", "notes"]:
+        elif task_type in ["curr_act", "waiting", "notes"]:
             await add_item_based_on_type(user_id, task_text, task_type, message)
         else:
             await message.reply(f"😕 Неизвестный тип задачи от AI: {task_type}. Попробуйте переформулировать.")

@@ -12,18 +12,18 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 SERVICE_ACTION_CLIENTS = {
-    "current_actions": {
+    "curr_act": {
         "get_one": None, # API не имеет get one, получаем из списка
         "update": api_client.update_current_action_name,
         "complete": api_client.complete_current_action,
         "remove": api_client.remove_current_action,
-        "move_to_sometime": api_client.move_current_action_to_sometime_later,
+        "mv_smtm": api_client.move_current_action_to_sometime_later,
     },
-    "sometime_later": {
+    "smt_ltr": {
         "update": api_client.update_sometime_later_task_name,
         "complete": api_client.complete_sometime_later_task,
         "remove": api_client.remove_sometime_later_task,
-        "move_to_current": api_client.move_sometime_later_to_current_actions,
+        "mv_curr": api_client.move_sometime_later_to_current_actions,
     },
     "waiting": {
         "update": api_client.update_waiting_task_name,
@@ -174,7 +174,7 @@ async def handle_process_new_item_name(message: Message, state: FSMContext, bot:
 
     await state.update_data({f"item_name_{item_id}": new_name}) # Обновляем кешированное имя
 
-# --- Действия с элементами: complete, move_to_sometime, move_to_current ---
+# --- Действия с элементами: complete, mv_smtm, mv_curr ---
 async def _handle_simple_item_modification(query: CallbackQuery, callback_data: TaskAction, action_name_rus: str, bot: Bot, state: FSMContext):
     if not query.message:
         await query.answer("Ошибка.")
@@ -182,7 +182,7 @@ async def _handle_simple_item_modification(query: CallbackQuery, callback_data: 
 
     item_id = callback_data.item_id
     item_type = callback_data.item_type
-    api_action_key = callback_data.action # "complete", "move_to_sometime", etc.
+    api_action_key = callback_data.action # "complete", "mv_smtm", etc.
 
     action_method = SERVICE_ACTION_CLIENTS.get(item_type, {}).get(api_action_key)
     
@@ -192,7 +192,7 @@ async def _handle_simple_item_modification(query: CallbackQuery, callback_data: 
         # Предположим, что ID содержит префикс или мы где-то храним эту информацию.
         # Это сложная часть, если API не дает source_type для выполненных задач.
         # Для MVP: если это "completed", то complete/move не имеет смысла. Только удаление.
-        # Если API отдает Task с полем source_type (e.g. 'current_actions'), то используем его
+        # Если API отдает Task с полем source_type (e.g. 'curr_act'), то используем его
         # task_details = await api_client.get_task_details(item_id) # Если бы был такой метод
         # source_service_for_completed = task_details.get('source_type') 
         # action_method = SERVICE_ACTION_CLIENTS.get(source_service_for_completed, {}).get(api_action_key)
@@ -222,17 +222,17 @@ async def _handle_simple_item_modification(query: CallbackQuery, callback_data: 
 async def handle_complete_item_action(query: CallbackQuery, callback_data: TaskAction, bot: Bot, state: FSMContext):
     await _handle_simple_item_modification(query, callback_data, "Выполнено", bot, state)
 
-@router.callback_query(TaskAction.filter(F.action == "move_to_sometime"))
+@router.callback_query(TaskAction.filter(F.action == "mv_smtm"))
 async def handle_move_to_sometime_action(query: CallbackQuery, callback_data: TaskAction, bot: Bot, state: FSMContext):
     await _handle_simple_item_modification(query, callback_data, "Перемещено в 'Не сейчас'", bot, state)
 
-@router.callback_query(TaskAction.filter(F.action == "move_to_current"))
+@router.callback_query(TaskAction.filter(F.action == "mv_curr"))
 async def handle_move_to_current_action(query: CallbackQuery, callback_data: TaskAction, bot: Bot, state: FSMContext):
     await _handle_simple_item_modification(query, callback_data, "Перемещено в 'Задачи'", bot, state)
 
 
 # --- Удаление (запрос подтверждения) ---
-@router.callback_query(TaskAction.filter(F.action == "delete_prompt"))
+@router.callback_query(TaskAction.filter(F.action == "del_prompt"))
 async def handle_delete_item_prompt_action(query: CallbackQuery, callback_data: TaskAction, bot: Bot, state: FSMContext):
     if not query.message:
         await query.answer("Ошибка.")
@@ -249,14 +249,14 @@ async def handle_delete_item_prompt_action(query: CallbackQuery, callback_data: 
     await query.answer()
 
 # --- Удаление (подтверждение) ---
-@router.callback_query(TaskAction.filter(F.action == "delete_confirm"))
+@router.callback_query(TaskAction.filter(F.action == "del_conf"))
 async def handle_delete_item_confirm_action(query: CallbackQuery, callback_data: TaskAction, bot: Bot, state: FSMContext):
     if not query.message:
         await query.answer("Ошибка.")
         return
 
     item_id = callback_data.item_id
-    original_item_type = callback_data.item_type # Тип списка, из которого удаляем (current_actions, notes, completed, etc.)
+    original_item_type = callback_data.item_type # Тип списка, из которого удаляем (curr_act, notes, completed, etc.)
     item_type_for_api_call = original_item_type # По умолчанию совпадает
 
     # Особая логика для "completed"
@@ -284,14 +284,14 @@ async def handle_delete_item_confirm_action(query: CallbackQuery, callback_data:
 
     # Упрощение: Предположим, что "completed" задачи хранятся только в своих оригинальных сервисах.
     # И вызов "remove" для них - это тот же remove, что и для активных задач.
-    # НО! API для current_actions, etc., уже имеют status (active, completed, deleted).
+    # НО! API для curr_act, etc., уже имеют status (active, completed, deleted).
     # Поэтому "удалить" выполненную задачу может означать переход completed -> deleted.
 
     remove_method = None
-    if original_item_type == "current_actions":
-        remove_method = SERVICE_ACTION_CLIENTS["current_actions"]["remove"]
-    elif original_item_type == "sometime_later":
-        remove_method = SERVICE_ACTION_CLIENTS["sometime_later"]["remove"]
+    if original_item_type == "curr_act":
+        remove_method = SERVICE_ACTION_CLIENTS["curr_act"]["remove"]
+    elif original_item_type == "smt_ltr":
+        remove_method = SERVICE_ACTION_CLIENTS["smt_ltr"]["remove"]
     elif original_item_type == "waiting":
         remove_method = SERVICE_ACTION_CLIENTS["waiting"]["remove"]
     elif original_item_type == "notes":
@@ -300,7 +300,7 @@ async def handle_delete_item_confirm_action(query: CallbackQuery, callback_data:
         # Это самый сложный случай. Какому сервису слать remove?
         # Если ID глобальны - то надо определить сервис по ID.
         # Если нет - нужен `source_service` в `callback_data` или в информации о задаче.
-        # Допустим, мы просто используем `current_actions` как fallback, если не знаем источник.
+        # Допустим, мы просто используем `curr_act` как fallback, если не знаем источник.
         # Это надо четко прописать в ВКР.
         # "делает запрос в сервис, из которого пришла задача"
         # Для этого нам нужно знать этот сервис.
