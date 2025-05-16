@@ -149,6 +149,49 @@ services:
     networks:
       - app_network
 
+  ai-proxy:
+    build:
+      context: ./services/ai-proxy
+      dockerfile: Dockerfile
+    container_name: ai_proxy_service
+    ports:
+      - "8001:8000" # Связываем порт 8001 хоста с портом 8000 контейнера
+    networks:
+      - app_network
+    env_file:
+      - ./services/ai-proxy/.env 
+    volumes:
+      # Для разработки с hot-reload: монтируем код внутрь контейнера.
+      # Если DEBUG: "true", uvicorn (запущенный через main.py) будет перезагружаться при изменениях.
+      - ./services/ai-proxy/ai_proxy:/app/ai_proxy
+
+  # --- Сервис telegram-bot ---
+  telegram-bot:
+    build:
+      context: ./services/telegram-bot # Укажите путь к папке вашего telegram-bot сервиса
+      dockerfile: Dockerfile
+    container_name: telegram_bot_service
+    depends_on:
+      current-actions:
+        condition: service_started
+      sometime-later:
+        condition: service_started
+      waiting:
+        condition: service_started
+      notes:
+        condition: service_started
+      ai-proxy:
+        condition: service_started
+    networks:
+      - app_network
+    env_file:
+      - ./services/telegram-bot/.env # Убедитесь, что URL в этом файле настроены на имена сервисов
+    # Для разработки с обновлением кода без пересборки образа (если ваш бот это поддерживает):
+    # volumes:
+    #   - ./services/telegram-bot/telegram_bot:/app/telegram_bot
+    #   - ./services/telegram-bot/requirements.txt:/app/requirements.txt # Для обновления зависимостей
+    restart: unless-stopped # Перезапускать бота, если он упадет
+
 # Определяем сеть, чтобы сервисы могли общаться по именам
 networks:
   app_network:

@@ -1,45 +1,66 @@
 import asyncio
-from telegram.ext import ApplicationBuilder
-from telegram_bot.handlers.init import register_handlers
-from telegram_bot.internal.utils import get_env_var
-from telegram_bot.internal.logger import get_logger
+import logging
+import os
 
-logger = get_logger()
+from aiogram import Bot, Dispatcher, F
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.types import BotCommand, BotCommandScopeDefault
+from dotenv import load_dotenv
+
+# Импортируем роутеры
+from telegram_bot.handlers import common_handlers, free_text_handler, task_list_handlers, task_action_handlers
+from telegram_bot.clients.api_client import api_client # для инициализации при старте, если нужно
+
+# Загрузка переменных окружения
+load_dotenv()
+
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+if not TELEGRAM_BOT_TOKEN:
+    exit("Error: no TELEGRAM_BOT_TOKEN provided")
+
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+
+async def set_commands(bot: Bot):
+    commands = [
+        BotCommand(command="start", description="🚀 Запустить/Перезапустить бота"),
+        BotCommand(command="help", description="ℹ️ Помощь по командам"),
+        BotCommand(command="support", description="🛠️ Поддержка"),
+        BotCommand(command="cancel", description="❌ Отменить текущее действие")
+    ]
+    await bot.set_my_commands(commands, BotCommandScopeDefault())
 
 
 async def main():
-    """Основная функция запуска бота"""
-    # Получаем токен бота из переменных окружения
-    bot_token = get_env_var("TELEGRAM_BOT_TOKEN")
+    bot = Bot(token=TELEGRAM_BOT_TOKEN)
+    storage = MemoryStorage() # Используем MemoryStorage для FSM
+    dp = Dispatcher(storage=storage)
+
+    # Регистрация роутеров
+    dp.include_router(common_handlers.router)
+    dp.include_router(task_list_handlers.router) # Должен идти до free_text, если кнопки совпадают с текстом
+    dp.include_router(task_action_handlers.router) # Callback-хендлеры
+    dp.include_router(free_text_handler.router)   # Хендлер для свободного текста должен быть последним из Message хендлеров
+
+    # Установка команд меню
+    await set_commands(bot)
     
-    if not bot_token:
-        logger.error("TELEGRAM_BOT_TOKEN not found in environment variables")
-        exit(1)
-    
-    logger.info("Starting telegram bot")
-    
-    # Создаем объект приложения
-    application = ApplicationBuilder().token(bot_token).build()
-    
-    # Регистрируем обработчики
-    register_handlers(application)
-    
-    # Запускаем бота
-    await application.initialize()
-    await application.start()
-    await application.updater.start_polling()
-    
-    logger.info("Bot started")
-    
-    # Держим бота запущенным до получения сигнала остановки
+    logger.info("Bot is starting...")
+    # Запуск polling
     try:
-        await asyncio.Event().wait()
-    except (KeyboardInterrupt, SystemExit):
-        logger.info("Bot stopping...")
-        await application.updater.stop_polling()
-        await application.stop()
-        logger.info("Bot stopped")
+        await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
+    finally:
+        await bot.session.close()
+        logger.info("Bot has been stopped.")
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        logger.info("Bot stopped by user.")

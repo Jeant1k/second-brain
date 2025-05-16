@@ -1,27 +1,34 @@
-PROJECT_ROOT := /home/jean/second_brain
+.PHONY: build run logs stop clean requirements
 
-# .PHONY: run-tests
-# run-tests:
-# 	pytest --log-cli-level=DEBUG -vv test_telegram_bot/test_telegram_bot.py
+# Имя сервиса и тег
+IMAGE_NAME := telegram-bot-service
+IMAGE_TAG := latest
 
+# Файл с переменными окружения
+ENV_FILE := .env
 
-.PHONY: run-codegen
-run-codegen:
-	datamodel-codegen --input $(PROJECT_ROOT)/schemas/services/ai-proxy/api/api.yaml --output $(PROJECT_ROOT)/services/telegram-bot/telegram_bot/generated/ai_proxy_api.py --input-file-type openapi
-	datamodel-codegen --input $(PROJECT_ROOT)/services/telegram-bot/docs/yaml/types.yaml --output $(PROJECT_ROOT)/services/telegram-bot/telegram_bot/generated/types.py --input-file-type openapi
+build:
+	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
 
+run-docker: build
+	docker run -d --rm --name $(IMAGE_NAME) \
+		--env-file $(ENV_FILE) \
+		-p 8085:8080 \ # Если боту нужен порт (обычно нет для polling)
+		$(IMAGE_NAME):$(IMAGE_TAG)
 
-.PHONY: run-service
-run-service:
-	python -m telegram_bot.main
+run-local:
+	python telegram_bot/main.py
 
+logs:
+	docker logs -f $(IMAGE_NAME)
 
-.PHONY: install-requirements
-install-requirements:
-	pip install -r requirements.txt
+stop:
+	docker stop $(IMAGE_NAME) || true
 
+clean: stop
+	docker rm $(IMAGE_NAME) || true
+	docker rmi $(IMAGE_NAME):$(IMAGE_TAG) || true
 
-.PHONY: cache-delete
-cache-delete:
-	find . -type d -name "__pycache__" | xargs rm -rf
-	rm -rf test_telegram_bot/pytest_cache
+requirements:
+	pip freeze > requirements.txt
+
