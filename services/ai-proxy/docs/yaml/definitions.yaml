@@ -20,11 +20,6 @@ components:
             type: string
             enum:
               - trash
-              - someday_maybe
-              - notes
-              - do_it
-              - delegate
               - current_actions
-              - calendar
-              - project
-              - completed
+              - waiting
+              - notes
