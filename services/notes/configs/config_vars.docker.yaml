@@ -5,3 +5,5 @@ logger-level: debug
 is-testing: false
 
 server-port: 8080
+
+dbconnection: 'postgresql://notes_user:password@postgres-notes:5432/notes'

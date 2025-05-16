@@ -75,6 +75,80 @@ services:
     networks:
       - app_network
 
+  # --- База данных для waiting ---
+  postgres-waiting:
+    image: postgres:16
+    container_name: waiting_postgres_db
+    environment:
+      POSTGRES_USER: waiting_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: waiting
+    ports:
+      - "5434:5432" # Связываем порт 5434 контейнера с портом 5432 хоста
+    volumes:
+      - ./services/waiting/postgresql/schemas/waiting.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U waiting_user -d waiting"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Сервис waiting ---
+  waiting:
+    build:
+      context: ./services/waiting # Путь к директории сервиса
+      dockerfile: Dockerfile
+    container_name: waiting_service
+    depends_on:
+      postgres-waiting:
+        condition: service_healthy 
+    # Переменные окружения для waiting (если они переопределяют config_vars.yaml)
+    # environment:
+    #   DB_CONNECTION: 'postgresql://waiting_user:password@postgres_waiting:5432/waiting'
+    ports:
+      - "8082:8080" # Связываем порт 8082 контейнера с портом 8080 хоста
+    networks:
+      - app_network
+
+  # --- База данных для notes ---
+  postgres-notes:
+    image: postgres:16
+    container_name: notes_postgres_db
+    environment:
+      POSTGRES_USER: notes_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: notes
+    ports:
+      - "5435:5432" # Связываем порт 5435 контейнера с портом 5432 хоста
+    volumes:
+      - ./services/notes/postgresql/schemas/notes.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notes_user -d notes"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Сервис notes ---
+  notes:
+    build:
+      context: ./services/notes # Путь к директории сервиса
+      dockerfile: Dockerfile
+    container_name: notes_service
+    depends_on:
+      postgres-notes:
+        condition: service_healthy 
+    # Переменные окружения для notes (если они переопределяют config_vars.yaml)
+    # environment:
+    #   DB_CONNECTION: 'postgresql://notes_user:password@postgres_notes:5432/notes'
+    ports:
+      - "8083:8080" # Связываем порт 8083 контейнера с портом 8080 хоста
+    networks:
+      - app_network
+
 # Определяем сеть, чтобы сервисы могли общаться по именам
 networks:
   app_network:

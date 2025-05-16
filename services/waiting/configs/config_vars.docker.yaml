@@ -5,3 +5,5 @@ logger-level: debug
 is-testing: false
 
 server-port: 8080
+
+dbconnection: 'postgresql://waiting_user:password@postgres-waiting:5432/waiting'
