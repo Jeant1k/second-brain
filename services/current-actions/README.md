@@ -1,38 +1,59 @@
-# pg_current-actions
+# Current Actions Service
 
-Template of a C++ service that uses [userver framework](https://github.com/userver-framework/userver) with PostgreSQL.
+## 🎯 Назначение
 
+Бэкенд-сервис `current-actions` отвечает за управление списком "Текущие действия" (Next Actions) в рамках методологии GTD. Он предоставляет API для создания, чтения, обновления и удаления активных задач, которые пользователь планирует выполнить в ближайшее время.
 
-## Download and Build
+## 🛠️ Технологии
 
-To create your own userver-based service follow the following steps:
+*   C++ (C++20)
+*   Фреймворк `userver`
+*   PostgreSQL (для хранения данных)
+*   CMake/Make (для сборки)
 
-1. Press the "Use this template button" at the top right of this GitHub page
-2. Clone the service `git clone your-service-repo && cd your-service-repo`
-3. Give a proper name to your service and replace all the occurrences of "current-actions" string with that name
-   (could be done via `find . -not -path "./third_party/*" -not -path ".git/*" -not -path './build-*' -type f | xargs sed -i 's/current-actions/YOUR_SERVICE_NAME/g'`).
-4. Feel free to tweak, adjust or fully rewrite the source code of your service.
+## 🗃️ База данных
 
+Сервис использует собственную схему или набор таблиц в общей базе данных PostgreSQL. Основная таблица для хранения текущих задач может выглядеть так:
 
-## Makefile
+*   **`current_action_tasks`**:
+    *   `id` (UUID, PK)
+    *   `user_id` (BIGINT, FK to users table or just identifier)
+    *   `title` (TEXT, NOT NULL)
+    *   `description` (TEXT, nullable)
+    *   `created_at` (TIMESTAMP WITH TIME ZONE, NOT NULL)
+    *   `updated_at` (TIMESTAMP WITH TIME ZONE, NOT NULL)
+    *   `due_date` (TIMESTAMP WITH TIME ZONE, nullable)
+    *   `status` (VARCHAR, e.g., 'active', 'completed', 'deferred', 'deleted')
+    *   `gtd_list_type` (VARCHAR, const 'current_actions') // Для унификации при агрегации
+    *   ... другие необходимые поля (контекст, проект и т.д.)
 
-`PRESET` is either `debug`, `release`, or if you've added custom presets in `CMakeUserPresets.json`, it
-can also be `debug-custom`, `release-custom`.
+Скрипты для создания/миграции таблиц находятся в директории `postgresql/`.
 
-* `make cmake-PRESET` - run cmake configure, update cmake options and source file lists
-* `make build-PRESET` - build the service
-* `make test-PRESET` - build the service and run all tests
-* `make start-PRESET` - build the service, start it in testsuite environment and leave it running
-* `make install-PRESET` - build the service and install it in directory set in environment `PREFIX`
-* `make` or `make all` - build and run all tests in `debug` and `release` modes
-* `make format` - reformat all C++ and Python sources
-* `make dist-clean` - clean build files and cmake cache
-* `make docker-COMMAND` - run `make COMMAND` in docker environment
-* `make docker-clean-data` - stop docker containers and clean database data
+## 🌐 API (Основные эндпоинты)
 
+Сервис предоставляет REST-подобный HTTP API:
 
-## License
+*   `GET /v1/tasks?user_id=<user_id>&limit=<N>&cursor=<cursor>`: Получить список активных задач пользователя (с пагинацией).
+*   `POST /v1/tasks`: Создать новую задачу.
+    *   Тело запроса (JSON): `{ "user_id": "...", "title": "...", "description": "..." }`
+*   `GET /v1/tasks/{task_id}?user_id=<user_id>`: Получить информацию о конкретной задаче.
+*   `PUT /v1/tasks/{task_id}`: Обновить задачу (например, изменить название).
+    *   Тело запроса (JSON): `{ "user_id": "...", "title": "новое название" }`
+*   `POST /v1/tasks/{task_id}/complete`: Пометить задачу как выполненную.
+    *   Тело запроса (JSON): `{ "user_id": "..." }`
+*   `POST /v1/tasks/{task_id}/defer`: Отложить задачу (переместить в `sometime-later`).
+    *   Тело запроса (JSON): `{ "user_id": "..." }`
+    *   *Примечание: это действие может инициировать вызов сервиса `sometime-later` или просто изменить статус и ожидать, что `telegram-bot` сделает нужные вызовы.*
+*   `DELETE /v1/tasks/{task_id}?user_id=<user_id>`: Логически или физически удалить задачу.
 
-The original template is distributed under the [Apache-2.0 License](https://github.com/userver-framework/userver/blob/develop/LICENSE)
-and [CLA](https://github.com/userver-framework/userver/blob/develop/CONTRIBUTING.md). Services based on the template may change
-the license and CLA.
+Эндпоинты и структура ответов должны быть четко документированы (например, с использованием OpenAPI в `docs/`).
+
+## 🚀 Сборка и запуск
+
+Сервис предназначен для сборки и запуска в Docker-контейнере. `Dockerfile` и `Makefile` в корневой директории сервиса управляют этим процессом.
+
+Для локальной сборки (примерно):
+1.  `mkdir build-debug && cd build-debug`
+2.  `cmake .. -DCMAKE_BUILD_TYPE=Debug`
+3.  `make -jN`
+4.  Запуск бинарного файла с указанием пути к конфигурационному файлу (например, `configs/config.yaml`).

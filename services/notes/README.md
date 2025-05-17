@@ -1,38 +1,42 @@
-# pg_notes
+# Notes Service
 
-Template of a C++ service that uses [userver framework](https://github.com/userver-framework/userver) with PostgreSQL.
+## 🎯 Назначение
 
+Бэкенд-сервис `notes` предназначен для управления заметками и справочной информацией пользователя, которая не является непосредственно задачами, но может быть полезна для их выполнения или общего ведения дел (в GTD это часть "Справочные материалы").
 
-## Download and Build
+## 🛠️ Технологии
 
-To create your own userver-based service follow the following steps:
+*   C++ (C++20)
+*   Фреймворк `userver`
+*   PostgreSQL (для хранения данных)
+*   CMake/Make (для сборки)
 
-1. Press the "Use this template button" at the top right of this GitHub page
-2. Clone the service `git clone your-service-repo && cd your-service-repo`
-3. Give a proper name to your service and replace all the occurrences of "notes" string with that name
-   (could be done via `find . -not -path "./third_party/*" -not -path ".git/*" -not -path './build-*' -type f | xargs sed -i 's/notes/YOUR_SERVICE_NAME/g'`).
-4. Feel free to tweak, adjust or fully rewrite the source code of your service.
+## 🗃️ База данных
 
+Основная таблица:
 
-## Makefile
+*   **`notes`**:
+    *   `id` (UUID, PK)
+    *   `user_id` (BIGINT)
+    *   `title` (TEXT, NOT NULL) // Может быть первой строкой заметки или отдельным заголовком
+    *   `content` (TEXT, NOT NULL)
+    *   `created_at` (TIMESTAMP WITH TIME ZONE, NOT NULL)
+    *   `updated_at` (TIMESTAMP WITH TIME ZONE, NOT NULL)
+    *   `gtd_list_type` (VARCHAR, const 'notes')
+    *   ... другие поля (теги, категория и т.д.).
 
-`PRESET` is either `debug`, `release`, or if you've added custom presets in `CMakeUserPresets.json`, it
-can also be `debug-custom`, `release-custom`.
+Скрипты для создания/миграции таблиц находятся в директории `postgresql/`.
 
-* `make cmake-PRESET` - run cmake configure, update cmake options and source file lists
-* `make build-PRESET` - build the service
-* `make test-PRESET` - build the service and run all tests
-* `make start-PRESET` - build the service, start it in testsuite environment and leave it running
-* `make install-PRESET` - build the service and install it in directory set in environment `PREFIX`
-* `make` or `make all` - build and run all tests in `debug` and `release` modes
-* `make format` - reformat all C++ and Python sources
-* `make dist-clean` - clean build files and cmake cache
-* `make docker-COMMAND` - run `make COMMAND` in docker environment
-* `make docker-clean-data` - stop docker containers and clean database data
+## 🌐 API (Основные эндпоинты)
 
+*   `GET /v1/notes?user_id=<user_id>&limit=<N>&cursor=<cursor>`: Получить список заметок.
+*   `POST /v1/notes`: Создать новую заметку.
+    *   Тело запроса (JSON): `{ "user_id": "...", "title": "...", "content": "..." }`
+*   `GET /v1/notes/{note_id}?user_id=<user_id>`: Получить заметку.
+*   `PUT /v1/notes/{note_id}`: Обновить заметку.
+    *   Тело запроса (JSON): `{ "user_id": "...", "title": "...", "content": "..." }`
+*   `DELETE /v1/notes/{note_id}?user_id=<user_id>`: Удалить заметку.
 
-## License
+## 🚀 Сборка и запуск
 
-The original template is distributed under the [Apache-2.0 License](https://github.com/userver-framework/userver/blob/develop/LICENSE)
-and [CLA](https://github.com/userver-framework/userver/blob/develop/CONTRIBUTING.md). Services based on the template may change
-the license and CLA.
+Аналогично сервису `current-actions`. Управляется через `Dockerfile` и `Makefile`.

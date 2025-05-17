@@ -1,38 +1,39 @@
-# pg_calendar
+# Calendar Service
 
-Template of a C++ service that uses [userver framework](https://github.com/userver-framework/userver) with PostgreSQL.
+## 🎯 Назначение
 
+Сервис `calendar` отвечает за генерацию файлов в формате `.ics` (iCalendar). Эти файлы содержат информацию о задачах пользователя (в первую очередь, из списка "Текущие действия" или специального списка "Календарь" GTD), имеющих конкретные сроки выполнения или запланированных как события календаря. Сгенерированные `.ics` файлы могут быть импортированы в большинство стандартных календарных приложений (Google Calendar, Outlook Calendar, Apple Calendar и др.).
 
-## Download and Build
+## 🛠️ Технологии
 
-To create your own userver-based service follow the following steps:
+*   C++ (C++20)
+*   Фреймворк `userver`
+*   Библиотека для генерации `.ics` (может быть самописной или сторонней, если таковая существует для C++ и userver).
+*   Может потребоваться доступ к PostgreSQL для чтения данных о задачах, либо взаимодействие с другими C++ сервисами (например, `current-actions`) по HTTP.
 
-1. Press the "Use this template button" at the top right of this GitHub page
-2. Clone the service `git clone your-service-repo && cd your-service-repo`
-3. Give a proper name to your service and replace all the occurrences of "calendar" string with that name
-   (could be done via `find . -not -path "./third_party/*" -not -path ".git/*" -not -path './build-*' -type f | xargs sed -i 's/calendar/YOUR_SERVICE_NAME/g'`).
-4. Feel free to tweak, adjust or fully rewrite the source code of your service.
+## 🗃️ Источники данных
 
+Сервис получает данные о задачах для включения в календарь:
+1.  **Напрямую из PostgreSQL:** Читая таблицы, принадлежащие другим сервисам (например, `current_action_tasks`), фильтруя задачи с установленной `due_date`.
+2.  **Через API других сервисов:** Делая запросы к `current-actions` и другим релевантным сервисам для получения списка задач с датами.
 
-## Makefile
+Выбор зависит от архитектурных решений (степень изоляции данных сервисов).
 
-`PRESET` is either `debug`, `release`, or if you've added custom presets in `CMakeUserPresets.json`, it
-can also be `debug-custom`, `release-custom`.
+## 🌐 API (Основные эндпоинты)
 
-* `make cmake-PRESET` - run cmake configure, update cmake options and source file lists
-* `make build-PRESET` - build the service
-* `make test-PRESET` - build the service and run all tests
-* `make start-PRESET` - build the service, start it in testsuite environment and leave it running
-* `make install-PRESET` - build the service and install it in directory set in environment `PREFIX`
-* `make` or `make all` - build and run all tests in `debug` and `release` modes
-* `make format` - reformat all C++ and Python sources
-* `make dist-clean` - clean build files and cmake cache
-* `make docker-COMMAND` - run `make COMMAND` in docker environment
-* `make docker-clean-data` - stop docker containers and clean database data
+Основной эндпоинт сервиса предназначен для скачивания `.ics` файла:
 
+*   `GET /v1/calendar/export.ics?user_id=<user_id>&date_range_start=<YYYY-MM-DD>&date_range_end=<YYYY-MM-DD>`
+    *   **Параметры запроса:**
+        *   `user_id`: Идентификатор пользователя.
+        *   `date_range_start` (опционально): Начальная дата периода для экспорта.
+        *   `date_range_end` (опционально): Конечная дата периода для экспорта.
+    *   **Ответ:**
+        *   `Content-Type: text/calendar`
+        *   Тело ответа: Содержимое `.ics` файла.
 
-## License
+## 🚀 Сборка и запуск
 
-The original template is distributed under the [Apache-2.0 License](https://github.com/userver-framework/userver/blob/develop/LICENSE)
-and [CLA](https://github.com/userver-framework/userver/blob/develop/CONTRIBUTING.md). Services based on the template may change
-the license and CLA.
+Сервис предназначен для сборки и запуска в Docker-контейнере. `Dockerfile` (если он отличается от стандартного userver `Dockerfile`) и `Makefile` в корневой директории сервиса управляют этим процессом.
+
+Поскольку этот сервис может быть более легковесным (в основном, логика генерации файла), его структура может быть проще, чем у сервисов с активным хранением данных. Однако, если он напрямую читает из БД, ему необходимы скрипты для создания представлений или индексов, если это оптимизирует запросы (в `postgresql/`).

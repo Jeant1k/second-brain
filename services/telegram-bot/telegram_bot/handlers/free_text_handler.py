@@ -51,7 +51,9 @@ async def handle_free_text(message: Message, state: FSMContext, bot: Bot):
                 reply_markup=get_confirm_delete_keyboard(item_id="0", item_type="trash_suggestion", original_message_id=message.message_id)
             )
             await state.update_data(original_task_text=task_text, last_bot_message_id=sent_message.message_id)
-        elif task_type in ["curr_act", "waiting", "notes"]:
+        elif task_type in ["current_actions", "waiting", "notes"]:
+            if task_type == "current_actions":
+                task_type = "curr_act"
             await add_item_based_on_type(user_id, task_text, task_type, message)
         else:
             await message.reply(f"😕 Неизвестный тип задачи от AI: {task_type}. Попробуйте переформулировать.")
